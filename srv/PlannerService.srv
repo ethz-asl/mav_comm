@@ -11,7 +11,7 @@ int8 PLANNINGFAILED=2
 #response fields
 uint8 status
 float64[] path # m x n matrix
-float64[] time # m vector with times
-int32 number_primitives  # =m
+float64[] time # n vector with times
+int32 number_primitives  # = n
 WaypointType waypoint_type #polynom, pose etc.
 
