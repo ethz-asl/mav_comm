@@ -1,0 +1,17 @@
+<package>
+  <description brief="planning_msgs">
+
+     planning_msgs
+
+  </description>
+  <author>Simon Lynen</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/planning_msgs</url>
+
+<depend package="roscpp"/>
+<depend package="geometry_msgs"/>
+
+</package>
+
+
