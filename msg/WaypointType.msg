@@ -1,3 +1,3 @@
-int32 POLYNOM=1
-int32 POSES=2
-int32 type
+uint8 POLYNOM=1
+uint8 POSES=2
+uint8 type
