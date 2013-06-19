@@ -1,3 +1,3 @@
 Header header
-geometry_msgs/Pose pose
-sensor_msgs/PointCloud2 cloud
+geometry_msgs/TransformStamped sensor_pose
+sensor_msgs/PointCloud2 cloud_in_sensor_frame
