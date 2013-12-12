@@ -1,0 +1,23 @@
+<package>
+  <name>mav_comm</name>
+  <version>1.0.0</version>
+  <description>Contains messages and services for MAV communication</description>
+  <maintainer email="markus.achtelik_devel@mavt.ethz.ch">Markus Achtelik</maintainer>
+
+  <license></license>
+
+  <!--url type="website">http://ros.org/wiki/</url-->
+  <url type="bugtracker">https://github.com/ethz-asl/mav_comm/issues</url>
+
+  <author>Markus Achtelik</author>
+
+  <!-- Dependencies which this package needs to build itself. -->
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <!-- Dependencies needed after this package is compiled. -->
+  <run_depend>planning_msgs</run_depend>
+
+  <export>
+    <metapackage/>
+  </export>
+</package>
