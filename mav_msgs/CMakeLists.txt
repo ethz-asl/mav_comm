@@ -8,6 +8,7 @@ add_message_files(
   ControlAttitudeThrust.msg
   ControlMotorSpeed.msg
   ControlRateThrust.msg
+  MotorSpeed.msg
 )
 
 generate_messages(DEPENDENCIES std_msgs)
