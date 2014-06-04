@@ -8,6 +8,7 @@ add_message_files(
   ControlAttitudeThrust.msg
   ControlMotorSpeed.msg
   ControlRateThrust.msg
+  ControlTrajectory.msg
   MotorSpeed.msg
 )
 
