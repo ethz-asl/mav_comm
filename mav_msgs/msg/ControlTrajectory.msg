@@ -1,6 +1,8 @@
 Header header
 
-float32[4] x # position, velocity, acceleration, jerk for the x-axis
-float32[4] y # position, velocity, acceleration, jerk for the y-axis
-float32[4] z # position, velocity, acceleration, jerk for the z-axis
-float32[2] yaw # yaw, yaw_dot
+float32[3] position
+float32[3] velocity
+float32[3] acceleration
+float32[3] jerk
+float32 yaw # rad
+float32 yaw_rate # rad/s
