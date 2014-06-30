@@ -5,10 +5,10 @@ find_package(catkin REQUIRED message_generation std_msgs)
 
 add_message_files(
   FILES
-  ControlAttitudeThrust.msg
-  ControlMotorSpeed.msg
-  ControlRateThrust.msg
-  ControlTrajectory.msg
+  CommandAttitudeThrust.msg
+  CommandMotorSpeed.msg
+  CommandRateThrust.msg
+  CommandTrajectory.msg
   MotorSpeed.msg
 )
 
