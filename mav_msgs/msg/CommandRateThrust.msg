@@ -7,7 +7,5 @@ Header header
 #   y: left
 #   z: up
 
-float64 roll_rate    # roll rate around body x-axis [rad/s]
-float64 pitch_rate   # pitch rate around body y-axis [rad/s]
-float64 yaw_rate     # yaw rate around body z-axis [rad/s]
-float64 thrust       # thrust [N]
+geometry_msgs/Vector3 angular_rates  # roll-, pitch-, yaw-rate around body axes [rad/s]
+float64 thrust                       # thrust [N]

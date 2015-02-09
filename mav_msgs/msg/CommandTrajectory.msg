@@ -2,10 +2,10 @@ Header header
 
 # Message should be specified in the world coordinate frame.
 
-geometry_msgs/Vector3 position # [m]
-geometry_msgs/Vector3 velocity # [m/s]
-geometry_msgs/Vector3 acceleration # [m/s^2]
-geometry_msgs/Vector3 jerk # [m/s^3]
-geometry_msgs/Vector3 snap # [m/s^4]
-float64 yaw # [rad]
-float64 yaw_rate # [rad/s]
+geometry_msgs/Vector3 position      # [m]
+geometry_msgs/Vector3 velocity      # [m/s]
+geometry_msgs/Vector3 acceleration  # [m/s^2]
+geometry_msgs/Vector3 jerk          # [m/s^3]
+geometry_msgs/Vector3 snap          # [m/s^4]
+float64 yaw                         # [rad]
+float64 yaw_rate                    # [rad/s]
