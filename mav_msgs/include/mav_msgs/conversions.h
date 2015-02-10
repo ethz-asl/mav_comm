@@ -19,8 +19,9 @@
 #ifndef MAV_MSGS_CONVERSIONS_H
 #define MAV_MSGS_CONVERSIONS_H
 
-#include <geometry_msgs/Quaternion>
-#include <geometry_msgs/Vector3>
+#include <geometry_msgs/Point.h>
+#include <geometry_msgs/Quaternion.h>
+#include <geometry_msgs/Vector3.h>
 
 #include "mav_msgs/CommandAttitudeThrust.h"
 #include "mav_msgs/CommandMotorSpeed.h"
@@ -35,8 +36,12 @@ Eigen::Vector3d vector3FromMsg(const geometry_msgs::Vector3& msg) {
   return Eigen::Vector3d(msg.x, msg.y, msg.z);
 }
 
+Eigen::Vector3d vector3FromPointMsg(const geometry_msgs::Point& msg) {
+  return Eigen::Vector3d(msg.x, msg.y, msg.z);
+}
+
 Eigen::Quaterniond quaternionFromMsg(const geometry_msgs::Quaternion& msg) {
-  return Eigen::Quaternion(msg.w, msg.x, msg.y, msg.z);
+  return Eigen::Quaterniond(msg.w, msg.x, msg.y, msg.z);
 }
 
 void eigenCommandAttitudeThrustFromMsg(const CommandAttitudeThrust& msg,
@@ -47,9 +52,9 @@ void eigenCommandAttitudeThrustFromMsg(const CommandAttitudeThrust& msg,
 
 void eigenCommandMotorSpeedFromMsg(const CommandMotorSpeed& msg,
                                    EigenCommandMotorSpeed* command_motor_speed) {
-  command_motor_speed->resize(msg.motor_speed.size());
+  command_motor_speed->motor_speeds.resize(msg.motor_speed.size());
   for (unsigned int i = 0; i < msg.motor_speed.size(); ++i) {
-    *command_motor_speed[i] = msg->motor_speed[i];
+    command_motor_speed->motor_speeds[i] = msg.motor_speed[i];
   }
 }
 
@@ -67,15 +72,15 @@ void eigenCommandRollPitchYawrateThrustFromMsg(const CommandRollPitchYawrateThru
   command_roll_pitch_yawrate_thrust->thrust = msg.thrust;
 }
 
-void eigenCommandTrajectoryFromMsg(const CommandTrajectory& msg,
+void eigenCommandTrajectoryFromMsg(const CommandTrajectoryConstPtr& msg,
                                    EigenCommandTrajectory* command_trajectory) {
-  command_trajectory->position = vector3FromMsg(msg.position);
-  command_trajectory->velocity = vector3FromMsg(msg.velocity);
-  command_trajectory->acceleration = vector3FromMsg(msg.acceleration);
-  command_trajectory->jerk = vector3FromMsg(msg.jerk);
-  command_trajectory->snap = vector3FromMsg(msg.snap);
-  command_trajectory->yaw = msg.yaw;
-  command_trajectory->yaw_rate = msg.yaw_rate;
+  command_trajectory->position = vector3FromMsg(msg->position);
+  command_trajectory->velocity = vector3FromMsg(msg->velocity);
+  command_trajectory->acceleration = vector3FromMsg(msg->acceleration);
+  command_trajectory->jerk = vector3FromMsg(msg->jerk);
+  command_trajectory->snap = vector3FromMsg(msg->snap);
+  command_trajectory->yaw = msg->yaw;
+  command_trajectory->yaw_rate = msg->yaw_rate;
 }
 
 }

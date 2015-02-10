@@ -37,8 +37,7 @@ struct EigenCommandAttitudeThrust {
 };
 
 struct EigenCommandMotorSpeed {
-  EigenCommandMotorSpeed()
-      : motor_speeds(0.0, 0.0, 0.0, 0.0, 0.0, 0.0) {};
+  //TODO(ffurrer): Find a proper way of initializing :)
 
   EigenCommandMotorSpeed(const Eigen::VectorXd& _motor_speeds) {
     motor_speeds = _motor_speeds;
@@ -49,7 +48,7 @@ struct EigenCommandMotorSpeed {
 
 struct EigenCommandRateThrust {
   EigenCommandRateThrust()
-      : angular_rates(0.0, 0.0, 0.0);
+      : angular_rates(0.0, 0.0, 0.0),
         thrust(0.0) {};
 
   EigenCommandRateThrust(const Eigen::Vector3d& _angular_rates, const double& _thrust) {
