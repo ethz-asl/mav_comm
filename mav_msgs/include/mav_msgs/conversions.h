@@ -1,0 +1,83 @@
+/*
+ * Copyright 2015 Fadri Furrer, ASL, ETH Zurich, Switzerland
+ * Copyright 2015 Michael Burri, ASL, ETH Zurich, Switzerland
+ * Copyright 2015 Markus Achtelik, ASL, ETH Zurich, Switzerland
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+#ifndef MAV_MSGS_CONVERSIONS_H
+#define MAV_MSGS_CONVERSIONS_H
+
+#include <geometry_msgs/Quaternion>
+#include <geometry_msgs/Vector3>
+
+#include "mav_msgs/CommandAttitudeThrust.h"
+#include "mav_msgs/CommandMotorSpeed.h"
+#include "mav_msgs/CommandRateThrust.h"
+#include "mav_msgs/CommandRollPitchYawrateThrust.h"
+#include "mav_msgs/CommandTrajectory.h"
+#include "mav_msgs/eigen_mav_msgs.h"
+
+namespace mav_msgs {
+
+Eigen::Vector3d vector3FromMsg(const geometry_msgs::Vector3& msg) {
+  return Eigen::Vector3d(msg.x, msg.y, msg.z);
+}
+
+Eigen::Quaterniond quaternionFromMsg(const geometry_msgs::Quaternion& msg) {
+  return Eigen::Quaternion(msg.w, msg.x, msg.y, msg.z);
+}
+
+void eigenCommandAttitudeThrustFromMsg(const CommandAttitudeThrust& msg,
+                                       EigenCommandAttitudeThrust* command_attitude_thrust) {
+  command_attitude_thrust->attitude = quaternionFromMsg(msg.attitude);
+  command_attitude_thrust->thrust = msg.thrust;
+}
+
+void eigenCommandMotorSpeedFromMsg(const CommandMotorSpeed& msg,
+                                   EigenCommandMotorSpeed* command_motor_speed) {
+  command_motor_speed->resize(msg.motor_speed.size());
+  for (unsigned int i = 0; i < msg.motor_speed.size(); ++i) {
+    *command_motor_speed[i] = msg->motor_speed[i];
+  }
+}
+
+void eigenCommandRateThrustFromMsg(const CommandRateThrust& msg,
+                                   EigenCommandRateThrust* command_rate_thrust) {
+  command_rate_thrust->angular_rates = vector3FromMsg(msg.angular_rates);
+  command_rate_thrust->thrust = msg.thrust;
+}
+
+void eigenCommandRollPitchYawrateThrustFromMsg(const CommandRollPitchYawrateThrust& msg,
+                                               EigenCommandRollPitchYawrateThrust* command_roll_pitch_yawrate_thrust) {
+  command_roll_pitch_yawrate_thrust->roll = msg.roll;
+  command_roll_pitch_yawrate_thrust->pitch = msg.pitch;
+  command_roll_pitch_yawrate_thrust->yaw_rate = msg.yaw_rate;
+  command_roll_pitch_yawrate_thrust->thrust = msg.thrust;
+}
+
+void eigenCommandTrajectoryFromMsg(const CommandTrajectory& msg,
+                                   EigenCommandTrajectory* command_trajectory) {
+  command_trajectory->position = vector3FromMsg(msg.position);
+  command_trajectory->velocity = vector3FromMsg(msg.velocity);
+  command_trajectory->acceleration = vector3FromMsg(msg.acceleration);
+  command_trajectory->jerk = vector3FromMsg(msg.jerk);
+  command_trajectory->snap = vector3FromMsg(msg.snap);
+  command_trajectory->yaw = msg.yaw;
+  command_trajectory->yaw_rate = msg.yaw_rate;
+}
+
+}
+
+#endif // MAV_MSGS_CONVERSIONS_H

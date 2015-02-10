@@ -1,7 +1,14 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(mav_msgs)
 
+add_definitions(-std=c++11)
+
+find_package(catkin REQUIRED COMPONENTS
+  cmake_modules
+)
+
 find_package(catkin REQUIRED message_generation std_msgs geometry_msgs)
+find_package(Eigen REQUIRED)
 
 add_message_files(
   FILES
@@ -16,7 +23,12 @@ add_message_files(
 
 generate_messages(DEPENDENCIES std_msgs geometry_msgs)
 
-catkin_package(
-  CATKIN_DEPENDS message_runtime std_msgs geometry_msgs
-)
+include_directories(include ${catkin_INCLUDE_DIRS})
+include_directories(${Eigen_INCLUDE_DIRS})
 
+catkin_package(
+  INCLUDE_DIRS include ${Eigen_INCLUDE_DIRS}
+  LIBRARIES
+  CATKIN_DEPENDS message_runtime std_msgs geometry_msgs
+  DEPENDS Eigen
+)
