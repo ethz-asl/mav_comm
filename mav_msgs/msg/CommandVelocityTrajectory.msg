@@ -1,6 +1,6 @@
 Header header
 
-# Message should be specified in the world coordinate frame.
+# Message should be expressed in the frame_id specified in the header.
 
 geometry_msgs/Vector3 velocity      # [m/s]
 geometry_msgs/Vector3 acceleration  # [m/s^2]

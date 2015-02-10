@@ -28,10 +28,12 @@ struct EigenCommandAttitudeThrust {
       : attitude(1.0, 0.0, 0.0, 0.0),
         thrust(0.0) {};
   EigenCommandAttitudeThrust(const Eigen::Quaterniond& _attitude,
-                             const double& _thrust) {
+                             double _thrust) {
     attitude = _attitude;
     thrust = _thrust;
   }
+
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   Eigen::Quaterniond attitude;
   double thrust;
 };
@@ -43,6 +45,7 @@ struct EigenCommandMotorSpeed {
     motor_speeds = _motor_speeds;
   };
 
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   Eigen::VectorXd motor_speeds;
 };
 
@@ -56,6 +59,7 @@ struct EigenCommandRateThrust {
     thrust = _thrust;
   };
 
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   Eigen::Vector3d angular_rates;
   double thrust;
 };
@@ -67,15 +71,14 @@ struct EigenCommandRollPitchYawrateThrust {
         yaw_rate(0.0),
         thrust(0.0) {};
 
-  EigenCommandRollPitchYawrateThrust(const double& _roll,
-                                     const double& _pitch,
-                                     const double& _yaw_rate,
-                                     const double& _thrust) {
-    roll = _roll;
-    pitch = _pitch;
-    yaw_rate = _yaw_rate;
-    thrust = _thrust;
-  };
+  EigenCommandRollPitchYawrateThrust(double _roll,
+                                     double _pitch,
+                                     double _yaw_rate,
+                                     double _thrust)
+      : roll(_roll),
+        pitch(_pitch),
+        yaw_rate(_yaw_rate),
+        thrust(_thrust) {};
 
   double roll;
   double pitch;
@@ -98,17 +101,17 @@ struct EigenCommandTrajectory {
                          const Eigen::Vector3d& _acceleration,
                          const Eigen::Vector3d& _jerk,
                          const Eigen::Vector3d& _snap,
-                         const double& _yaw,
-                         const double& _yaw_rate) {
-    position = _position;
-    velocity = _velocity;
-    acceleration = _acceleration;
-    jerk = _jerk;
-    snap = _snap;
-    yaw = _yaw;
-    yaw_rate = _yaw_rate;
-  };
+                         double _yaw,
+                         double _yaw_rate)
+      : position(_position),
+        velocity(_velocity),
+        acceleration(_acceleration),
+        jerk(_jerk),
+        snap(_snap),
+        yaw(_yaw),
+        yaw_rate(_yaw_rate) {};
 
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   Eigen::Vector3d position;
   Eigen::Vector3d velocity;
   Eigen::Vector3d acceleration;
