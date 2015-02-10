@@ -32,25 +32,25 @@
 
 namespace mav_msgs {
 
-Eigen::Vector3d vector3FromMsg(const geometry_msgs::Vector3& msg) {
+inline Eigen::Vector3d vector3FromMsg(const geometry_msgs::Vector3& msg) {
   return Eigen::Vector3d(msg.x, msg.y, msg.z);
 }
 
-Eigen::Vector3d vector3FromPointMsg(const geometry_msgs::Point& msg) {
+inline Eigen::Vector3d vector3FromPointMsg(const geometry_msgs::Point& msg) {
   return Eigen::Vector3d(msg.x, msg.y, msg.z);
 }
 
-Eigen::Quaterniond quaternionFromMsg(const geometry_msgs::Quaternion& msg) {
+inline Eigen::Quaterniond quaternionFromMsg(const geometry_msgs::Quaternion& msg) {
   return Eigen::Quaterniond(msg.w, msg.x, msg.y, msg.z);
 }
 
-void eigenCommandAttitudeThrustFromMsg(const CommandAttitudeThrust& msg,
+inline void eigenCommandAttitudeThrustFromMsg(const CommandAttitudeThrust& msg,
                                        EigenCommandAttitudeThrust* command_attitude_thrust) {
   command_attitude_thrust->attitude = quaternionFromMsg(msg.attitude);
   command_attitude_thrust->thrust = msg.thrust;
 }
 
-void eigenCommandMotorSpeedFromMsg(const CommandMotorSpeed& msg,
+inline void eigenCommandMotorSpeedFromMsg(const CommandMotorSpeed& msg,
                                    EigenCommandMotorSpeed* command_motor_speed) {
   command_motor_speed->motor_speeds.resize(msg.motor_speed.size());
   for (unsigned int i = 0; i < msg.motor_speed.size(); ++i) {
@@ -58,13 +58,13 @@ void eigenCommandMotorSpeedFromMsg(const CommandMotorSpeed& msg,
   }
 }
 
-void eigenCommandRateThrustFromMsg(const CommandRateThrust& msg,
+inline void eigenCommandRateThrustFromMsg(const CommandRateThrust& msg,
                                    EigenCommandRateThrust* command_rate_thrust) {
   command_rate_thrust->angular_rates = vector3FromMsg(msg.angular_rates);
   command_rate_thrust->thrust = msg.thrust;
 }
 
-void eigenCommandRollPitchYawrateThrustFromMsg(const CommandRollPitchYawrateThrust& msg,
+inline void eigenCommandRollPitchYawrateThrustFromMsg(const CommandRollPitchYawrateThrust& msg,
                                                EigenCommandRollPitchYawrateThrust* command_roll_pitch_yawrate_thrust) {
   command_roll_pitch_yawrate_thrust->roll = msg.roll;
   command_roll_pitch_yawrate_thrust->pitch = msg.pitch;
@@ -72,7 +72,7 @@ void eigenCommandRollPitchYawrateThrustFromMsg(const CommandRollPitchYawrateThru
   command_roll_pitch_yawrate_thrust->thrust = msg.thrust;
 }
 
-void eigenCommandTrajectoryFromMsg(const CommandTrajectoryConstPtr& msg,
+inline void eigenCommandTrajectoryFromMsg(const CommandTrajectoryConstPtr& msg,
                                    EigenCommandTrajectory* command_trajectory) {
   command_trajectory->position = vector3FromMsg(msg->position);
   command_trajectory->velocity = vector3FromMsg(msg->velocity);

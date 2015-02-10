@@ -54,7 +54,7 @@ struct EigenCommandRateThrust {
       : angular_rates(0.0, 0.0, 0.0),
         thrust(0.0) {};
 
-  EigenCommandRateThrust(const Eigen::Vector3d& _angular_rates, const double& _thrust) {
+  EigenCommandRateThrust(const Eigen::Vector3d& _angular_rates, double _thrust) {
     angular_rates = _angular_rates;
     thrust = _thrust;
   };
