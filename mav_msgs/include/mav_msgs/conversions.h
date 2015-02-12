@@ -46,12 +46,16 @@ inline Eigen::Quaterniond quaternionFromMsg(const geometry_msgs::Quaternion& msg
 
 inline void eigenCommandAttitudeThrustFromMsg(const CommandAttitudeThrust& msg,
                                        EigenCommandAttitudeThrust* command_attitude_thrust) {
+  assert(command_attitude_thrust != NULL);
+
   command_attitude_thrust->attitude = quaternionFromMsg(msg.attitude);
   command_attitude_thrust->thrust = msg.thrust;
 }
 
 inline void eigenCommandMotorSpeedFromMsg(const CommandMotorSpeed& msg,
                                    EigenCommandMotorSpeed* command_motor_speed) {
+  assert(command_motor_speed != NULL);
+
   command_motor_speed->motor_speeds.resize(msg.motor_speed.size());
   for (unsigned int i = 0; i < msg.motor_speed.size(); ++i) {
     command_motor_speed->motor_speeds[i] = msg.motor_speed[i];
@@ -60,12 +64,16 @@ inline void eigenCommandMotorSpeedFromMsg(const CommandMotorSpeed& msg,
 
 inline void eigenCommandRateThrustFromMsg(const CommandRateThrust& msg,
                                    EigenCommandRateThrust* command_rate_thrust) {
+  assert(command_rate_thrust != NULL);
+
   command_rate_thrust->angular_rates = vector3FromMsg(msg.angular_rates);
   command_rate_thrust->thrust = msg.thrust;
 }
 
 inline void eigenCommandRollPitchYawrateThrustFromMsg(const CommandRollPitchYawrateThrust& msg,
                                                EigenCommandRollPitchYawrateThrust* command_roll_pitch_yawrate_thrust) {
+  assert(command_roll_pitch_yawrate_thrust != NULL);
+
   command_roll_pitch_yawrate_thrust->roll = msg.roll;
   command_roll_pitch_yawrate_thrust->pitch = msg.pitch;
   command_roll_pitch_yawrate_thrust->yaw_rate = msg.yaw_rate;
@@ -74,6 +82,8 @@ inline void eigenCommandRollPitchYawrateThrustFromMsg(const CommandRollPitchYawr
 
 inline void eigenCommandTrajectoryFromMsg(const CommandTrajectoryConstPtr& msg,
                                    EigenCommandTrajectory* command_trajectory) {
+  assert(command_trajectory != NULL);
+
   command_trajectory->position = vector3FromMsg(msg->position);
   command_trajectory->velocity = vector3FromMsg(msg->velocity);
   command_trajectory->acceleration = vector3FromMsg(msg->acceleration);
