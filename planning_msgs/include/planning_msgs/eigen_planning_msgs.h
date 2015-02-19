@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 
-#ifndef MAV_MSGS_EIGEN_MAV_MSGS_H
-#define MAV_MSGS_EIGEN_MAV_MSGS_H
+#ifndef PLANNING_MSGS_EIGEN_MAV_MSGS_H
+#define PLANNING_MSGS_EIGEN_MAV_MSGS_H
 
 #include <Eigen/Eigen>
 #include <vector>
@@ -39,4 +39,4 @@ typedef std::vector<EigenWayPoint> EigenWaypointArray;
 
 }
 
-#endif // MAV_MSGS_EIGEN_MAV_MSGS_H
+#endif

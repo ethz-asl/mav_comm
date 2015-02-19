@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 
-#ifndef MAV_MSGS_CONVERSIONS_H
-#define MAV_MSGS_CONVERSIONS_H
+#ifndef PLANNING_MSGS_CONVERSIONS_H
+#define PLANNING_MSGS_CONVERSIONS_H
 
 #include <geometry_msgs/Point.h>
 #include <geometry_msgs/Quaternion.h>
@@ -93,4 +93,4 @@ inline void waypointArrayMsgFromEigen(const EigenWaypointArray& waypoint_array, 
 
 }
 
-#endif // MAV_MSGS_CONVERSIONS_H
+#endif
