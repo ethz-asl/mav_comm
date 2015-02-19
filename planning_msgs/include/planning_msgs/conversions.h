@@ -36,14 +36,13 @@ inline void vectorFromMsgArray(const WayPoint::_x_type& array, Eigen::VectorXd* 
 }
 
 /// Converts an Eigen::VectorXd to a WayPoint double array.
-inline void msgArrayFromVector(const Eigen::VectorXd& x, WayPoint::_x_type* array){
+inline void msgArrayFromVector(const Eigen::VectorXd& x, WayPoint::_x_type* array) {
   Eigen::Map<Eigen::VectorXd> map = Eigen::Map<Eigen::VectorXd>(&((*array)[0]), array->size());
   map = x;
 }
 
 /// Converts a WayPoint message to an EigenWayPoint structure.
-inline void eigenWaypointFromMsg(const WayPoint& msg,
-                                   EigenWayPoint* waypoint) {
+inline void eigenWaypointFromMsg(const WayPoint& msg, EigenWayPoint* waypoint) {
   assert(waypoint != NULL);
 
   vectorFromMsgArray(msg.x, &(waypoint->x));
@@ -69,7 +68,7 @@ inline void eigenWaypointArrayFromMsg(const WayPointArray& msg, EigenWaypointArr
 }
 
 /// Converts an EigenWayPoint to a WayPoint message. Does NOT set the header!
-inline void wayPointMsgFromEigen(const EigenWayPoint& waypoint, WayPoint* msg){
+inline void wayPointMsgFromEigen(const EigenWayPoint& waypoint, WayPoint* msg) {
   assert(msg != NULL);
   msgArrayFromVector(waypoint.x, &(msg->x));
   msgArrayFromVector(waypoint.y, &(msg->y));
@@ -81,10 +80,10 @@ inline void wayPointMsgFromEigen(const EigenWayPoint& waypoint, WayPoint* msg){
 }
 
 /// Converts an EigenWayPointArray to a WayPointArray message. Does NOT set the header!
-inline void waypointArrayMsgFromEigen(const EigenWaypointArray& waypoint_array, WayPointArray* msg){
+inline void waypointArrayMsgFromEigen(const EigenWaypointArray& waypoint_array, WayPointArray* msg) {
   assert(msg != NULL);
   msg->waypoints.reserve(waypoint_array.size());
-  for(EigenWaypointArray::const_iterator it = waypoint_array.begin(); it != waypoint_array.end(); ++it){
+  for (EigenWaypointArray::const_iterator it = waypoint_array.begin(); it != waypoint_array.end(); ++it) {
     WayPoint wp;
     wayPointMsgFromEigen(*it, &wp);
     msg->waypoints.push_back(wp);
