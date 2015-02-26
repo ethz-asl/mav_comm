@@ -45,7 +45,7 @@ inline Eigen::Quaterniond quaternionFromMsg(const geometry_msgs::Quaternion& msg
 }
 
 inline void eigenCommandAttitudeThrustFromMsg(const CommandAttitudeThrust& msg,
-                                       EigenCommandAttitudeThrust* command_attitude_thrust) {
+                                              EigenCommandAttitudeThrust* command_attitude_thrust) {
   assert(command_attitude_thrust != NULL);
 
   command_attitude_thrust->attitude = quaternionFromMsg(msg.attitude);
@@ -53,7 +53,7 @@ inline void eigenCommandAttitudeThrustFromMsg(const CommandAttitudeThrust& msg,
 }
 
 inline void eigenCommandMotorSpeedFromMsg(const CommandMotorSpeed& msg,
-                                   EigenCommandMotorSpeed* command_motor_speed) {
+                                          EigenCommandMotorSpeed* command_motor_speed) {
   assert(command_motor_speed != NULL);
 
   command_motor_speed->motor_speeds.resize(msg.motor_speed.size());
@@ -63,15 +63,16 @@ inline void eigenCommandMotorSpeedFromMsg(const CommandMotorSpeed& msg,
 }
 
 inline void eigenCommandRateThrustFromMsg(const CommandRateThrust& msg,
-                                   EigenCommandRateThrust* command_rate_thrust) {
+                                          EigenCommandRateThrust* command_rate_thrust) {
   assert(command_rate_thrust != NULL);
 
   command_rate_thrust->angular_rates = vector3FromMsg(msg.angular_rates);
   command_rate_thrust->thrust = msg.thrust;
 }
 
-inline void eigenCommandRollPitchYawrateThrustFromMsg(const CommandRollPitchYawrateThrust& msg,
-                                               EigenCommandRollPitchYawrateThrust* command_roll_pitch_yawrate_thrust) {
+inline void eigenCommandRollPitchYawrateThrustFromMsg(
+    const CommandRollPitchYawrateThrust& msg,
+    EigenCommandRollPitchYawrateThrust* command_roll_pitch_yawrate_thrust) {
   assert(command_roll_pitch_yawrate_thrust != NULL);
 
   command_roll_pitch_yawrate_thrust->roll = msg.roll;
@@ -80,17 +81,17 @@ inline void eigenCommandRollPitchYawrateThrustFromMsg(const CommandRollPitchYawr
   command_roll_pitch_yawrate_thrust->thrust = msg.thrust;
 }
 
-inline void eigenCommandTrajectoryFromMsg(const CommandTrajectoryConstPtr& msg,
-                                   EigenCommandTrajectory* command_trajectory) {
+inline void eigenCommandTrajectoryFromMsg(const CommandTrajectory& msg,
+                                          EigenCommandTrajectory* command_trajectory) {
   assert(command_trajectory != NULL);
 
-  command_trajectory->position = vector3FromMsg(msg->position);
-  command_trajectory->velocity = vector3FromMsg(msg->velocity);
-  command_trajectory->acceleration = vector3FromMsg(msg->acceleration);
-  command_trajectory->jerk = vector3FromMsg(msg->jerk);
-  command_trajectory->snap = vector3FromMsg(msg->snap);
-  command_trajectory->yaw = msg->yaw;
-  command_trajectory->yaw_rate = msg->yaw_rate;
+  command_trajectory->position = vector3FromMsg(msg.position);
+  command_trajectory->velocity = vector3FromMsg(msg.velocity);
+  command_trajectory->acceleration = vector3FromMsg(msg.acceleration);
+  command_trajectory->jerk = vector3FromMsg(msg.jerk);
+  command_trajectory->snap = vector3FromMsg(msg.snap);
+  command_trajectory->yaw = msg.yaw;
+  command_trajectory->yaw_rate = msg.yaw_rate;
 }
 
 }

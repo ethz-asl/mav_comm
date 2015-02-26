@@ -37,6 +37,7 @@ inline void vectorFromMsgArray(const WayPoint::_x_type& array, Eigen::VectorXd* 
 
 /// Converts an Eigen::VectorXd to a WayPoint double array.
 inline void msgArrayFromVector(const Eigen::VectorXd& x, WayPoint::_x_type* array) {
+  array->resize(x.size());
   Eigen::Map<Eigen::VectorXd> map = Eigen::Map<Eigen::VectorXd>(&((*array)[0]), array->size());
   map = x;
 }
