@@ -14,8 +14,8 @@ add_message_files(
   CommandMotorSpeed.msg
   CommandRateThrust.msg
   CommandRollPitchYawrateThrust.msg
-  CommandTrajectory.msg
-  CommandVelocityTrajectory.msg
+  CommandTrajectoryPositionYaw.msg
+  CommandTrajectoryVelocityYawrate.msg
   MotorSpeed.msg
 )
 
