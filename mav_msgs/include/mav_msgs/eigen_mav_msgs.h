@@ -86,8 +86,8 @@ struct EigenCommandRollPitchYawrateThrust {
   double thrust;
 };
 
-struct EigenCommandTrajectory {
-  EigenCommandTrajectory()
+struct EigenCommandTrajectoryPositionYaw {
+  EigenCommandTrajectoryPositionYaw()
       : position(0.0, 0.0, 0.0),
         velocity(0.0, 0.0, 0.0),
         acceleration(0.0, 0.0, 0.0),
@@ -96,7 +96,7 @@ struct EigenCommandTrajectory {
         yaw(0.0),
         yaw_rate(0.0) {};
 
-  EigenCommandTrajectory(const Eigen::Vector3d& _position,
+  EigenCommandTrajectoryPositionYaw(const Eigen::Vector3d& _position,
                          const Eigen::Vector3d& _velocity,
                          const Eigen::Vector3d& _acceleration,
                          const Eigen::Vector3d& _jerk,

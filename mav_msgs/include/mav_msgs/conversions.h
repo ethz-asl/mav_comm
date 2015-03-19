@@ -27,7 +27,7 @@
 #include "mav_msgs/CommandMotorSpeed.h"
 #include "mav_msgs/CommandRateThrust.h"
 #include "mav_msgs/CommandRollPitchYawrateThrust.h"
-#include "mav_msgs/CommandTrajectory.h"
+#include "mav_msgs/CommandTrajectoryPositionYaw.h"
 #include "mav_msgs/eigen_mav_msgs.h"
 
 namespace mav_msgs {
@@ -81,8 +81,8 @@ inline void eigenCommandRollPitchYawrateThrustFromMsg(
   command_roll_pitch_yawrate_thrust->thrust = msg.thrust;
 }
 
-inline void eigenCommandTrajectoryFromMsg(const CommandTrajectory& msg,
-                                          EigenCommandTrajectory* command_trajectory) {
+inline void eigenCommandTrajectoryPositionYawFromMsg(const CommandTrajectoryPositionYaw& msg,
+                                                     EigenCommandTrajectoryPositionYaw* command_trajectory) {
   assert(command_trajectory != NULL);
 
   command_trajectory->position = vector3FromMsg(msg.position);
