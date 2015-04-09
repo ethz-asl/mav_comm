@@ -1,0 +1,15 @@
+#request fields
+
+geometry_msgs/Vector3 start_position
+geometry_msgs/Vector3 goal_position
+geometry_msgs/Vector3 bounding_box
+bool use_current_position_as_start
+bool rebuild_map
+---
+#response constants
+uint8 PLANNINGSUCCESS=1
+uint8 PLANNINGFAILED=2
+#response fields
+uint8 status
+PlanningResponse plan
+
