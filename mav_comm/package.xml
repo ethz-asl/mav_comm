@@ -3,7 +3,7 @@
   <version>2.0.0</version>
   <description>Contains messages and services for MAV communication</description>
 
-  <maintainer email="markus.achtelik_devel@mavt.ethz.ch">Markus Achtelik</maintainer>
+  <maintainer email="fadri.furrer@mavt.ethz.ch">Fadri Furrer</maintainer>
 
   <author>Simon Lynen</author>
   <author>Markus Achtelik</author>
