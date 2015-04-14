@@ -8,7 +8,7 @@ find_package(catkin REQUIRED COMPONENTS
 find_package(catkin REQUIRED message_generation std_msgs geometry_msgs)
 include_directories(include ${catkin_INCLUDE_DIRS})
 
-find_package(eigen REQUIRED)
+find_package(Eigen REQUIRED)
 include_directories(${EIGEN_INCLUDE_DIRS})
 
 add_message_files(
@@ -28,5 +28,5 @@ catkin_package(
   INCLUDE_DIRS include ${EIGEN_INCLUDE_DIRS}
   LIBRARIES
   CATKIN_DEPENDS message_runtime std_msgs geometry_msgs
-  DEPENDS eigen
+  DEPENDS Eigen
 )
