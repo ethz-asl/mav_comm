@@ -1,11 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(mav_msgs)
 
-find_package(catkin REQUIRED COMPONENTS
-  cmake_modules
-)
-
-find_package(catkin REQUIRED message_generation std_msgs geometry_msgs)
+find_package(catkin REQUIRED cmake_modules message_generation std_msgs geometry_msgs)
 include_directories(include ${catkin_INCLUDE_DIRS})
 
 find_package(Eigen REQUIRED)
