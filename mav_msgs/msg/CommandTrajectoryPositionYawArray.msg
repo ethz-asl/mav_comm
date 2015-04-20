@@ -1,3 +1,3 @@
 Header header
 
-CommandTrajectoryPositionYaw[] sample
+CommandTrajectoryPositionYaw[] samples
