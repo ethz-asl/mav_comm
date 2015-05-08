@@ -14,6 +14,8 @@ add_message_files(
   WayPointArray.msg
   WayPoint.msg
   WaypointType.msg
+  GPSWayPoint.msg
+  GPSWayPointArray.msg
 )
 
 add_service_files(
