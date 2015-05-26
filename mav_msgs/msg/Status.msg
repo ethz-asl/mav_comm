@@ -1,5 +1,6 @@
 Header header
 
+# If values are not known / available, set to -1 or empty string. 
 string      vehicle_name
 string      vehicle_type                  # E.g. firefly, pelican ...
 float32     battery_voltage               # Battery voltage in V.
