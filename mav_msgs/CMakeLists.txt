@@ -18,6 +18,7 @@ add_message_files(
   CommandTrajectoryVelocityYawrate.msg
   CommandTrajectoryPositionYawArray.msg
   MotorSpeed.msg
+  Status.msg
 )
 
 generate_messages(DEPENDENCIES std_msgs geometry_msgs)
