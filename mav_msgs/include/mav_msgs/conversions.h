@@ -19,6 +19,10 @@
 #ifndef MAV_MSGS_CONVERSIONS_H
 #define MAV_MSGS_CONVERSIONS_H
 
+#include <Eigen/StdVector>
+#include <deque>
+#include <list>
+
 #include <geometry_msgs/Point.h>
 #include <geometry_msgs/Quaternion.h>
 #include <geometry_msgs/Vector3.h>
@@ -94,6 +98,30 @@ inline void eigenCommandTrajectoryPositionYawFromMsg(const CommandTrajectoryPosi
   command_trajectory->yaw_rate = msg.yaw_rate;
 }
 
+inline void eigenOdometryFromMsg(const nav_msgs::Odometry& msg, EigenOdometry* odometry) {
+  assert(odometry != NULL);
+  odometry->position = mav_msgs::vector3FromPointMsg(msg.pose.pose.position);
+  odometry->orientation = mav_msgs::quaternionFromMsg(msg.pose.pose.orientation);
+  odometry->velocity = mav_msgs::vector3FromMsg(msg.twist.twist.linear);
+  odometry->angular_velocity = mav_msgs::vector3FromMsg(msg.twist.twist.angular);
 }
+
+#define MAV_MSGS_CONCATENATE(x, y) x ## y
+#define MAV_MSGS_CONCATENATE2(x, y) MAV_MSGS_CONCATENATE(x, y)
+#define MAV_MSGS_MAKE_ALIGNED_CONTAINERS(eigen_type) \
+  typedef std::vector<eigen_type, Eigen::aligned_allocator<eigen_type> > MAV_MSGS_CONCATENATE2(eigen_type, Vector); \
+  typedef std::list<eigen_type, Eigen::aligned_allocator<eigen_type> > MAV_MSGS_CONCATENATE2(eigen_type, List); \
+  typedef std::deque<eigen_type, Eigen::aligned_allocator<eigen_type> > MAV_MSGS_CONCATENATE2(eigen_type, Deque); \
+
+MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EigenCommandAttitudeThrust)
+MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EigenCommandMotorSpeed)
+MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EigenCommandRateThrust)
+MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EigenCommandTrajectoryPositionYaw)
+MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EigenCommandRollPitchYawrateThrust)
+MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EigenOdometry)
+
+}
+
+
 
 #endif // MAV_MSGS_CONVERSIONS_H
