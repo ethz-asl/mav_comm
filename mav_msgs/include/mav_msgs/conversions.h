@@ -25,6 +25,7 @@
 #include <geometry_msgs/Point.h>
 #include <geometry_msgs/Quaternion.h>
 #include <geometry_msgs/Vector3.h>
+#include <nav_msgs/Odometry.h>
 
 #include "mav_msgs/CommandAttitudeThrust.h"
 #include "mav_msgs/CommandMotorSpeed.h"
