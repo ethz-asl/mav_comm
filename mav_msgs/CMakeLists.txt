@@ -8,6 +8,7 @@ find_package(Eigen REQUIRED)
 include_directories(${EIGEN_INCLUDE_DIRS})
 
 add_message_files(
+  DIRECTORY msg
   FILES
   CommandAttitudeThrust.msg
   CommandMotorSpeed.msg
@@ -16,6 +17,12 @@ add_message_files(
   CommandTrajectoryPositionYaw.msg
   CommandTrajectoryVelocityYawrate.msg
   MotorSpeed.msg
+)
+
+add_service_files(
+  DIRECTORY srv
+  FILES
+  SetFlightMode.srv
 )
 
 generate_messages(DEPENDENCIES std_msgs geometry_msgs)

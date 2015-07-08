@@ -1,0 +1,19 @@
+# This service is used to switch the flight mode.
+
+uint8 MODE_INACTIVE=0
+uint8 MODE_PREARM=1
+uint8 MODE_MANUAL=2
+uint8 MODE_ATTITUDE=3
+uint8 MODE AUTO=4
+uint8 MODE_RTL=5
+
+uint8 request_mode
+
+---
+
+uint8 FAILURE_UNDEFINED=0
+uint8 FAILURE_LOCALIZATION_NOT_AVAILABLE=1
+# ... TODO fill the failure modes in
+
+uint8 resultant_mode
+uint8[] failure_reasons # A list of reasons why the mode change failed.
