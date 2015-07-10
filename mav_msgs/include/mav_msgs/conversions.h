@@ -123,14 +123,14 @@ inline void eigenCommandTrajectoryPositionYawFromMultiDofJointTrajectoryPointMsg
     EigenCommandTrajectoryPositionYaw* command_trajectory) {
   assert(command_trajectory != NULL);
 
-  if (msg.transforms.size() > 1) {
-    ROS_WARN("MultiDofJointTrajectoryPoint message should have one joint, but has %lu. Using first joint.",
-             msg.transforms.size());
-  }
-
   if (msg.transforms.empty()) {
     ROS_ERROR("MultiDofJointTrajectoryPoint is empty.");
     return;
+  }
+
+  if (msg.transforms.size() > 1) {
+    ROS_WARN("MultiDofJointTrajectoryPoint message should have one joint, but has %lu. Using first joint.",
+             msg.transforms.size());
   }
 
   command_trajectory->position = vector3FromMsg(msg.transforms[0].translation);
