@@ -16,14 +16,15 @@ add_message_files(
   CommandRollPitchYawrateThrust.msg
   CommandTrajectoryPositionYaw.msg
   CommandTrajectoryVelocityYawrate.msg
-  FlightMode.msg
+  LevelOfAutonomy.msg
+  LevelOfAutonomyChangeError.msg
   MotorSpeed.msg
 )
 
 add_service_files(
   DIRECTORY srv
   FILES
-  SetFlightMode.srv
+  SetLevelOfAutonomy.srv
 )
 
 generate_messages(DEPENDENCIES std_msgs geometry_msgs)

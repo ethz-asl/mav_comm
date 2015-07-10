@@ -1,6 +1,6 @@
 # This service is used to switch the flight mode.
 
-FlightMode request_mode
+LevelOfAutonomy request_level
 
 ---
 
@@ -8,5 +8,5 @@ uint8 FAILURE_UNDEFINED=0
 uint8 FAILURE_LOCALIZATION_NOT_AVAILABLE=1
 # ... TODO fill the failure modes in
 
-FlightMode resultant_mode
-uint8[] failure_reasons # A list of reasons why the mode change failed.
+LevelOfAutonomy resultant_level
+LevelOfAutonomyChangeError[] failure_reasons # A list of reasons why the LOA change failed.
