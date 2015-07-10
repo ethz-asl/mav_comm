@@ -26,6 +26,8 @@
 #include <geometry_msgs/Quaternion.h>
 #include <geometry_msgs/Vector3.h>
 #include <nav_msgs/Odometry.h>
+#include <ros/ros.h>
+#include <trajectory_msgs/MultiDOFJointTrajectory.h>
 
 #include "mav_msgs/CommandAttitudeThrust.h"
 #include "mav_msgs/CommandMotorSpeed.h"
@@ -46,6 +48,16 @@ inline Eigen::Vector3d vector3FromPointMsg(const geometry_msgs::Point& msg) {
 
 inline Eigen::Quaterniond quaternionFromMsg(const geometry_msgs::Quaternion& msg) {
   return Eigen::Quaterniond(msg.w, msg.x, msg.y, msg.z);
+}
+
+/**
+ * \brief Extracts the yaw part from a quaternion, using RPY / euler (z-y'-z'') angles.
+ * RPY rotates about the fixed axes in the order x-y-z,
+ * which is the same as euler angles in the order z-y'-x''.
+ */
+template<class T>
+T yawFromQuaternion(const Eigen::Quaternion<T> & q) {
+  return atan2(2.0 * (q.w() * q.z() + q.x() * q.y()), 1.0 - 2.0 * (q.y() * q.y() + q.z() * q.z()));
 }
 
 inline void eigenCommandAttitudeThrustFromMsg(const CommandAttitudeThrust& msg,
@@ -104,6 +116,30 @@ inline void eigenOdometryFromMsg(const nav_msgs::Odometry& msg, EigenOdometry* o
   odometry->orientation = mav_msgs::quaternionFromMsg(msg.pose.pose.orientation);
   odometry->velocity = mav_msgs::vector3FromMsg(msg.twist.twist.linear);
   odometry->angular_velocity = mav_msgs::vector3FromMsg(msg.twist.twist.angular);
+}
+
+inline void eigenCommandTrajectoryPositionYawFromMultiDofJointTrajectoryPointMsg(
+    const trajectory_msgs::MultiDOFJointTrajectoryPoint& msg,
+    EigenCommandTrajectoryPositionYaw* command_trajectory) {
+  assert(command_trajectory != NULL);
+
+  if (msg.transforms.empty()) {
+    ROS_ERROR("MultiDofJointTrajectoryPoint is empty.");
+    return;
+  }
+
+  if (msg.transforms.size() > 1) {
+    ROS_WARN("MultiDofJointTrajectoryPoint message should have one joint, but has %lu. Using first joint.",
+             msg.transforms.size());
+  }
+
+  command_trajectory->position = vector3FromMsg(msg.transforms[0].translation);
+  command_trajectory->velocity = vector3FromMsg(msg.velocities[0].linear);
+  command_trajectory->acceleration = vector3FromMsg(msg.accelerations[0].linear);
+  command_trajectory->jerk.setZero();
+  command_trajectory->snap.setZero();
+  command_trajectory->yaw = yawFromQuaternion(quaternionFromMsg(msg.transforms[0].rotation));
+  command_trajectory->yaw_rate = msg.velocities[0].angular.z;
 }
 
 #define MAV_MSGS_CONCATENATE(x, y) x ## y
