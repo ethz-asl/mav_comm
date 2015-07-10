@@ -1,0 +1,46 @@
+/*
+ * Copyright 2015 Fadri Furrer, ASL, ETH Zurich, Switzerland
+ * Copyright 2015 Michael Burri, ASL, ETH Zurich, Switzerland
+ * Copyright 2015 Markus Achtelik, ASL, ETH Zurich, Switzerland
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+#ifndef DEFAULT_TOPICS_H_
+#define DEFAULT_TOPICS_H_
+
+namespace mav_msgs {
+namespace default_topics {
+
+static constexpr char IMU[] = "imu";
+static constexpr char MOTOR_MEASUREMENT[] = "motor_speed";
+static constexpr char MAGNETIC_FIELD[] = "magnetic_field";
+static constexpr char GPS[] = "gps";
+static constexpr char RC[] = "rc";
+static constexpr char STATUS[] = "status";
+
+static constexpr char COMMAND_MOTOR_SPEED[] = "command/motor_speed";
+static constexpr char COMMAND_ROLL_PITCH_YAWRATE_THRUST[] = "command/roll_pitch_yawrate_thrust";
+static constexpr char COMMAND_ATTITUDE_THRUST[] = "command/attitude_thrust";
+static constexpr char COMMAND_TRAJECTORY_POSITION_YAW[] = "command/trajectory_position_yaw";
+static constexpr char COMMAND_TRAJECTORY_VELOCITY_YAWRATE[] = "command/trajectory_velocity_yawrate";
+static constexpr char COMMAND_MULTI_DOF_JOINT_TRAJECTORY[] = "command/multi_dof_joint_trajectory";
+
+static constexpr char POSE_WITH_COVARIANCE[] = "pose_with_covariance";
+static constexpr char TRANSFORM[] = "transform";
+static constexpr char ODOMETRY[] = "odometry";
+
+} // end namespace default_topics
+} // end namespace mav_msgs
+
+#endif /* DEFAULT_TOPICS_H_ */
