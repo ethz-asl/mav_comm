@@ -10,14 +10,10 @@ include_directories(${EIGEN_INCLUDE_DIRS})
 add_message_files(
   FILES
   CommandActuator.msg
-  CommandAngularAccelerationThrust.msg
   CommandAttitudeThrust.msg
-  CommandMotorSpeed.msg
   CommandRateThrust.msg
   CommandRollPitchYawrateThrust.msg
-  CommandTrajectoryPositionYaw.msg
-  CommandTrajectoryVelocityYawrate.msg
-  MotorSpeed.msg
+  CommandTorqueThrust.msg
 )
 
 generate_messages(DEPENDENCIES std_msgs geometry_msgs)
