@@ -9,6 +9,8 @@ include_directories(${EIGEN_INCLUDE_DIRS})
 
 add_message_files(
   FILES
+  CommandActuator.msg
+  CommandAngularAccelerationThrust.msg
   CommandAttitudeThrust.msg
   CommandMotorSpeed.msg
   CommandRateThrust.msg
