@@ -30,11 +30,11 @@
 #include <ros/ros.h>
 #include <trajectory_msgs/MultiDOFJointTrajectory.h>
 
-#include "mav_msgs/AttitudeThrust.h"
 #include "mav_msgs/Actuator.h"
+#include "mav_msgs/AttitudeThrust.h"
+#include "mav_msgs/eigen_mav_msgs.h"
 #include "mav_msgs/RateThrust.h"
 #include "mav_msgs/RollPitchYawrateThrust.h"
-#include "mav_msgs/eigen_mav_msgs.h"
 
 namespace mav_msgs {
 
@@ -58,6 +58,10 @@ inline Eigen::Quaterniond quaternionFromMsg(const geometry_msgs::Quaternion& msg
 template<class T>
 T yawFromQuaternion(const Eigen::Quaternion<T> & q) {
   return atan2(2.0 * (q.w() * q.z() + q.x() * q.y()), 1.0 - 2.0 * (q.y() * q.y() + q.z() * q.z()));
+}
+
+inline Eigen::Quaterniond quaternionFromYaw(double yaw) {
+  return Eigen::Quaterniond(Eigen::AngleAxisd(yaw, Eigen::Vector3d::UnitZ()));
 }
 
 inline void eigenAttitudeThrustFromMsg(const AttitudeThrust& msg,
@@ -157,6 +161,7 @@ inline void msgRateThrustFromEigen(EigenRateThrust& rate_thrust,
 inline void msgRollPitchYawrateThrustFromEigen(
     const EigenRollPitchYawrateThrust& roll_pitch_yawrate_thrust,
     RollPitchYawrateThrust* msg) {
+  assert(msg != NULL);
   msg->roll = roll_pitch_yawrate_thrust.roll;
   msg->pitch = roll_pitch_yawrate_thrust.pitch;
   msg->yaw_rate = roll_pitch_yawrate_thrust.yaw_rate;
@@ -164,12 +169,31 @@ inline void msgRollPitchYawrateThrustFromEigen(
 }
 
 inline void msgOdometryFromEigen(const EigenOdometry& odometry, nav_msgs::Odometry* msg) {
+  assert(msg != NULL);
+
   msg->header.stamp.fromNSec(odometry.timestamp_ns);
   tf::pointEigenToMsg(odometry.position, msg->pose.pose.position);
   tf::quaternionEigenToMsg(odometry.orientation, msg->pose.pose.orientation);
 
   tf::vectorEigenToMsg(odometry.velocity, msg->twist.twist.linear);
   tf::vectorEigenToMsg(odometry.angular_velocity, msg->twist.twist.angular);
+}
+
+inline void msgMultiDofJointTrajectoryPointFromEigen(
+    const EigenTrajectoryPoint& trajectory_point,
+    trajectory_msgs::MultiDOFJointTrajectoryPoint* msg) {
+  assert(msg != NULL);
+
+  msg->time_from_start.fromNSec(trajectory_point.time_from_start_ns);
+  msg->transforms.resize(1);
+  msg->velocities.resize(1);
+  msg->accelerations.resize(1);
+
+  tf::vectorEigenToMsg(trajectory_point.position, msg->transforms[0].translation);
+  tf::quaternionEigenToMsg(quaternionFromYaw(trajectory_point.yaw), msg->transforms[0].rotation);
+  tf::vectorEigenToMsg(trajectory_point.velocity, msg->velocities[0].linear);
+  msg->velocities[0].angular.z = trajectory_point.yaw_rate;
+  tf::vectorEigenToMsg(trajectory_point.acceleration, msg->accelerations[0].linear);
 }
 
 #define MAV_MSGS_CONCATENATE(x, y) x ## y
