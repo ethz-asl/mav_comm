@@ -30,7 +30,7 @@
 #include <trajectory_msgs/MultiDOFJointTrajectory.h>
 
 #include "mav_msgs/AttitudeThrust.h"
-#include "mav_msgs/MotorSpeed.h"
+#include "mav_msgs/Actuator.h"
 #include "mav_msgs/RateThrust.h"
 #include "mav_msgs/RollPitchYawrateThrust.h"
 #include "mav_msgs/TrajectoryPositionYaw.h"
@@ -61,25 +61,24 @@ T yawFromQuaternion(const Eigen::Quaternion<T> & q) {
 }
 
 inline void eigenAttitudeThrustFromMsg(const AttitudeThrust& msg,
-                                              EigenAttitudeThrust* command_attitude_thrust) {
+                                       EigenAttitudeThrust* command_attitude_thrust) {
   assert(command_attitude_thrust != NULL);
 
   command_attitude_thrust->attitude = quaternionFromMsg(msg.attitude);
   command_attitude_thrust->thrust = msg.thrust;
 }
 
-inline void eigenMotorSpeedFromMsg(const MotorSpeed& msg,
-                                          EigenMotorSpeed* command_motor_speed) {
-  assert(command_motor_speed != NULL);
+inline void eigenActuatorFromMsg(const Actuator& msg, EigenActuator* actuator) {
+  assert(actuator != NULL);
 
-  command_motor_speed->motor_speeds.resize(msg.motor_speed.size());
+  actuator->motor_speeds.resize(msg.motor_speed.size());
   for (unsigned int i = 0; i < msg.motor_speed.size(); ++i) {
-    command_motor_speed->motor_speeds[i] = msg.motor_speed[i];
+    actuator->motor_speeds[i] = msg.motor_speed[i];
   }
 }
 
 inline void eigenRateThrustFromMsg(const RateThrust& msg,
-                                          EigenRateThrust* command_rate_thrust) {
+                                   EigenRateThrust* command_rate_thrust) {
   assert(command_rate_thrust != NULL);
 
   command_rate_thrust->angular_rates = vector3FromMsg(msg.angular_rates);
@@ -106,7 +105,7 @@ inline void eigenOdometryFromMsg(const nav_msgs::Odometry& msg, EigenOdometry* o
   odometry->angular_velocity = mav_msgs::vector3FromMsg(msg.twist.twist.angular);
 }
 
-inline void EigenTrajectoryPointFromMultiDofJointTrajectoryPointMsg(
+inline void eigenTrajectoryPointFromMultiDofJointTrajectoryPointMsg(
     const trajectory_msgs::MultiDOFJointTrajectoryPoint& msg,
     EigenTrajectoryPoint* trajectory_point) {
   assert(trajectory_point != NULL);
@@ -131,6 +130,31 @@ inline void EigenTrajectoryPointFromMultiDofJointTrajectoryPointMsg(
   trajectory_point->yaw_rate = msg.velocities[0].angular.z;
 }
 
+inline void msgActuatorFromEigen(const EigenActuator& actuator, Actuator* msg) {
+
+
+}
+
+
+inline void msgAttitudeThrustFromEigen(const EigenAttitudeThrust& command_attitude_thrust,
+                                       AttitudeThrust* msg) {
+}
+
+inline void msgRateThrustFromEigen(RateThrust& command_rate_thrust,
+                                   EigenRateThrust* msg) {
+
+inline void msgRollPitchYawrateThrustFromEigen(
+    const EigenRollPitchYawrateThrust& command_roll_pitch_yawrate_thrust,
+    RollPitchYawrateThrust* msg) {
+}
+
+inline void msgAttitudeThrustFromEigen(const EigenAttitudeThrust& command_attitude_thrust,
+                                       AttitudeThrust* msg) {
+}
+
+inline void msgOdometryFromEigen(const EigenOdometry& odometry, nav_msgs::Odometry* msg) {
+}
+
 #define MAV_MSGS_CONCATENATE(x, y) x ## y
 #define MAV_MSGS_CONCATENATE2(x, y) MAV_MSGS_CONCATENATE(x, y)
 #define MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EIGEN_TYPE) \
@@ -138,7 +162,7 @@ inline void EigenTrajectoryPointFromMultiDofJointTrajectoryPointMsg(
   typedef std::deque<EIGEN_TYPE, Eigen::aligned_allocator<EIGEN_TYPE> > MAV_MSGS_CONCATENATE2(EIGEN_TYPE, Deque); \
 
 MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EigenAttitudeThrust)
-MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EigenMotorSpeed)
+MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EigenActuator)
 MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EigenRateThrust)
 MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EigenTrajectoryPoint)
 MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EigenRollPitchYawrateThrust)
