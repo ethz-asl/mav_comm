@@ -34,7 +34,6 @@
 #include "mav_msgs/Actuator.h"
 #include "mav_msgs/RateThrust.h"
 #include "mav_msgs/RollPitchYawrateThrust.h"
-#include "mav_msgs/TrajectoryPositionYaw.h"
 #include "mav_msgs/eigen_mav_msgs.h"
 
 namespace mav_msgs {
@@ -66,7 +65,7 @@ inline void eigenAttitudeThrustFromMsg(const AttitudeThrust& msg,
   assert(attitude_thrust != NULL);
 
   attitude_thrust->attitude = quaternionFromMsg(msg.attitude);
-  attitude_thrust->thrust = msg.thrust;
+  attitude_thrust->thrust = msg.thrust.z;
 }
 
 inline void eigenActuatorFromMsg(const Actuator& msg, EigenActuator* actuator) {
@@ -83,7 +82,7 @@ inline void eigenRateThrustFromMsg(const RateThrust& msg,
   assert(rate_thrust != NULL);
 
   rate_thrust->angular_rates = vector3FromMsg(msg.angular_rates);
-  rate_thrust->thrust = msg.thrust;
+  rate_thrust->thrust = msg.thrust.z;
 }
 
 inline void eigenRollPitchYawrateThrustFromMsg(
@@ -94,7 +93,7 @@ inline void eigenRollPitchYawrateThrustFromMsg(
   roll_pitch_yawrate_thrust->roll = msg.roll;
   roll_pitch_yawrate_thrust->pitch = msg.pitch;
   roll_pitch_yawrate_thrust->yaw_rate = msg.yaw_rate;
-  roll_pitch_yawrate_thrust->thrust = msg.thrust;
+  roll_pitch_yawrate_thrust->thrust = msg.thrust.z;
 }
 
 inline void eigenOdometryFromMsg(const nav_msgs::Odometry& msg, EigenOdometry* odometry) {
@@ -145,14 +144,14 @@ inline void msgAttitudeThrustFromEigen(const EigenAttitudeThrust& attitude_thrus
                                        AttitudeThrust* msg) {
   assert(msg != NULL);
   tf::quaternionEigenToMsg(attitude_thrust.attitude, msg->attitude);
-  msg->thrust = attitude_thrust.thrust;
+  msg->thrust.z = attitude_thrust.thrust;
 }
 
-inline void msgRateThrustFromEigen(RateThrust& rate_thrust,
-                                   EigenRateThrust* msg) {
+inline void msgRateThrustFromEigen(EigenRateThrust& rate_thrust,
+                                   RateThrust* msg) {
   assert(msg != NULL);
-  tf::pointEigenToMsg(rate_thrust.angular_rates, msg->angular_rates);
-  msg->thrust = rate_thrust.thrust;
+  tf::vectorEigenToMsg(rate_thrust.angular_rates, msg->angular_rates);
+  msg->thrust.z = rate_thrust.thrust;
 }
 
 inline void msgRollPitchYawrateThrustFromEigen(
@@ -161,7 +160,7 @@ inline void msgRollPitchYawrateThrustFromEigen(
   msg->roll = roll_pitch_yawrate_thrust.roll;
   msg->pitch = roll_pitch_yawrate_thrust.pitch;
   msg->yaw_rate = roll_pitch_yawrate_thrust.yaw_rate;
-  msg->thrust = roll_pitch_yawrate_thrust.thrust;
+  msg->thrust.z = roll_pitch_yawrate_thrust.thrust;
 }
 
 inline void msgOdometryFromEigen(const EigenOdometry& odometry, nav_msgs::Odometry* msg) {
