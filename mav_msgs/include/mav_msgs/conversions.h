@@ -21,6 +21,7 @@
 
 #include <deque>
 
+#include <eigen_conversions/eigen_msg.h>
 #include <Eigen/StdVector>
 #include <geometry_msgs/Point.h>
 #include <geometry_msgs/Quaternion.h>
@@ -61,39 +62,39 @@ T yawFromQuaternion(const Eigen::Quaternion<T> & q) {
 }
 
 inline void eigenAttitudeThrustFromMsg(const AttitudeThrust& msg,
-                                       EigenAttitudeThrust* command_attitude_thrust) {
-  assert(command_attitude_thrust != NULL);
+                                       EigenAttitudeThrust* attitude_thrust) {
+  assert(attitude_thrust != NULL);
 
-  command_attitude_thrust->attitude = quaternionFromMsg(msg.attitude);
-  command_attitude_thrust->thrust = msg.thrust;
+  attitude_thrust->attitude = quaternionFromMsg(msg.attitude);
+  attitude_thrust->thrust = msg.thrust;
 }
 
 inline void eigenActuatorFromMsg(const Actuator& msg, EigenActuator* actuator) {
   assert(actuator != NULL);
 
-  actuator->motor_speeds.resize(msg.motor_speed.size());
-  for (unsigned int i = 0; i < msg.motor_speed.size(); ++i) {
-    actuator->motor_speeds[i] = msg.motor_speed[i];
+  actuator->angular_velocities.resize(msg.angular_velocities.size());
+  for (unsigned int i = 0; i < msg.angular_velocities.size(); ++i) {
+    actuator->angular_velocities[i] = msg.angular_velocities[i];
   }
 }
 
 inline void eigenRateThrustFromMsg(const RateThrust& msg,
-                                   EigenRateThrust* command_rate_thrust) {
-  assert(command_rate_thrust != NULL);
+                                   EigenRateThrust* rate_thrust) {
+  assert(rate_thrust != NULL);
 
-  command_rate_thrust->angular_rates = vector3FromMsg(msg.angular_rates);
-  command_rate_thrust->thrust = msg.thrust;
+  rate_thrust->angular_rates = vector3FromMsg(msg.angular_rates);
+  rate_thrust->thrust = msg.thrust;
 }
 
 inline void eigenRollPitchYawrateThrustFromMsg(
     const RollPitchYawrateThrust& msg,
-    EigenRollPitchYawrateThrust* command_roll_pitch_yawrate_thrust) {
-  assert(command_roll_pitch_yawrate_thrust != NULL);
+    EigenRollPitchYawrateThrust* roll_pitch_yawrate_thrust) {
+  assert(roll_pitch_yawrate_thrust != NULL);
 
-  command_roll_pitch_yawrate_thrust->roll = msg.roll;
-  command_roll_pitch_yawrate_thrust->pitch = msg.pitch;
-  command_roll_pitch_yawrate_thrust->yaw_rate = msg.yaw_rate;
-  command_roll_pitch_yawrate_thrust->thrust = msg.thrust;
+  roll_pitch_yawrate_thrust->roll = msg.roll;
+  roll_pitch_yawrate_thrust->pitch = msg.pitch;
+  roll_pitch_yawrate_thrust->yaw_rate = msg.yaw_rate;
+  roll_pitch_yawrate_thrust->thrust = msg.thrust;
 }
 
 inline void eigenOdometryFromMsg(const nav_msgs::Odometry& msg, EigenOdometry* odometry) {
@@ -131,28 +132,45 @@ inline void eigenTrajectoryPointFromMultiDofJointTrajectoryPointMsg(
 }
 
 inline void msgActuatorFromEigen(const EigenActuator& actuator, Actuator* msg) {
+  assert(msg != NULL);
+  msg->angular_velocities.resize(actuator.angular_velocities.size());
 
-
+  for (unsigned int i = 0; i < actuator.angular_velocities.size(); ++i) {
+    msg->angular_velocities[i] = actuator.angular_velocities[i];
+  }
 }
 
 
-inline void msgAttitudeThrustFromEigen(const EigenAttitudeThrust& command_attitude_thrust,
+inline void msgAttitudeThrustFromEigen(const EigenAttitudeThrust& attitude_thrust,
                                        AttitudeThrust* msg) {
+  assert(msg != NULL);
+  tf::quaternionEigenToMsg(attitude_thrust.attitude, msg->attitude);
+  msg->thrust = attitude_thrust.thrust;
 }
 
-inline void msgRateThrustFromEigen(RateThrust& command_rate_thrust,
+inline void msgRateThrustFromEigen(RateThrust& rate_thrust,
                                    EigenRateThrust* msg) {
+  assert(msg != NULL);
+  tf::pointEigenToMsg(rate_thrust.angular_rates, msg->angular_rates);
+  msg->thrust = rate_thrust.thrust;
+}
 
 inline void msgRollPitchYawrateThrustFromEigen(
-    const EigenRollPitchYawrateThrust& command_roll_pitch_yawrate_thrust,
+    const EigenRollPitchYawrateThrust& roll_pitch_yawrate_thrust,
     RollPitchYawrateThrust* msg) {
-}
-
-inline void msgAttitudeThrustFromEigen(const EigenAttitudeThrust& command_attitude_thrust,
-                                       AttitudeThrust* msg) {
+  msg->roll = roll_pitch_yawrate_thrust.roll;
+  msg->pitch = roll_pitch_yawrate_thrust.pitch;
+  msg->yaw_rate = roll_pitch_yawrate_thrust.yaw_rate;
+  msg->thrust = roll_pitch_yawrate_thrust.thrust;
 }
 
 inline void msgOdometryFromEigen(const EigenOdometry& odometry, nav_msgs::Odometry* msg) {
+  msg->header.stamp.fromNSec(odometry.timestamp_ns);
+  tf::pointEigenToMsg(odometry.position, msg->pose.pose.position);
+  tf::quaternionEigenToMsg(odometry.orientation, msg->pose.pose.orientation);
+
+  tf::vectorEigenToMsg(odometry.velocity, msg->twist.twist.linear);
+  tf::vectorEigenToMsg(odometry.angular_velocity, msg->twist.twist.angular);
 }
 
 #define MAV_MSGS_CONCATENATE(x, y) x ## y
