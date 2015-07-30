@@ -28,7 +28,7 @@ struct EigenAttitudeThrust {
       : attitude(1.0, 0.0, 0.0, 0.0),
         thrust(0.0) {};
   EigenAttitudeThrust(const Eigen::Quaterniond& _attitude,
-                             double _thrust) {
+                      double _thrust) {
     attitude = _attitude;
     thrust = _thrust;
   }
@@ -38,10 +38,10 @@ struct EigenAttitudeThrust {
   double thrust;
 };
 
-struct EigenMotorSpeed {
+struct EigenActuator {
   //TODO(ffurrer): Find a proper way of initializing :)
 
-  EigenMotorSpeed(const Eigen::VectorXd& _motor_speeds) {
+  EigenActuator(const Eigen::VectorXd& _motor_speeds) {
     motor_speeds = _motor_speeds;
   };
 
@@ -72,9 +72,9 @@ struct EigenRollPitchYawrateThrust {
         thrust(0.0) {};
 
   EigenRollPitchYawrateThrust(double _roll,
-                                     double _pitch,
-                                     double _yaw_rate,
-                                     double _thrust)
+                              double _pitch,
+                              double _yaw_rate,
+                              double _thrust)
       : roll(_roll),
         pitch(_pitch),
         yaw_rate(_yaw_rate),
