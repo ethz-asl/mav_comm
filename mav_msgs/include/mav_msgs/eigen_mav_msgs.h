@@ -23,11 +23,11 @@
 
 namespace mav_msgs {
 
-struct EigenCommandAttitudeThrust {
-  EigenCommandAttitudeThrust()
+struct EigenAttitudeThrust {
+  EigenAttitudeThrust()
       : attitude(1.0, 0.0, 0.0, 0.0),
         thrust(0.0) {};
-  EigenCommandAttitudeThrust(const Eigen::Quaterniond& _attitude,
+  EigenAttitudeThrust(const Eigen::Quaterniond& _attitude,
                              double _thrust) {
     attitude = _attitude;
     thrust = _thrust;
@@ -38,10 +38,10 @@ struct EigenCommandAttitudeThrust {
   double thrust;
 };
 
-struct EigenCommandMotorSpeed {
+struct EigenMotorSpeed {
   //TODO(ffurrer): Find a proper way of initializing :)
 
-  EigenCommandMotorSpeed(const Eigen::VectorXd& _motor_speeds) {
+  EigenMotorSpeed(const Eigen::VectorXd& _motor_speeds) {
     motor_speeds = _motor_speeds;
   };
 
@@ -49,12 +49,12 @@ struct EigenCommandMotorSpeed {
   Eigen::VectorXd motor_speeds;
 };
 
-struct EigenCommandRateThrust {
-  EigenCommandRateThrust()
+struct EigenRateThrust {
+  EigenRateThrust()
       : angular_rates(0.0, 0.0, 0.0),
         thrust(0.0) {};
 
-  EigenCommandRateThrust(const Eigen::Vector3d& _angular_rates, double _thrust) {
+  EigenRateThrust(const Eigen::Vector3d& _angular_rates, double _thrust) {
     angular_rates = _angular_rates;
     thrust = _thrust;
   };
@@ -64,14 +64,14 @@ struct EigenCommandRateThrust {
   double thrust;
 };
 
-struct EigenCommandRollPitchYawrateThrust {
-  EigenCommandRollPitchYawrateThrust()
+struct EigenRollPitchYawrateThrust {
+  EigenRollPitchYawrateThrust()
       : roll(0.0),
         pitch(0.0),
         yaw_rate(0.0),
         thrust(0.0) {};
 
-  EigenCommandRollPitchYawrateThrust(double _roll,
+  EigenRollPitchYawrateThrust(double _roll,
                                      double _pitch,
                                      double _yaw_rate,
                                      double _thrust)
