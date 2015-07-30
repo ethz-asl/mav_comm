@@ -86,9 +86,10 @@ struct EigenCommandRollPitchYawrateThrust {
   double thrust;
 };
 
-struct EigenCommandTrajectoryPositionYaw {
-  EigenCommandTrajectoryPositionYaw()
-      : position(0.0, 0.0, 0.0),
+struct EigenTrajectoryPoint {
+  EigenTrajectoryPoint()
+      : time_from_start_ns(0),
+        position(0.0, 0.0, 0.0),
         velocity(0.0, 0.0, 0.0),
         acceleration(0.0, 0.0, 0.0),
         jerk(0.0, 0.0, 0.0),
@@ -96,14 +97,16 @@ struct EigenCommandTrajectoryPositionYaw {
         yaw(0.0),
         yaw_rate(0.0) {};
 
-  EigenCommandTrajectoryPositionYaw(const Eigen::Vector3d& _position,
-                         const Eigen::Vector3d& _velocity,
-                         const Eigen::Vector3d& _acceleration,
-                         const Eigen::Vector3d& _jerk,
-                         const Eigen::Vector3d& _snap,
-                         double _yaw,
-                         double _yaw_rate)
-      : position(_position),
+  EigenTrajectoryPoint(int64_t _time_from_start_ns,
+                       const Eigen::Vector3d& _position,
+                       const Eigen::Vector3d& _velocity,
+                       const Eigen::Vector3d& _acceleration,
+                       const Eigen::Vector3d& _jerk,
+                       const Eigen::Vector3d& _snap,
+                       double _yaw,
+                       double _yaw_rate)
+      : time_from_start_ns(_time_from_start_ns),
+        position(_position),
         velocity(_velocity),
         acceleration(_acceleration),
         jerk(_jerk),
@@ -112,6 +115,7 @@ struct EigenCommandTrajectoryPositionYaw {
         yaw_rate(_yaw_rate) {};
 
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  int64_t time_from_start_ns;
   Eigen::Vector3d position;
   Eigen::Vector3d velocity;
   Eigen::Vector3d acceleration;
@@ -123,7 +127,8 @@ struct EigenCommandTrajectoryPositionYaw {
 
 struct EigenOdometry {
   EigenOdometry()
-      : position(0.0, 0.0, 0.0),
+      : timestamp_ns(-1),
+        position(0.0, 0.0, 0.0),
         orientation(Eigen::Quaterniond::Identity()),
         velocity(0.0, 0.0, 0.0),
         angular_velocity(0.0, 0.0, 0.0) {
@@ -137,6 +142,7 @@ struct EigenOdometry {
         angular_velocity(_angular_velocity) {}
 
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  int64_t timestamp_ns; // Time since epoch, negative value = invalid timestamp.
   Eigen::Vector3d position;
   Eigen::Quaterniond orientation;
   Eigen::Vector3d velocity;  // Velocity in expressed in the Body frame!

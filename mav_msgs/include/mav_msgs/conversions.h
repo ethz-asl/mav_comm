@@ -97,31 +97,19 @@ inline void eigenCommandRollPitchYawrateThrustFromMsg(
   command_roll_pitch_yawrate_thrust->thrust = msg.thrust;
 }
 
-inline void eigenCommandTrajectoryPositionYawFromMsg(const CommandTrajectoryPositionYaw& msg,
-                                                     EigenCommandTrajectoryPositionYaw* command_trajectory) {
-  assert(command_trajectory != NULL);
-
-  command_trajectory->position = vector3FromMsg(msg.position);
-  command_trajectory->velocity = vector3FromMsg(msg.velocity);
-  command_trajectory->acceleration = vector3FromMsg(msg.acceleration);
-  command_trajectory->jerk = vector3FromMsg(msg.jerk);
-  command_trajectory->snap = vector3FromMsg(msg.snap);
-  command_trajectory->yaw = msg.yaw;
-  command_trajectory->yaw_rate = msg.yaw_rate;
-}
-
 inline void eigenOdometryFromMsg(const nav_msgs::Odometry& msg, EigenOdometry* odometry) {
   assert(odometry != NULL);
+  odometry->timestamp_ns = msg.header.stamp.toNSec();
   odometry->position = mav_msgs::vector3FromPointMsg(msg.pose.pose.position);
   odometry->orientation = mav_msgs::quaternionFromMsg(msg.pose.pose.orientation);
   odometry->velocity = mav_msgs::vector3FromMsg(msg.twist.twist.linear);
   odometry->angular_velocity = mav_msgs::vector3FromMsg(msg.twist.twist.angular);
 }
 
-inline void eigenCommandTrajectoryPositionYawFromMultiDofJointTrajectoryPointMsg(
+inline void EigenTrajectoryPointFromMultiDofJointTrajectoryPointMsg(
     const trajectory_msgs::MultiDOFJointTrajectoryPoint& msg,
-    EigenCommandTrajectoryPositionYaw* command_trajectory) {
-  assert(command_trajectory != NULL);
+    EigenTrajectoryPoint* trajectory_point) {
+  assert(trajectory_point != NULL);
 
   if (msg.transforms.empty()) {
     ROS_ERROR("MultiDofJointTrajectoryPoint is empty.");
@@ -133,13 +121,14 @@ inline void eigenCommandTrajectoryPositionYawFromMultiDofJointTrajectoryPointMsg
              msg.transforms.size());
   }
 
-  command_trajectory->position = vector3FromMsg(msg.transforms[0].translation);
-  command_trajectory->velocity = vector3FromMsg(msg.velocities[0].linear);
-  command_trajectory->acceleration = vector3FromMsg(msg.accelerations[0].linear);
-  command_trajectory->jerk.setZero();
-  command_trajectory->snap.setZero();
-  command_trajectory->yaw = yawFromQuaternion(quaternionFromMsg(msg.transforms[0].rotation));
-  command_trajectory->yaw_rate = msg.velocities[0].angular.z;
+  trajectory_point->time_from_start_ns = msg.time_from_start.toNSec();
+  trajectory_point->position = vector3FromMsg(msg.transforms[0].translation);
+  trajectory_point->velocity = vector3FromMsg(msg.velocities[0].linear);
+  trajectory_point->acceleration = vector3FromMsg(msg.accelerations[0].linear);
+  trajectory_point->jerk.setZero();
+  trajectory_point->snap.setZero();
+  trajectory_point->yaw = yawFromQuaternion(quaternionFromMsg(msg.transforms[0].rotation));
+  trajectory_point->yaw_rate = msg.velocities[0].angular.z;
 }
 
 #define MAV_MSGS_CONCATENATE(x, y) x ## y
@@ -151,7 +140,7 @@ inline void eigenCommandTrajectoryPositionYawFromMultiDofJointTrajectoryPointMsg
 MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EigenCommandAttitudeThrust)
 MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EigenCommandMotorSpeed)
 MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EigenCommandRateThrust)
-MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EigenCommandTrajectoryPositionYaw)
+MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EigenTrajectoryPoint)
 MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EigenCommandRollPitchYawrateThrust)
 MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EigenOdometry)
 
