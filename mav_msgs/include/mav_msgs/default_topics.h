@@ -29,7 +29,7 @@ static constexpr char GPS[] = "gps";
 static constexpr char RC[] = "rc";
 static constexpr char STATUS[] = "status";
 
-static constexpr char COMMAND_MOTOR_SPEED[] = "command/motor_speed";
+static constexpr char COMMAND_ACTUATORS[] = "command/actuators";
 static constexpr char COMMAND_ROLL_PITCH_YAWRATE_THRUST[] = "command/roll_pitch_yawrate_thrust";
 static constexpr char COMMAND_ATTITUDE_THRUST[] = "command/attitude_thrust";
 static constexpr char COMMAND_TRAJECTORY_POSITION_YAW[] = "command/trajectory_position_yaw";

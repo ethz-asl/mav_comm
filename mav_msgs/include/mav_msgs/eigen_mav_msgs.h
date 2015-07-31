@@ -38,15 +38,15 @@ struct EigenAttitudeThrust {
   double thrust;
 };
 
-struct EigenActuator {
+struct EigenActuators {
   //TODO(ffurrer): Find a proper way of initializing :)
 
-  EigenActuator(const Eigen::VectorXd& _angular_velocities) {
+  EigenActuators(const Eigen::VectorXd& _angular_velocities) {
     angular_velocities = _angular_velocities;
   };
 
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-  Eigen::VectorXd angular_velocities; // In RPM in the case of props.
+  Eigen::VectorXd angular_velocities; // In rad/s.
 };
 
 struct EigenRateThrust {
