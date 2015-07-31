@@ -64,6 +64,16 @@ inline Eigen::Quaterniond quaternionFromYaw(double yaw) {
   return Eigen::Quaterniond(Eigen::AngleAxisd(yaw, Eigen::Vector3d::UnitZ()));
 }
 
+inline void setQuaternionMsgFromYaw(double yaw, geometry_msgs::Quaternion* msg) {
+  assert(msg != NULL);
+  tf::quaternionEigenToMsg(quaternionFromYaw(yaw), *msg);
+}
+
+inline void setAngularVelocityMsgFromYawRate(double yaw_rate, geometry_msgs::Vector3* msg) {
+  assert(msg != NULL);
+  msg->z = yaw_rate;
+}
+
 inline void eigenAttitudeThrustFromMsg(const AttitudeThrust& msg,
                                        EigenAttitudeThrust* attitude_thrust) {
   assert(attitude_thrust != NULL);
