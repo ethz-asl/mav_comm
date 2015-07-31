@@ -2,6 +2,7 @@
  * Copyright 2015 Fadri Furrer, ASL, ETH Zurich, Switzerland
  * Copyright 2015 Michael Burri, ASL, ETH Zurich, Switzerland
  * Copyright 2015 Markus Achtelik, ASL, ETH Zurich, Switzerland
+ * Copyright 2015 Helen Oleynikova, ASL, ETH Zurich, Switzerland
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,12 +57,10 @@ struct EigenActuators {
 struct EigenRateThrust {
   EigenRateThrust()
       : angular_rates(Eigen::Vector3d::Zero()),
-        thrust(Eigen::Vector3d::Zero()) {};
+        thrust(Eigen::Vector3d::Zero()) {}
 
-  EigenRateThrust(const Eigen::Vector3d& _angular_rates, const Eigen::Vector3d _thrust) {
-    angular_rates = _angular_rates;
-    thrust = _thrust;
-  };
+  EigenRateThrust(const Eigen::Vector3d& _angular_rates, const Eigen::Vector3d _thrust)
+      : angular_rates(_angular_rates), thrust(_thrust) {}
 
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   Eigen::Vector3d angular_rates;
@@ -71,12 +70,10 @@ struct EigenRateThrust {
 struct EigenTorqueThrust {
   EigenTorqueThrust()
       : torque(Eigen::Vector3d::Zero()),
-        thrust(Eigen::Vector3d::Zero()) {};
+        thrust(Eigen::Vector3d::Zero()) {}
 
-  EigenTorqueThrust(const Eigen::Vector3d& _torque, const Eigen::Vector3d _thrust) {
-    torque = _torque;
-    thrust = _thrust;
-  };
+  EigenTorqueThrust(const Eigen::Vector3d& _torque, const Eigen::Vector3d _thrust)
+      : torque(_torque), thrust(_thrust) {}
 
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   Eigen::Vector3d torque;
@@ -97,7 +94,7 @@ struct EigenRollPitchYawrateThrust {
       : roll(_roll),
         pitch(_pitch),
         yaw_rate(_yaw_rate),
-        thrust(_thrust) {};
+        thrust(_thrust) {}
 
   double roll;
   double pitch;
@@ -131,7 +128,7 @@ struct EigenTrajectoryPoint {
         jerk(_jerk),
         snap(_snap),
         orientation(_orientation),
-        angular_velocity(_angular_velocity) {};
+        angular_velocity(_angular_velocity) {}
 
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   int64_t time_from_start_ns;
@@ -152,10 +149,12 @@ struct EigenTrajectoryPoint {
     return angular_velocity.z();
   }
   // WARNING: sets roll and pitch to 0.
-  inline void setYaw(double yaw) {
+  inline void setFromYaw(double yaw) {
     orientation = quaternionFromYaw(yaw);
   }
-  inline void setYawRate(double yaw_rate) {
+  inline void setFromYawRate(double yaw_rate) {
+    angular_velocity.x() = 0.0;
+    angular_velocity.y() = 0.0;
     angular_velocity.z() = yaw_rate;
   }
 };
@@ -166,8 +165,7 @@ struct EigenOdometry {
         position(Eigen::Vector3d::Zero()),
         orientation(Eigen::Quaterniond::Identity()),
         velocity(Eigen::Vector3d::Zero()),
-        angular_velocity(Eigen::Vector3d::Zero()) {
-  }
+        angular_velocity(Eigen::Vector3d::Zero()) {}
 
   EigenOdometry(const Eigen::Vector3d& _position, const Eigen::Quaterniond& _orientation,
                 const Eigen::Vector3d& _velocity, const Eigen::Vector3d& _angular_velocity)
@@ -191,10 +189,12 @@ struct EigenOdometry {
     return angular_velocity.z();
   }
   // WARNING: sets roll and pitch to 0.
-  inline void setYaw(double yaw) {
+  inline void setFromYaw(double yaw) {
     orientation = quaternionFromYaw(yaw);
   }
-  inline void setYawRate(double yaw_rate) {
+  inline void setFromYawRate(double yaw_rate) {
+    angular_velocity.x() = 0.0;
+    angular_velocity.y() = 0.0;
     angular_velocity.z() = yaw_rate;
   }
 
