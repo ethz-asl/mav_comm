@@ -21,21 +21,23 @@
 
 #include <Eigen/Eigen>
 
+#include "mav_msgs/common.h"
+
 namespace mav_msgs {
 
 struct EigenAttitudeThrust {
   EigenAttitudeThrust()
-      : attitude(1.0, 0.0, 0.0, 0.0),
-        thrust(0.0) {};
+      : attitude(Eigen::Quaterniond::Identity()),
+        thrust(Eigen::Vector3d::Zero()) {};
   EigenAttitudeThrust(const Eigen::Quaterniond& _attitude,
-                      double _thrust) {
+                      const Eigen::Vector3d& _thrust) {
     attitude = _attitude;
     thrust = _thrust;
   }
 
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   Eigen::Quaterniond attitude;
-  double thrust;
+  Eigen::Vector3d thrust;
 };
 
 struct EigenActuators {
@@ -46,22 +48,24 @@ struct EigenActuators {
   };
 
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  Eigen::VectorXd angles;             // In rad.
   Eigen::VectorXd angular_velocities; // In rad/s.
+  Eigen::VectorXd normalized;         // Everything else, normalized [-1 to 1].
 };
 
 struct EigenRateThrust {
   EigenRateThrust()
       : angular_rates(0.0, 0.0, 0.0),
-        thrust(0.0) {};
+        thrust(Eigen::Vector3d::Zero()) {};
 
-  EigenRateThrust(const Eigen::Vector3d& _angular_rates, double _thrust) {
+  EigenRateThrust(const Eigen::Vector3d& _angular_rates, const Eigen::Vector3d _thrust) {
     angular_rates = _angular_rates;
     thrust = _thrust;
   };
 
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   Eigen::Vector3d angular_rates;
-  double thrust;
+  Eigen::Vector3d thrust;
 };
 
 struct EigenRollPitchYawrateThrust {
@@ -69,12 +73,12 @@ struct EigenRollPitchYawrateThrust {
       : roll(0.0),
         pitch(0.0),
         yaw_rate(0.0),
-        thrust(0.0) {};
+        thrust(Eigen::Vector3d::Zero()) {};
 
   EigenRollPitchYawrateThrust(double _roll,
                               double _pitch,
                               double _yaw_rate,
-                              double _thrust)
+                              const Eigen::Vector3d& _thrust)
       : roll(_roll),
         pitch(_pitch),
         yaw_rate(_yaw_rate),
@@ -83,7 +87,7 @@ struct EigenRollPitchYawrateThrust {
   double roll;
   double pitch;
   double yaw_rate;
-  double thrust;
+  Eigen::Vector3d thrust;
 };
 
 struct EigenTrajectoryPoint {
@@ -94,8 +98,8 @@ struct EigenTrajectoryPoint {
         acceleration(0.0, 0.0, 0.0),
         jerk(0.0, 0.0, 0.0),
         snap(0.0, 0.0, 0.0),
-        yaw(0.0),
-        yaw_rate(0.0) {};
+        orientation(Eigen::Quaterniond::Identity()),
+        angular_velocity(0.0, 0.0, 0.0) {};
 
   EigenTrajectoryPoint(int64_t _time_from_start_ns,
                        const Eigen::Vector3d& _position,
@@ -103,16 +107,16 @@ struct EigenTrajectoryPoint {
                        const Eigen::Vector3d& _acceleration,
                        const Eigen::Vector3d& _jerk,
                        const Eigen::Vector3d& _snap,
-                       double _yaw,
-                       double _yaw_rate)
+                       const Eigen::Quaterniond& _orientation,
+                       const Eigen::Vector3d& _angular_velocity)
       : time_from_start_ns(_time_from_start_ns),
         position(_position),
         velocity(_velocity),
         acceleration(_acceleration),
         jerk(_jerk),
         snap(_snap),
-        yaw(_yaw),
-        yaw_rate(_yaw_rate) {};
+        orientation(_orientation),
+        angular_velocity(_angular_velocity) {};
 
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   int64_t time_from_start_ns;
@@ -121,8 +125,24 @@ struct EigenTrajectoryPoint {
   Eigen::Vector3d acceleration;
   Eigen::Vector3d jerk;
   Eigen::Vector3d snap;
-  double yaw;
-  double yaw_rate;
+
+  Eigen::Quaterniond orientation;
+  Eigen::Vector3d angular_velocity;
+
+  // Accessors for making dealing with orientation/angular velocity easier.
+  inline double getYaw() const {
+    return yawFromQuaternion(orientation);
+  }
+  inline double getYawRate() const {
+    return angular_velocity.z();
+  }
+  // WARNING: sets roll and pitch to 0.
+  inline void setYaw(double yaw) {
+    orientation = quaternionFromYaw(yaw);
+  }
+  inline void setYawRate(double yaw_rate) {
+    angular_velocity.z() = yaw_rate;
+  }
 };
 
 struct EigenOdometry {
@@ -147,6 +167,23 @@ struct EigenOdometry {
   Eigen::Quaterniond orientation;
   Eigen::Vector3d velocity;  // Velocity in expressed in the Body frame!
   Eigen::Vector3d angular_velocity;
+
+  // Accessors for making dealing with orientation/angular velocity easier.
+  inline double getYaw() const {
+    return yawFromQuaternion(orientation);
+  }
+  inline double getYawRate() const {
+    return angular_velocity.z();
+  }
+  // WARNING: sets roll and pitch to 0.
+  inline void setYaw(double yaw) {
+    orientation = quaternionFromYaw(yaw);
+  }
+  inline void setYawRate(double yaw_rate) {
+    angular_velocity.z() = yaw_rate;
+  }
+
+  // TODO(helenol): add accessors for body frame vs. world frame velocities.
 };
 
 }
