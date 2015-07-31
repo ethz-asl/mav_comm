@@ -16,13 +16,15 @@
  * limitations under the License.
  */
 
+// Conversion functions between Eigen types and MAV ROS message types.
+
 #ifndef MAV_MSGS_CONVERSIONS_H
 #define MAV_MSGS_CONVERSIONS_H
 
 #include <deque>
 
-#include <eigen_conversions/eigen_msg.h>
 #include <Eigen/StdVector>
+#include <eigen_conversions/eigen_msg.h>
 #include <geometry_msgs/Point.h>
 #include <geometry_msgs/Quaternion.h>
 #include <geometry_msgs/Vector3.h>
@@ -35,59 +37,37 @@
 #include "mav_msgs/eigen_mav_msgs.h"
 #include "mav_msgs/RateThrust.h"
 #include "mav_msgs/RollPitchYawrateThrust.h"
+#include "mav_msgs/common.h"
 
 namespace mav_msgs {
-
-inline Eigen::Vector3d vector3FromMsg(const geometry_msgs::Vector3& msg) {
-  return Eigen::Vector3d(msg.x, msg.y, msg.z);
-}
-
-inline Eigen::Vector3d vector3FromPointMsg(const geometry_msgs::Point& msg) {
-  return Eigen::Vector3d(msg.x, msg.y, msg.z);
-}
-
-inline Eigen::Quaterniond quaternionFromMsg(const geometry_msgs::Quaternion& msg) {
-  return Eigen::Quaterniond(msg.w, msg.x, msg.y, msg.z);
-}
-
-/**
- * \brief Extracts the yaw part from a quaternion, using RPY / euler (z-y'-z'') angles.
- * RPY rotates about the fixed axes in the order x-y-z,
- * which is the same as euler angles in the order z-y'-x''.
- */
-template<class T>
-T yawFromQuaternion(const Eigen::Quaternion<T> & q) {
-  return atan2(2.0 * (q.w() * q.z() + q.x() * q.y()), 1.0 - 2.0 * (q.y() * q.y() + q.z() * q.z()));
-}
-
-inline Eigen::Quaterniond quaternionFromYaw(double yaw) {
-  return Eigen::Quaterniond(Eigen::AngleAxisd(yaw, Eigen::Vector3d::UnitZ()));
-}
-
-inline void setQuaternionMsgFromYaw(double yaw, geometry_msgs::Quaternion* msg) {
-  assert(msg != NULL);
-  tf::quaternionEigenToMsg(quaternionFromYaw(yaw), *msg);
-}
-
-inline void setAngularVelocityMsgFromYawRate(double yaw_rate, geometry_msgs::Vector3* msg) {
-  assert(msg != NULL);
-  msg->z = yaw_rate;
-}
 
 inline void eigenAttitudeThrustFromMsg(const AttitudeThrust& msg,
                                        EigenAttitudeThrust* attitude_thrust) {
   assert(attitude_thrust != NULL);
 
   attitude_thrust->attitude = quaternionFromMsg(msg.attitude);
-  attitude_thrust->thrust = msg.thrust.z;
+  attitude_thrust->thrust = vector3FromMsg(msg.thrust);
 }
 
 inline void eigenActuatorsFromMsg(const Actuators& msg, EigenActuators* actuators) {
   assert(actuators != NULL);
 
+  // Positions.
+  actuators->angles.resize(msg.angles.size());
+  for (unsigned int i = 0; i < msg.angles.size(); ++i) {
+    actuators->angles[i] = msg.angles[i];
+  }
+
+  // Angular velocities.
   actuators->angular_velocities.resize(msg.angular_velocities.size());
   for (unsigned int i = 0; i < msg.angular_velocities.size(); ++i) {
     actuators->angular_velocities[i] = msg.angular_velocities[i];
+  }
+
+  // Normalized.
+  actuators->normalized.resize(msg.normalized.size());
+  for (unsigned int i = 0; i < msg.normalized.size(); ++i) {
+    actuators->normalized[i] = msg.normalized[i];
   }
 }
 
@@ -96,7 +76,7 @@ inline void eigenRateThrustFromMsg(const RateThrust& msg,
   assert(rate_thrust != NULL);
 
   rate_thrust->angular_rates = vector3FromMsg(msg.angular_rates);
-  rate_thrust->thrust = msg.thrust.z;
+  rate_thrust->thrust = vector3FromMsg(msg.thrust);
 }
 
 inline void eigenRollPitchYawrateThrustFromMsg(
@@ -107,7 +87,7 @@ inline void eigenRollPitchYawrateThrustFromMsg(
   roll_pitch_yawrate_thrust->roll = msg.roll;
   roll_pitch_yawrate_thrust->pitch = msg.pitch;
   roll_pitch_yawrate_thrust->yaw_rate = msg.yaw_rate;
-  roll_pitch_yawrate_thrust->thrust = msg.thrust.z;
+  roll_pitch_yawrate_thrust->thrust = vector3FromMsg(msg.thrust);
 }
 
 inline void eigenOdometryFromMsg(const nav_msgs::Odometry& msg, EigenOdometry* odometry) {
@@ -140,8 +120,8 @@ inline void eigenTrajectoryPointFromMultiDofJointTrajectoryPointMsg(
   trajectory_point->acceleration = vector3FromMsg(msg.accelerations[0].linear);
   trajectory_point->jerk.setZero();
   trajectory_point->snap.setZero();
-  trajectory_point->yaw = yawFromQuaternion(quaternionFromMsg(msg.transforms[0].rotation));
-  trajectory_point->yaw_rate = msg.velocities[0].angular.z;
+  trajectory_point->orientation = quaternionFromMsg(msg.transforms[0].rotation);
+  trajectory_point->angular_velocity = vector3FromMsg(msg.velocities[0].angular);
 }
 
 inline void msgActuatorsFromEigen(const EigenActuators& actuators, Actuators* msg) {
@@ -158,14 +138,14 @@ inline void msgAttitudeThrustFromEigen(const EigenAttitudeThrust& attitude_thrus
                                        AttitudeThrust* msg) {
   assert(msg != NULL);
   tf::quaternionEigenToMsg(attitude_thrust.attitude, msg->attitude);
-  msg->thrust.z = attitude_thrust.thrust;
+  tf::vectorEigenToMsg(attitude_thrust.thrust, msg->thrust);
 }
 
 inline void msgRateThrustFromEigen(EigenRateThrust& rate_thrust,
                                    RateThrust* msg) {
   assert(msg != NULL);
   tf::vectorEigenToMsg(rate_thrust.angular_rates, msg->angular_rates);
-  msg->thrust.z = rate_thrust.thrust;
+  tf::vectorEigenToMsg(rate_thrust.thrust, msg->thrust);
 }
 
 inline void msgRollPitchYawrateThrustFromEigen(
@@ -175,7 +155,7 @@ inline void msgRollPitchYawrateThrustFromEigen(
   msg->roll = roll_pitch_yawrate_thrust.roll;
   msg->pitch = roll_pitch_yawrate_thrust.pitch;
   msg->yaw_rate = roll_pitch_yawrate_thrust.yaw_rate;
-  msg->thrust.z = roll_pitch_yawrate_thrust.thrust;
+  tf::vectorEigenToMsg(roll_pitch_yawrate_thrust.thrust, msg->thrust);
 }
 
 inline void msgOdometryFromEigen(const EigenOdometry& odometry, nav_msgs::Odometry* msg) {
@@ -200,12 +180,13 @@ inline void msgMultiDofJointTrajectoryPointFromEigen(
   msg->accelerations.resize(1);
 
   tf::vectorEigenToMsg(trajectory_point.position, msg->transforms[0].translation);
-  tf::quaternionEigenToMsg(quaternionFromYaw(trajectory_point.yaw), msg->transforms[0].rotation);
+  tf::quaternionEigenToMsg(trajectory_point.orientation, msg->transforms[0].rotation);
   tf::vectorEigenToMsg(trajectory_point.velocity, msg->velocities[0].linear);
-  msg->velocities[0].angular.z = trajectory_point.yaw_rate;
+  tf::vectorEigenToMsg(trajectory_point.angular_velocity, msg->velocities[0].angular);
   tf::vectorEigenToMsg(trajectory_point.acceleration, msg->accelerations[0].linear);
 }
 
+// TODO(helenol): replaced with aligned allocator headers from Simon.
 #define MAV_MSGS_CONCATENATE(x, y) x ## y
 #define MAV_MSGS_CONCATENATE2(x, y) MAV_MSGS_CONCATENATE(x, y)
 #define MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EIGEN_TYPE) \

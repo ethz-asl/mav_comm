@@ -31,3 +31,10 @@ install(
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
   FILES_MATCHING PATTERN "*.h"
 )
+
+
+
+add_executable(test_crap src/test_crap.cpp)
+target_link_libraries(test_crap ${catkin_LIBRARIES})
+
+
