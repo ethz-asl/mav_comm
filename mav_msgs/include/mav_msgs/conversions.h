@@ -105,7 +105,7 @@ inline void eigenOdometryFromMsg(const nav_msgs::Odometry& msg, EigenOdometry* o
   odometry->timestamp_ns = msg.header.stamp.toNSec();
   odometry->position = mav_msgs::vector3FromPointMsg(msg.pose.pose.position);
   odometry->orientation = mav_msgs::quaternionFromMsg(msg.pose.pose.orientation);
-  odometry->velocity = mav_msgs::vector3FromMsg(msg.twist.twist.linear);
+  odometry->velocity_body = mav_msgs::vector3FromMsg(msg.twist.twist.linear);
   odometry->angular_velocity = mav_msgs::vector3FromMsg(msg.twist.twist.angular);
 }
 
@@ -192,7 +192,7 @@ inline void msgOdometryFromEigen(const EigenOdometry& odometry, nav_msgs::Odomet
   tf::pointEigenToMsg(odometry.position, msg->pose.pose.position);
   tf::quaternionEigenToMsg(odometry.orientation, msg->pose.pose.orientation);
 
-  tf::vectorEigenToMsg(odometry.velocity, msg->twist.twist.linear);
+  tf::vectorEigenToMsg(odometry.velocity_body, msg->twist.twist.linear);
   tf::vectorEigenToMsg(odometry.angular_velocity, msg->twist.twist.angular);
 }
 

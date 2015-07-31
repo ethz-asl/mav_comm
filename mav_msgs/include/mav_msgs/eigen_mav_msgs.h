@@ -164,21 +164,21 @@ struct EigenOdometry {
       : timestamp_ns(-1),
         position(Eigen::Vector3d::Zero()),
         orientation(Eigen::Quaterniond::Identity()),
-        velocity(Eigen::Vector3d::Zero()),
+        velocity_body(Eigen::Vector3d::Zero()),
         angular_velocity(Eigen::Vector3d::Zero()) {}
 
   EigenOdometry(const Eigen::Vector3d& _position, const Eigen::Quaterniond& _orientation,
-                const Eigen::Vector3d& _velocity, const Eigen::Vector3d& _angular_velocity)
+                const Eigen::Vector3d& _velocity_body, const Eigen::Vector3d& _angular_velocity)
       : position(_position),
         orientation(_orientation),
-        velocity(_velocity),
+        velocity_body(_velocity_body),
         angular_velocity(_angular_velocity) {}
 
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   int64_t timestamp_ns; // Time since epoch, negative value = invalid timestamp.
   Eigen::Vector3d position;
   Eigen::Quaterniond orientation;
-  Eigen::Vector3d velocity;  // Velocity in expressed in the Body frame!
+  Eigen::Vector3d velocity_body;  // Velocity in expressed in the Body frame!
   Eigen::Vector3d angular_velocity;
 
   // Accessors for making dealing with orientation/angular velocity easier.
@@ -198,7 +198,12 @@ struct EigenOdometry {
     angular_velocity.z() = yaw_rate;
   }
 
-  // TODO(helenol): add accessors for body frame vs. world frame velocities.
+  inline Eigen::Vector3d getVelocityWorld() const {
+    return orientation * velocity_body;
+  }
+  inline void setVelocityWorld(const Eigen::Vector3d& velocity_world) {
+    velocity_body = orientation.inverse() * velocity_world;
+  }
 };
 
 }
