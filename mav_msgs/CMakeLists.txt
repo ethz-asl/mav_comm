@@ -9,7 +9,7 @@ include_directories(${EIGEN_INCLUDE_DIRS})
 
 add_message_files(
   FILES
-  Actuator.msg
+  Actuators.msg
   AttitudeThrust.msg
   RateThrust.msg
   RollPitchYawrateThrust.msg

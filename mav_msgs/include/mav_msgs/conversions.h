@@ -30,7 +30,7 @@
 #include <ros/ros.h>
 #include <trajectory_msgs/MultiDOFJointTrajectory.h>
 
-#include "mav_msgs/Actuator.h"
+#include "mav_msgs/Actuators.h"
 #include "mav_msgs/AttitudeThrust.h"
 #include "mav_msgs/eigen_mav_msgs.h"
 #include "mav_msgs/RateThrust.h"
@@ -72,12 +72,12 @@ inline void eigenAttitudeThrustFromMsg(const AttitudeThrust& msg,
   attitude_thrust->thrust = msg.thrust.z;
 }
 
-inline void eigenActuatorFromMsg(const Actuator& msg, EigenActuator* actuator) {
-  assert(actuator != NULL);
+inline void eigenActuatorsFromMsg(const Actuators& msg, EigenActuators* actuators) {
+  assert(actuators != NULL);
 
-  actuator->angular_velocities.resize(msg.angular_velocities.size());
+  actuators->angular_velocities.resize(msg.angular_velocities.size());
   for (unsigned int i = 0; i < msg.angular_velocities.size(); ++i) {
-    actuator->angular_velocities[i] = msg.angular_velocities[i];
+    actuators->angular_velocities[i] = msg.angular_velocities[i];
   }
 }
 
@@ -134,12 +134,12 @@ inline void eigenTrajectoryPointFromMultiDofJointTrajectoryPointMsg(
   trajectory_point->yaw_rate = msg.velocities[0].angular.z;
 }
 
-inline void msgActuatorFromEigen(const EigenActuator& actuator, Actuator* msg) {
+inline void msgActuatorsFromEigen(const EigenActuators& actuators, Actuators* msg) {
   assert(msg != NULL);
-  msg->angular_velocities.resize(actuator.angular_velocities.size());
+  msg->angular_velocities.resize(actuators.angular_velocities.size());
 
-  for (unsigned int i = 0; i < actuator.angular_velocities.size(); ++i) {
-    msg->angular_velocities[i] = actuator.angular_velocities[i];
+  for (unsigned int i = 0; i < actuators.angular_velocities.size(); ++i) {
+    msg->angular_velocities[i] = actuators.angular_velocities[i];
   }
 }
 
@@ -203,7 +203,7 @@ inline void msgMultiDofJointTrajectoryPointFromEigen(
   typedef std::deque<EIGEN_TYPE, Eigen::aligned_allocator<EIGEN_TYPE> > MAV_MSGS_CONCATENATE2(EIGEN_TYPE, Deque); \
 
 MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EigenAttitudeThrust)
-MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EigenActuator)
+MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EigenActuators)
 MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EigenRateThrust)
 MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EigenTrajectoryPoint)
 MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EigenRollPitchYawrateThrust)
