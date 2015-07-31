@@ -34,10 +34,11 @@
 
 #include "mav_msgs/Actuators.h"
 #include "mav_msgs/AttitudeThrust.h"
+#include "mav_msgs/common.h"
 #include "mav_msgs/eigen_mav_msgs.h"
 #include "mav_msgs/RateThrust.h"
 #include "mav_msgs/RollPitchYawrateThrust.h"
-#include "mav_msgs/common.h"
+#include "mav_msgs/TorqueThrust.h"
 
 namespace mav_msgs {
 
@@ -79,6 +80,14 @@ inline void eigenRateThrustFromMsg(const RateThrust& msg,
   rate_thrust->thrust = vector3FromMsg(msg.thrust);
 }
 
+inline void eigenTorqueThrustFromMsg(const TorqueThrust& msg,
+                                     EigenTorqueThrust* torque_thrust) {
+  assert(torque_thrust != NULL);
+
+  torque_thrust->torque = vector3FromMsg(msg.torque);
+  torque_thrust->thrust = vector3FromMsg(msg.thrust);
+}
+
 inline void eigenRollPitchYawrateThrustFromMsg(
     const RollPitchYawrateThrust& msg,
     EigenRollPitchYawrateThrust* roll_pitch_yawrate_thrust) {
@@ -99,7 +108,7 @@ inline void eigenOdometryFromMsg(const nav_msgs::Odometry& msg, EigenOdometry* o
   odometry->angular_velocity = mav_msgs::vector3FromMsg(msg.twist.twist.angular);
 }
 
-inline void eigenTrajectoryPointFromMultiDofJointTrajectoryPointMsg(
+inline void eigenTrajectoryPointFromMsg(
     const trajectory_msgs::MultiDOFJointTrajectoryPoint& msg,
     EigenTrajectoryPoint* trajectory_point) {
   assert(trajectory_point != NULL);
@@ -148,6 +157,13 @@ inline void msgRateThrustFromEigen(EigenRateThrust& rate_thrust,
   tf::vectorEigenToMsg(rate_thrust.thrust, msg->thrust);
 }
 
+inline void msgTorqueThrustFromEigen(EigenTorqueThrust& torque_thrust,
+                                     TorqueThrust* msg) {
+  assert(msg != NULL);
+  tf::vectorEigenToMsg(torque_thrust.torque, msg->torque);
+  tf::vectorEigenToMsg(torque_thrust.thrust, msg->thrust);
+}
+
 inline void msgRollPitchYawrateThrustFromEigen(
     const EigenRollPitchYawrateThrust& roll_pitch_yawrate_thrust,
     RollPitchYawrateThrust* msg) {
@@ -184,6 +200,24 @@ inline void msgMultiDofJointTrajectoryPointFromEigen(
   tf::vectorEigenToMsg(trajectory_point.velocity, msg->velocities[0].linear);
   tf::vectorEigenToMsg(trajectory_point.angular_velocity, msg->velocities[0].angular);
   tf::vectorEigenToMsg(trajectory_point.acceleration, msg->accelerations[0].linear);
+}
+
+inline void msgMultiDofJointTrajectoryFromEigen(
+    const EigenTrajectoryPoint& trajectory_point,
+    const std::string& link_name,
+    trajectory_msgs::MultiDOFJointTrajectory* msg) {
+  assert(msg != NULL);
+  trajectory_msgs::MultiDOFJointTrajectoryPoint point_msg;
+  msgMultiDofJointTrajectoryPointFromEigen(trajectory_point, &point_msg);
+
+  msg->joint_names.push_back(link_name);
+  msg->points.push_back(point_msg);
+}
+
+inline void msgMultiDofJointTrajectoryFromEigen(
+    const EigenTrajectoryPoint& trajectory_point,
+    trajectory_msgs::MultiDOFJointTrajectory* msg){
+  msgMultiDofJointTrajectoryFromEigen(trajectory_point, "base_link", msg);
 }
 
 // TODO(helenol): replaced with aligned allocator headers from Simon.

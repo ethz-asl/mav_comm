@@ -55,7 +55,7 @@ struct EigenActuators {
 
 struct EigenRateThrust {
   EigenRateThrust()
-      : angular_rates(0.0, 0.0, 0.0),
+      : angular_rates(Eigen::Vector3d::Zero()),
         thrust(Eigen::Vector3d::Zero()) {};
 
   EigenRateThrust(const Eigen::Vector3d& _angular_rates, const Eigen::Vector3d _thrust) {
@@ -65,6 +65,21 @@ struct EigenRateThrust {
 
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   Eigen::Vector3d angular_rates;
+  Eigen::Vector3d thrust;
+};
+
+struct EigenTorqueThrust {
+  EigenTorqueThrust()
+      : torque(Eigen::Vector3d::Zero()),
+        thrust(Eigen::Vector3d::Zero()) {};
+
+  EigenTorqueThrust(const Eigen::Vector3d& _torque, const Eigen::Vector3d _thrust) {
+    torque = _torque;
+    thrust = _thrust;
+  };
+
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  Eigen::Vector3d torque;
   Eigen::Vector3d thrust;
 };
 
@@ -93,13 +108,13 @@ struct EigenRollPitchYawrateThrust {
 struct EigenTrajectoryPoint {
   EigenTrajectoryPoint()
       : time_from_start_ns(0),
-        position(0.0, 0.0, 0.0),
-        velocity(0.0, 0.0, 0.0),
-        acceleration(0.0, 0.0, 0.0),
-        jerk(0.0, 0.0, 0.0),
-        snap(0.0, 0.0, 0.0),
+        position(Eigen::Vector3d::Zero()),
+        velocity(Eigen::Vector3d::Zero()),
+        acceleration(Eigen::Vector3d::Zero()),
+        jerk(Eigen::Vector3d::Zero()),
+        snap(Eigen::Vector3d::Zero()),
         orientation(Eigen::Quaterniond::Identity()),
-        angular_velocity(0.0, 0.0, 0.0) {};
+        angular_velocity(Eigen::Vector3d::Zero()) {};
 
   EigenTrajectoryPoint(int64_t _time_from_start_ns,
                        const Eigen::Vector3d& _position,
@@ -148,10 +163,10 @@ struct EigenTrajectoryPoint {
 struct EigenOdometry {
   EigenOdometry()
       : timestamp_ns(-1),
-        position(0.0, 0.0, 0.0),
+        position(Eigen::Vector3d::Zero()),
         orientation(Eigen::Quaterniond::Identity()),
-        velocity(0.0, 0.0, 0.0),
-        angular_velocity(0.0, 0.0, 0.0) {
+        velocity(Eigen::Vector3d::Zero()),
+        angular_velocity(Eigen::Vector3d::Zero()) {
   }
 
   EigenOdometry(const Eigen::Vector3d& _position, const Eigen::Quaterniond& _orientation,
