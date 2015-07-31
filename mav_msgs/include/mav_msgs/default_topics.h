@@ -32,9 +32,7 @@ static constexpr char STATUS[] = "status";
 static constexpr char COMMAND_ACTUATORS[] = "command/actuators";
 static constexpr char COMMAND_ROLL_PITCH_YAWRATE_THRUST[] = "command/roll_pitch_yawrate_thrust";
 static constexpr char COMMAND_ATTITUDE_THRUST[] = "command/attitude_thrust";
-static constexpr char COMMAND_TRAJECTORY_POSITION_YAW[] = "command/trajectory_position_yaw";
-static constexpr char COMMAND_TRAJECTORY_VELOCITY_YAWRATE[] = "command/trajectory_velocity_yawrate";
-static constexpr char COMMAND_MULTI_DOF_JOINT_TRAJECTORY[] = "command/multi_dof_joint_trajectory";
+static constexpr char COMMAND_TRAJECTORY[] = "command/trajectory";
 
 static constexpr char POSE_WITH_COVARIANCE[] = "pose_with_covariance";
 static constexpr char TRANSFORM[] = "transform";
