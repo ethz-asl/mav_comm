@@ -2,6 +2,7 @@
  * Copyright 2015 Fadri Furrer, ASL, ETH Zurich, Switzerland
  * Copyright 2015 Michael Burri, ASL, ETH Zurich, Switzerland
  * Copyright 2015 Markus Achtelik, ASL, ETH Zurich, Switzerland
+ * Copyright 2015 Helen Oleynikova, ASL, ETH Zurich, Switzerland
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -135,10 +136,20 @@ inline void eigenTrajectoryPointFromMsg(
 
 inline void msgActuatorsFromEigen(const EigenActuators& actuators, Actuators* msg) {
   assert(msg != NULL);
-  msg->angular_velocities.resize(actuators.angular_velocities.size());
 
+  msg->angles.resize(actuators.angles.size());
+  for (unsigned int i = 0; i < actuators.angles.size(); ++i) {
+    msg->angles[i] = actuators.angles[i];
+  }
+
+  msg->angular_velocities.resize(actuators.angular_velocities.size());
   for (unsigned int i = 0; i < actuators.angular_velocities.size(); ++i) {
     msg->angular_velocities[i] = actuators.angular_velocities[i];
+  }
+
+  msg->normalized.resize(actuators.normalized.size());
+  for (unsigned int i = 0; i < actuators.normalized.size(); ++i) {
+    msg->normalized[i] = actuators.normalized[i];
   }
 }
 
@@ -210,6 +221,8 @@ inline void msgMultiDofJointTrajectoryFromEigen(
   trajectory_msgs::MultiDOFJointTrajectoryPoint point_msg;
   msgMultiDofJointTrajectoryPointFromEigen(trajectory_point, &point_msg);
 
+  msg->joint_names.clear();
+  msg->points.clear();
   msg->joint_names.push_back(link_name);
   msg->points.push_back(point_msg);
 }
