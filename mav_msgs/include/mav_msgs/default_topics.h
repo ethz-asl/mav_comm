@@ -40,6 +40,7 @@ static constexpr char POSE[] = "pose";
 static constexpr char POSE_WITH_COVARIANCE[] = "pose_with_covariance";
 static constexpr char TRANSFORM[] = "transform";
 static constexpr char ODOMETRY[] = "odometry";
+static constexpr char POSITION[] = "position";
 
 // Simulation-specific topic names.
 static constexpr char WRENCH[] = "wrench";
