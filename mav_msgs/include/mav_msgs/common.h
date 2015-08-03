@@ -70,7 +70,7 @@ inline void quaternionEigenToMsg(const Eigen::Quaterniond& eigen,
  * RPY rotates about the fixed axes in the order x-y-z,
  * which is the same as euler angles in the order z-y'-x''.
  */
-double yawFromQuaternion(const Eigen::Quaterniond& q) {
+inline double yawFromQuaternion(const Eigen::Quaterniond& q) {
   return atan2(2.0 * (q.w() * q.z() + q.x() * q.y()),
                1.0 - 2.0 * (q.y() * q.y() + q.z() * q.z()));
 }
