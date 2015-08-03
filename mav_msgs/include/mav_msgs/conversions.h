@@ -103,10 +103,10 @@ inline void eigenRollPitchYawrateThrustFromMsg(
 inline void eigenOdometryFromMsg(const nav_msgs::Odometry& msg, EigenOdometry* odometry) {
   assert(odometry != NULL);
   odometry->timestamp_ns = msg.header.stamp.toNSec();
-  odometry->position = mav_msgs::vector3FromPointMsg(msg.pose.pose.position);
-  odometry->orientation = mav_msgs::quaternionFromMsg(msg.pose.pose.orientation);
-  odometry->velocity_body = mav_msgs::vector3FromMsg(msg.twist.twist.linear);
-  odometry->angular_velocity = mav_msgs::vector3FromMsg(msg.twist.twist.angular);
+  odometry->position_W = mav_msgs::vector3FromPointMsg(msg.pose.pose.position);
+  odometry->orientation_W_B = mav_msgs::quaternionFromMsg(msg.pose.pose.orientation);
+  odometry->velocity_B = mav_msgs::vector3FromMsg(msg.twist.twist.linear);
+  odometry->angular_velocity_B = mav_msgs::vector3FromMsg(msg.twist.twist.angular);
 }
 
 inline void eigenTrajectoryPointFromMsg(
@@ -125,13 +125,13 @@ inline void eigenTrajectoryPointFromMsg(
   }
 
   trajectory_point->time_from_start_ns = msg.time_from_start.toNSec();
-  trajectory_point->position = vector3FromMsg(msg.transforms[0].translation);
-  trajectory_point->velocity = vector3FromMsg(msg.velocities[0].linear);
-  trajectory_point->acceleration = vector3FromMsg(msg.accelerations[0].linear);
-  trajectory_point->jerk.setZero();
-  trajectory_point->snap.setZero();
-  trajectory_point->orientation = quaternionFromMsg(msg.transforms[0].rotation);
-  trajectory_point->angular_velocity = vector3FromMsg(msg.velocities[0].angular);
+  trajectory_point->position_W = vector3FromMsg(msg.transforms[0].translation);
+  trajectory_point->velocity_W = vector3FromMsg(msg.velocities[0].linear);
+  trajectory_point->acceleration_W = vector3FromMsg(msg.accelerations[0].linear);
+  trajectory_point->jerk_W.setZero();
+  trajectory_point->snap_W.setZero();
+  trajectory_point->orientation_W_B = quaternionFromMsg(msg.transforms[0].rotation);
+  trajectory_point->angular_velocity_W = vector3FromMsg(msg.velocities[0].angular);
 }
 
 // In all these conversions, client is responsible for filling in message header.
@@ -189,11 +189,11 @@ inline void msgOdometryFromEigen(const EigenOdometry& odometry, nav_msgs::Odomet
   assert(msg != NULL);
 
   msg->header.stamp.fromNSec(odometry.timestamp_ns);
-  pointEigenToMsg(odometry.position, &msg->pose.pose.position);
-  quaternionEigenToMsg(odometry.orientation, &msg->pose.pose.orientation);
+  pointEigenToMsg(odometry.position_W, &msg->pose.pose.position);
+  quaternionEigenToMsg(odometry.orientation_W_B, &msg->pose.pose.orientation);
 
-  vectorEigenToMsg(odometry.velocity_body, &msg->twist.twist.linear);
-  vectorEigenToMsg(odometry.angular_velocity, &msg->twist.twist.angular);
+  vectorEigenToMsg(odometry.velocity_B, &msg->twist.twist.linear);
+  vectorEigenToMsg(odometry.angular_velocity_B, &msg->twist.twist.angular);
 }
 
 inline void msgMultiDofJointTrajectoryPointFromEigen(
@@ -206,11 +206,11 @@ inline void msgMultiDofJointTrajectoryPointFromEigen(
   msg->velocities.resize(1);
   msg->accelerations.resize(1);
 
-  vectorEigenToMsg(trajectory_point.position, &msg->transforms[0].translation);
-  quaternionEigenToMsg(trajectory_point.orientation, &msg->transforms[0].rotation);
-  vectorEigenToMsg(trajectory_point.velocity, &msg->velocities[0].linear);
-  vectorEigenToMsg(trajectory_point.angular_velocity, &msg->velocities[0].angular);
-  vectorEigenToMsg(trajectory_point.acceleration, &msg->accelerations[0].linear);
+  vectorEigenToMsg(trajectory_point.position_W, &msg->transforms[0].translation);
+  quaternionEigenToMsg(trajectory_point.orientation_W_B, &msg->transforms[0].rotation);
+  vectorEigenToMsg(trajectory_point.velocity_W, &msg->velocities[0].linear);
+  vectorEigenToMsg(trajectory_point.angular_velocity_W, &msg->velocities[0].angular);
+  vectorEigenToMsg(trajectory_point.acceleration_W, &msg->accelerations[0].linear);
 }
 
 inline void msgMultiDofJointTrajectoryFromEigen(
@@ -240,7 +240,7 @@ inline void msgMultiDofJointTrajectoryFromPositionYaw(
   assert(msg != NULL);
 
   EigenTrajectoryPoint point;
-  point.position = position;
+  point.position_W = position;
   point.setFromYaw(yaw);
 
   msgMultiDofJointTrajectoryFromEigen(point, msg);
