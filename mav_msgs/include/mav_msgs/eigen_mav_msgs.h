@@ -105,13 +105,13 @@ struct EigenRollPitchYawrateThrust {
 struct EigenTrajectoryPoint {
   EigenTrajectoryPoint()
       : time_from_start_ns(0),
-        position(Eigen::Vector3d::Zero()),
-        velocity(Eigen::Vector3d::Zero()),
-        acceleration(Eigen::Vector3d::Zero()),
-        jerk(Eigen::Vector3d::Zero()),
-        snap(Eigen::Vector3d::Zero()),
-        orientation(Eigen::Quaterniond::Identity()),
-        angular_velocity(Eigen::Vector3d::Zero()) {};
+        position_W(Eigen::Vector3d::Zero()),
+        velocity_W(Eigen::Vector3d::Zero()),
+        acceleration_W(Eigen::Vector3d::Zero()),
+        jerk_W(Eigen::Vector3d::Zero()),
+        snap_W(Eigen::Vector3d::Zero()),
+        orientation_W_B(Eigen::Quaterniond::Identity()),
+        angular_velocity_W(Eigen::Vector3d::Zero()) {};
 
   EigenTrajectoryPoint(int64_t _time_from_start_ns,
                        const Eigen::Vector3d& _position,
@@ -122,87 +122,87 @@ struct EigenTrajectoryPoint {
                        const Eigen::Quaterniond& _orientation,
                        const Eigen::Vector3d& _angular_velocity)
       : time_from_start_ns(_time_from_start_ns),
-        position(_position),
-        velocity(_velocity),
-        acceleration(_acceleration),
-        jerk(_jerk),
-        snap(_snap),
-        orientation(_orientation),
-        angular_velocity(_angular_velocity) {}
+        position_W(_position),
+        velocity_W(_velocity),
+        acceleration_W(_acceleration),
+        jerk_W(_jerk),
+        snap_W(_snap),
+        orientation_W_B(_orientation),
+        angular_velocity_W(_angular_velocity) {}
 
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   int64_t time_from_start_ns;
-  Eigen::Vector3d position;
-  Eigen::Vector3d velocity;
-  Eigen::Vector3d acceleration;
-  Eigen::Vector3d jerk;
-  Eigen::Vector3d snap;
+  Eigen::Vector3d position_W;
+  Eigen::Vector3d velocity_W;
+  Eigen::Vector3d acceleration_W;
+  Eigen::Vector3d jerk_W;
+  Eigen::Vector3d snap_W;
 
-  Eigen::Quaterniond orientation;
-  Eigen::Vector3d angular_velocity;
+  Eigen::Quaterniond orientation_W_B;
+  Eigen::Vector3d angular_velocity_W;
 
   // Accessors for making dealing with orientation/angular velocity easier.
   inline double getYaw() const {
-    return yawFromQuaternion(orientation);
+    return yawFromQuaternion(orientation_W_B);
   }
   inline double getYawRate() const {
-    return angular_velocity.z();
+    return angular_velocity_W.z();
   }
   // WARNING: sets roll and pitch to 0.
   inline void setFromYaw(double yaw) {
-    orientation = quaternionFromYaw(yaw);
+    orientation_W_B = quaternionFromYaw(yaw);
   }
   inline void setFromYawRate(double yaw_rate) {
-    angular_velocity.x() = 0.0;
-    angular_velocity.y() = 0.0;
-    angular_velocity.z() = yaw_rate;
+    angular_velocity_W.x() = 0.0;
+    angular_velocity_W.y() = 0.0;
+    angular_velocity_W.z() = yaw_rate;
   }
 };
 
 struct EigenOdometry {
   EigenOdometry()
       : timestamp_ns(-1),
-        position(Eigen::Vector3d::Zero()),
-        orientation(Eigen::Quaterniond::Identity()),
-        velocity_body(Eigen::Vector3d::Zero()),
-        angular_velocity(Eigen::Vector3d::Zero()) {}
+        position_W(Eigen::Vector3d::Zero()),
+        orientation_W_B(Eigen::Quaterniond::Identity()),
+        velocity_B(Eigen::Vector3d::Zero()),
+        angular_velocity_B(Eigen::Vector3d::Zero()) {}
 
   EigenOdometry(const Eigen::Vector3d& _position, const Eigen::Quaterniond& _orientation,
                 const Eigen::Vector3d& _velocity_body, const Eigen::Vector3d& _angular_velocity)
-      : position(_position),
-        orientation(_orientation),
-        velocity_body(_velocity_body),
-        angular_velocity(_angular_velocity) {}
+      : position_W(_position),
+        orientation_W_B(_orientation),
+        velocity_B(_velocity_body),
+        angular_velocity_B(_angular_velocity) {}
 
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   int64_t timestamp_ns; // Time since epoch, negative value = invalid timestamp.
-  Eigen::Vector3d position;
-  Eigen::Quaterniond orientation;
-  Eigen::Vector3d velocity_body;  // Velocity in expressed in the Body frame!
-  Eigen::Vector3d angular_velocity;
+  Eigen::Vector3d position_W;
+  Eigen::Quaterniond orientation_W_B;
+  Eigen::Vector3d velocity_B;  // Velocity in expressed in the Body frame!
+  Eigen::Vector3d angular_velocity_B;
 
   // Accessors for making dealing with orientation/angular velocity easier.
   inline double getYaw() const {
-    return yawFromQuaternion(orientation);
+    return yawFromQuaternion(orientation_W_B);
   }
   inline double getYawRate() const {
-    return angular_velocity.z();
+    return angular_velocity_B.z();
   }
   // WARNING: sets roll and pitch to 0.
   inline void setFromYaw(double yaw) {
-    orientation = quaternionFromYaw(yaw);
+    orientation_W_B = quaternionFromYaw(yaw);
   }
   inline void setFromYawRate(double yaw_rate) {
-    angular_velocity.x() = 0.0;
-    angular_velocity.y() = 0.0;
-    angular_velocity.z() = yaw_rate;
+    angular_velocity_B.x() = 0.0;
+    angular_velocity_B.y() = 0.0;
+    angular_velocity_B.z() = yaw_rate;
   }
 
   inline Eigen::Vector3d getVelocityWorld() const {
-    return orientation * velocity_body;
+    return orientation_W_B * velocity_B;
   }
   inline void setVelocityWorld(const Eigen::Vector3d& velocity_world) {
-    velocity_body = orientation.inverse() * velocity_world;
+    velocity_B = orientation_W_B.inverse() * velocity_world;
   }
 };
 
