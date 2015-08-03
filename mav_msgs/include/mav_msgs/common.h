@@ -22,7 +22,7 @@
 #ifndef MAV_MSGS_COMMON_H
 #define MAV_MSGS_COMMON_H
 
-#include <Eigen/Core>
+#include <Eigen/Geometry>
 #include <geometry_msgs/Point.h>
 #include <geometry_msgs/Quaternion.h>
 #include <geometry_msgs/Vector3.h>
@@ -40,6 +40,30 @@ inline Eigen::Vector3d vector3FromPointMsg(const geometry_msgs::Point& msg) {
 inline Eigen::Quaterniond quaternionFromMsg(const geometry_msgs::Quaternion& msg) {
   return Eigen::Quaterniond(msg.w, msg.x, msg.y, msg.z);
 }
+
+inline void vectorEigenToMsg(const Eigen::Vector3d& eigen, geometry_msgs::Vector3* msg) {
+  assert(msg != NULL);
+  msg->x = eigen.x();
+  msg->y = eigen.y();
+  msg->z = eigen.z();
+}
+
+inline void pointEigenToMsg(const Eigen::Vector3d& eigen, geometry_msgs::Point* msg) {
+  assert(msg != NULL);
+  msg->x = eigen.x();
+  msg->y = eigen.y();
+  msg->z = eigen.z();
+}
+
+inline void quaternionEigenToMsg(const Eigen::Quaterniond& eigen,
+    geometry_msgs::Quaternion* msg) {
+  assert(msg != NULL);
+  msg->x = eigen.x();
+  msg->y = eigen.y();
+  msg->z = eigen.z();
+  msg->w = eigen.w();
+}
+
 
 /**
  * \brief Extracts the yaw part from a quaternion, using RPY / euler (z-y'-z'') angles.

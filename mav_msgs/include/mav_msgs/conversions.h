@@ -25,7 +25,6 @@
 #include <deque>
 
 #include <Eigen/StdVector>
-#include <eigen_conversions/eigen_msg.h>
 #include <geometry_msgs/Point.h>
 #include <geometry_msgs/Quaternion.h>
 #include <geometry_msgs/Vector3.h>
@@ -157,22 +156,22 @@ inline void msgActuatorsFromEigen(const EigenActuators& actuators, Actuators* ms
 inline void msgAttitudeThrustFromEigen(const EigenAttitudeThrust& attitude_thrust,
                                        AttitudeThrust* msg) {
   assert(msg != NULL);
-  tf::quaternionEigenToMsg(attitude_thrust.attitude, msg->attitude);
-  tf::vectorEigenToMsg(attitude_thrust.thrust, msg->thrust);
+  quaternionEigenToMsg(attitude_thrust.attitude, &msg->attitude);
+  vectorEigenToMsg(attitude_thrust.thrust, &msg->thrust);
 }
 
 inline void msgRateThrustFromEigen(EigenRateThrust& rate_thrust,
                                    RateThrust* msg) {
   assert(msg != NULL);
-  tf::vectorEigenToMsg(rate_thrust.angular_rates, msg->angular_rates);
-  tf::vectorEigenToMsg(rate_thrust.thrust, msg->thrust);
+  vectorEigenToMsg(rate_thrust.angular_rates, &msg->angular_rates);
+  vectorEigenToMsg(rate_thrust.thrust, &msg->thrust);
 }
 
 inline void msgTorqueThrustFromEigen(EigenTorqueThrust& torque_thrust,
                                      TorqueThrust* msg) {
   assert(msg != NULL);
-  tf::vectorEigenToMsg(torque_thrust.torque, msg->torque);
-  tf::vectorEigenToMsg(torque_thrust.thrust, msg->thrust);
+  vectorEigenToMsg(torque_thrust.torque, &msg->torque);
+  vectorEigenToMsg(torque_thrust.thrust, &msg->thrust);
 }
 
 inline void msgRollPitchYawrateThrustFromEigen(
@@ -182,18 +181,18 @@ inline void msgRollPitchYawrateThrustFromEigen(
   msg->roll = roll_pitch_yawrate_thrust.roll;
   msg->pitch = roll_pitch_yawrate_thrust.pitch;
   msg->yaw_rate = roll_pitch_yawrate_thrust.yaw_rate;
-  tf::vectorEigenToMsg(roll_pitch_yawrate_thrust.thrust, msg->thrust);
+  vectorEigenToMsg(roll_pitch_yawrate_thrust.thrust, &msg->thrust);
 }
 
 inline void msgOdometryFromEigen(const EigenOdometry& odometry, nav_msgs::Odometry* msg) {
   assert(msg != NULL);
 
   msg->header.stamp.fromNSec(odometry.timestamp_ns);
-  tf::pointEigenToMsg(odometry.position, msg->pose.pose.position);
-  tf::quaternionEigenToMsg(odometry.orientation, msg->pose.pose.orientation);
+  pointEigenToMsg(odometry.position, &msg->pose.pose.position);
+  quaternionEigenToMsg(odometry.orientation, &msg->pose.pose.orientation);
 
-  tf::vectorEigenToMsg(odometry.velocity_body, msg->twist.twist.linear);
-  tf::vectorEigenToMsg(odometry.angular_velocity, msg->twist.twist.angular);
+  vectorEigenToMsg(odometry.velocity_body, &msg->twist.twist.linear);
+  vectorEigenToMsg(odometry.angular_velocity, &msg->twist.twist.angular);
 }
 
 inline void msgMultiDofJointTrajectoryPointFromEigen(
@@ -206,11 +205,11 @@ inline void msgMultiDofJointTrajectoryPointFromEigen(
   msg->velocities.resize(1);
   msg->accelerations.resize(1);
 
-  tf::vectorEigenToMsg(trajectory_point.position, msg->transforms[0].translation);
-  tf::quaternionEigenToMsg(trajectory_point.orientation, msg->transforms[0].rotation);
-  tf::vectorEigenToMsg(trajectory_point.velocity, msg->velocities[0].linear);
-  tf::vectorEigenToMsg(trajectory_point.angular_velocity, msg->velocities[0].angular);
-  tf::vectorEigenToMsg(trajectory_point.acceleration, msg->accelerations[0].linear);
+  vectorEigenToMsg(trajectory_point.position, &msg->transforms[0].translation);
+  quaternionEigenToMsg(trajectory_point.orientation, &msg->transforms[0].rotation);
+  vectorEigenToMsg(trajectory_point.velocity, &msg->velocities[0].linear);
+  vectorEigenToMsg(trajectory_point.angular_velocity, &msg->velocities[0].angular);
+  vectorEigenToMsg(trajectory_point.acceleration, &msg->accelerations[0].linear);
 }
 
 inline void msgMultiDofJointTrajectoryFromEigen(
@@ -232,6 +231,20 @@ inline void msgMultiDofJointTrajectoryFromEigen(
     trajectory_msgs::MultiDOFJointTrajectory* msg){
   msgMultiDofJointTrajectoryFromEigen(trajectory_point, "base_link", msg);
 }
+
+// Convenience method to quickly create a trajectory from a single waypoint.
+inline void msgMultiDofJointTrajectoryFromPositionYaw(
+  const Eigen::Vector3d& position, double yaw,
+  trajectory_msgs::MultiDOFJointTrajectory* msg) {
+  assert(msg != NULL);
+
+  EigenTrajectoryPoint point;
+  point.position = position;
+  point.setFromYaw(yaw);
+
+  msgMultiDofJointTrajectoryFromEigen(point, msg);
+}
+
 
 // TODO(helenol): replaced with aligned allocator headers from Simon.
 #define MAV_MSGS_CONCATENATE(x, y) x ## y
