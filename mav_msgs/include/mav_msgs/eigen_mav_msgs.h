@@ -206,6 +206,20 @@ struct EigenOdometry {
   }
 };
 
+// TODO(helenol): replaced with aligned allocator headers from Simon.
+#define MAV_MSGS_CONCATENATE(x, y) x ## y
+#define MAV_MSGS_CONCATENATE2(x, y) MAV_MSGS_CONCATENATE(x, y)
+#define MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EIGEN_TYPE) \
+  typedef std::vector<EIGEN_TYPE, Eigen::aligned_allocator<EIGEN_TYPE> > MAV_MSGS_CONCATENATE2(EIGEN_TYPE, Vector); \
+  typedef std::deque<EIGEN_TYPE, Eigen::aligned_allocator<EIGEN_TYPE> > MAV_MSGS_CONCATENATE2(EIGEN_TYPE, Deque); \
+
+MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EigenAttitudeThrust)
+MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EigenActuators)
+MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EigenRateThrust)
+MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EigenTrajectoryPoint)
+MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EigenRollPitchYawrateThrust)
+MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EigenOdometry)
+
 }
 
 #endif // MAV_MSGS_EIGEN_MAV_MSGS_H
