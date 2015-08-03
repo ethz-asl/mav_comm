@@ -22,8 +22,6 @@
 #ifndef MAV_MSGS_CONVERSIONS_H
 #define MAV_MSGS_CONVERSIONS_H
 
-#include <deque>
-
 #include <Eigen/StdVector>
 #include <geometry_msgs/Point.h>
 #include <geometry_msgs/Quaternion.h>

@@ -20,6 +20,7 @@
 #ifndef MAV_MSGS_EIGEN_MAV_MSGS_H
 #define MAV_MSGS_EIGEN_MAV_MSGS_H
 
+#include <deque>
 #include <Eigen/Eigen>
 
 #include "mav_msgs/common.h"
