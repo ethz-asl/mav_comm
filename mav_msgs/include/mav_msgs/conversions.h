@@ -134,6 +134,28 @@ inline void eigenTrajectoryPointFromMsg(
   trajectory_point->angular_velocity_W = vector3FromMsg(msg.velocities[0].angular);
 }
 
+inline void eigenTrajectoryPointVectorFromMsg(const trajectory_msgs::MultiDOFJointTrajectory& msg,
+                                              EigenTrajectoryPointVector* trajectory) {
+  assert(trajectory != NULL);
+  trajectory->clear();
+  for (const auto& msg_point : msg.points) {
+    EigenTrajectoryPoint point;
+    eigenTrajectoryPointFromMsg(msg_point, &point);
+    trajectory->push_back(point);
+  }
+}
+
+inline void eigenTrajectoryPointDequeFromMsg(const trajectory_msgs::MultiDOFJointTrajectory& msg,
+                                              EigenTrajectoryPointDeque* trajectory) {
+  assert(trajectory != NULL);
+  trajectory->clear();
+  for (const auto& msg_point : msg.points) {
+    EigenTrajectoryPoint point;
+    eigenTrajectoryPointFromMsg(msg_point, &point);
+    trajectory->push_back(point);
+  }
+}
+
 // In all these conversions, client is responsible for filling in message header.
 inline void msgActuatorsFromEigen(const EigenActuators& actuators, Actuators* msg) {
   assert(msg != NULL);
@@ -246,20 +268,58 @@ inline void msgMultiDofJointTrajectoryFromPositionYaw(
   msgMultiDofJointTrajectoryFromEigen(point, msg);
 }
 
+inline void msgMultiDofJointTrajectoryFromEigen(const EigenTrajectoryPointVector& trajectory,
+                                                const std::string& link_name,
+                                                trajectory_msgs::MultiDOFJointTrajectory* msg) {
+  assert(msg != NULL);
 
-// TODO(helenol): replaced with aligned allocator headers from Simon.
-#define MAV_MSGS_CONCATENATE(x, y) x ## y
-#define MAV_MSGS_CONCATENATE2(x, y) MAV_MSGS_CONCATENATE(x, y)
-#define MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EIGEN_TYPE) \
-  typedef std::vector<EIGEN_TYPE, Eigen::aligned_allocator<EIGEN_TYPE> > MAV_MSGS_CONCATENATE2(EIGEN_TYPE, Vector); \
-  typedef std::deque<EIGEN_TYPE, Eigen::aligned_allocator<EIGEN_TYPE> > MAV_MSGS_CONCATENATE2(EIGEN_TYPE, Deque); \
+  if (trajectory.empty()) {
+    ROS_ERROR("EigenTrajectoryPointVector is empty.");
+    return;
+  }
 
-MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EigenAttitudeThrust)
-MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EigenActuators)
-MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EigenRateThrust)
-MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EigenTrajectoryPoint)
-MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EigenRollPitchYawrateThrust)
-MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EigenOdometry)
+  msg->joint_names.clear();
+  msg->joint_names.push_back(link_name);
+  msg->points.clear();
+
+  for (const auto& trajectory_point : trajectory) {
+    trajectory_msgs::MultiDOFJointTrajectoryPoint point_msg;
+    msgMultiDofJointTrajectoryPointFromEigen(trajectory_point, &point_msg);
+    msg->points.push_back(point_msg);
+  }
+}
+
+inline void msgMultiDofJointTrajectoryFromEigen(const EigenTrajectoryPointVector& trajectory,
+                                                trajectory_msgs::MultiDOFJointTrajectory* msg) {
+  msgMultiDofJointTrajectoryFromEigen(trajectory, "base_link", msg);
+}
+
+
+inline void msgMultiDofJointTrajectoryFromEigen(const EigenTrajectoryPointDeque& trajectory,
+                                                const std::string& link_name,
+                                                trajectory_msgs::MultiDOFJointTrajectory* msg) {
+  assert(msg != NULL);
+
+  if (trajectory.empty()) {
+    ROS_ERROR("EigenTrajectoryPointVector is empty.");
+    return;
+  }
+
+  msg->joint_names.clear();
+  msg->joint_names.push_back(link_name);
+  msg->points.clear();
+
+  for (const auto& trajectory_point : trajectory) {
+    trajectory_msgs::MultiDOFJointTrajectoryPoint point_msg;
+    msgMultiDofJointTrajectoryPointFromEigen(trajectory_point, &point_msg);
+    msg->points.push_back(point_msg);
+  }
+}
+
+inline void msgMultiDofJointTrajectoryFromEigen(const EigenTrajectoryPointDeque& trajectory,
+                                                trajectory_msgs::MultiDOFJointTrajectory* msg) {
+  msgMultiDofJointTrajectoryFromEigen(trajectory, "base_link", msg);
+}
 
 } // end namespace mav_msgs
 
