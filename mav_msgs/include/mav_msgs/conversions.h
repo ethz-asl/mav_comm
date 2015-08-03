@@ -53,19 +53,20 @@ inline void eigenAttitudeThrustFromMsg(const AttitudeThrust& msg,
 inline void eigenActuatorsFromMsg(const Actuators& msg, EigenActuators* actuators) {
   assert(actuators != NULL);
 
-  // Positions.
+  // Angle of the actuator in [rad].
   actuators->angles.resize(msg.angles.size());
   for (unsigned int i = 0; i < msg.angles.size(); ++i) {
     actuators->angles[i] = msg.angles[i];
   }
 
-  // Angular velocities.
+  // Angular velocities of the actuator in [rad/s].
   actuators->angular_velocities.resize(msg.angular_velocities.size());
   for (unsigned int i = 0; i < msg.angular_velocities.size(); ++i) {
     actuators->angular_velocities[i] = msg.angular_velocities[i];
   }
 
-  // Normalized.
+  // Normalized: Everything that does not fit the above, normalized
+  // between [-1 ... 1].
   actuators->normalized.resize(msg.normalized.size());
   for (unsigned int i = 0; i < msg.normalized.size(); ++i) {
     actuators->normalized[i] = msg.normalized[i];
@@ -133,6 +134,7 @@ inline void eigenTrajectoryPointFromMsg(
   trajectory_point->angular_velocity = vector3FromMsg(msg.velocities[0].angular);
 }
 
+// In all these conversions, client is responsible for filling in message header.
 inline void msgActuatorsFromEigen(const EigenActuators& actuators, Actuators* msg) {
   assert(msg != NULL);
 
@@ -151,7 +153,6 @@ inline void msgActuatorsFromEigen(const EigenActuators& actuators, Actuators* ms
     msg->normalized[i] = actuators.normalized[i];
   }
 }
-
 
 inline void msgAttitudeThrustFromEigen(const EigenAttitudeThrust& attitude_thrust,
                                        AttitudeThrust* msg) {

@@ -41,6 +41,13 @@ static constexpr char POSE_WITH_COVARIANCE[] = "pose_with_covariance";
 static constexpr char TRANSFORM[] = "transform";
 static constexpr char ODOMETRY[] = "odometry";
 
+// Simulation-specific topic names.
+static constexpr char WRENCH[] = "wrench";
+static constexpr char WIND[] = "wind";
+
+static constexpr char GROUND_TRUTH_POSE[] = "ground_truth/pose";
+static constexpr char GROUND_TRUTH_TWIST[] = "ground_truth/twist";
+
 } // end namespace default_topics
 } // end namespace mav_msgs
 
