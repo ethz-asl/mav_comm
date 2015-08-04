@@ -123,7 +123,6 @@ inline void eigenTrajectoryPointFromPoseMsg(
   trajectory_point->snap_W.setZero();
 }
 
-
 inline void eigenTrajectoryPointFromMsg(
     const trajectory_msgs::MultiDOFJointTrajectoryPoint& msg,
     EigenTrajectoryPoint* trajectory_point) {
