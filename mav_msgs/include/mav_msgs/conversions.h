@@ -24,6 +24,7 @@
 
 #include <Eigen/StdVector>
 #include <geometry_msgs/Point.h>
+#include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/Quaternion.h>
 #include <geometry_msgs/Vector3.h>
 #include <nav_msgs/Odometry.h>
@@ -107,6 +108,22 @@ inline void eigenOdometryFromMsg(const nav_msgs::Odometry& msg, EigenOdometry* o
   odometry->angular_velocity_B = mav_msgs::vector3FromMsg(msg.twist.twist.angular);
 }
 
+inline void eigenTrajectoryPointFromPoseMsg(
+    const geometry_msgs::PoseStamped& msg,
+    EigenTrajectoryPoint* trajectory_point) {
+  assert(trajectory_point != NULL);
+
+  trajectory_point->time_from_start_ns = 0;
+  trajectory_point->position_W = vector3FromPointMsg(msg.pose.position);
+  trajectory_point->orientation_W_B = quaternionFromMsg(msg.pose.orientation);
+  trajectory_point->velocity_W.setZero();
+  trajectory_point->angular_velocity_W.setZero();
+  trajectory_point->acceleration_W.setZero();
+  trajectory_point->jerk_W.setZero();
+  trajectory_point->snap_W.setZero();
+}
+
+
 inline void eigenTrajectoryPointFromMsg(
     const trajectory_msgs::MultiDOFJointTrajectoryPoint& msg,
     EigenTrajectoryPoint* trajectory_point) {
@@ -123,13 +140,19 @@ inline void eigenTrajectoryPointFromMsg(
   }
 
   trajectory_point->time_from_start_ns = msg.time_from_start.toNSec();
-  trajectory_point->position_W = vector3FromMsg(msg.transforms[0].translation);
-  trajectory_point->velocity_W = vector3FromMsg(msg.velocities[0].linear);
-  trajectory_point->acceleration_W = vector3FromMsg(msg.accelerations[0].linear);
+  if (msg.transforms.size() > 0) {
+    trajectory_point->position_W = vector3FromMsg(msg.transforms[0].translation);
+    trajectory_point->orientation_W_B = quaternionFromMsg(msg.transforms[0].rotation);
+  }
+  if (msg.velocities.size() > 0) {
+    trajectory_point->velocity_W = vector3FromMsg(msg.velocities[0].linear);
+    trajectory_point->angular_velocity_W = vector3FromMsg(msg.velocities[0].angular);
+  }
+  if (msg.accelerations.size() > 0) {
+    trajectory_point->acceleration_W = vector3FromMsg(msg.accelerations[0].linear);
+  }
   trajectory_point->jerk_W.setZero();
   trajectory_point->snap_W.setZero();
-  trajectory_point->orientation_W_B = quaternionFromMsg(msg.transforms[0].rotation);
-  trajectory_point->angular_velocity_W = vector3FromMsg(msg.velocities[0].angular);
 }
 
 inline void eigenTrajectoryPointVectorFromMsg(const trajectory_msgs::MultiDOFJointTrajectory& msg,
