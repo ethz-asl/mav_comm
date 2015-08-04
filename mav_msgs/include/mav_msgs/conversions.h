@@ -140,16 +140,19 @@ inline void eigenTrajectoryPointFromMsg(
   }
 
   trajectory_point->time_from_start_ns = msg.time_from_start.toNSec();
-  if (msg.transforms.size() > 0) {
-    trajectory_point->position_W = vector3FromMsg(msg.transforms[0].translation);
-    trajectory_point->orientation_W_B = quaternionFromMsg(msg.transforms[0].rotation);
-  }
+  trajectory_point->position_W = vector3FromMsg(msg.transforms[0].translation);
+  trajectory_point->orientation_W_B = quaternionFromMsg(msg.transforms[0].rotation);
   if (msg.velocities.size() > 0) {
     trajectory_point->velocity_W = vector3FromMsg(msg.velocities[0].linear);
     trajectory_point->angular_velocity_W = vector3FromMsg(msg.velocities[0].angular);
+  } else {
+    trajectory_point->velocity_W.setZero();
+    trajectory_point->angular_velocity_W.setZero();
   }
   if (msg.accelerations.size() > 0) {
     trajectory_point->acceleration_W = vector3FromMsg(msg.accelerations[0].linear);
+  } else {
+    trajectory_point->acceleration_W.setZero();
   }
   trajectory_point->jerk_W.setZero();
   trajectory_point->snap_W.setZero();

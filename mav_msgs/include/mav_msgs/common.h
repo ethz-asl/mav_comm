@@ -38,7 +38,13 @@ inline Eigen::Vector3d vector3FromPointMsg(const geometry_msgs::Point& msg) {
 }
 
 inline Eigen::Quaterniond quaternionFromMsg(const geometry_msgs::Quaternion& msg) {
-  return Eigen::Quaterniond(msg.w, msg.x, msg.y, msg.z);
+  // Make sure this always returns a valid Quaternion, even if the message was
+  // uninitialized.
+  Eigen::Quaterniond quaternion(msg.w, msg.x, msg.y, msg.z);
+  if (fabs(quaternion.norm() - 1.0) > 0.001) {
+    quaternion.setIdentity();
+  }
+  return quaternion;
 }
 
 inline void vectorEigenToMsg(const Eigen::Vector3d& eigen, geometry_msgs::Vector3* msg) {
