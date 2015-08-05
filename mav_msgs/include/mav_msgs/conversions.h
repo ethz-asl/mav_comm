@@ -22,10 +22,9 @@
 #ifndef MAV_MSGS_CONVERSIONS_H
 #define MAV_MSGS_CONVERSIONS_H
 
-#include <deque>
-
 #include <Eigen/StdVector>
 #include <geometry_msgs/Point.h>
+#include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/Quaternion.h>
 #include <geometry_msgs/Vector3.h>
 #include <nav_msgs/Odometry.h>
@@ -109,6 +108,21 @@ inline void eigenOdometryFromMsg(const nav_msgs::Odometry& msg, EigenOdometry* o
   odometry->angular_velocity_B = mav_msgs::vector3FromMsg(msg.twist.twist.angular);
 }
 
+inline void eigenTrajectoryPointFromPoseMsg(
+    const geometry_msgs::PoseStamped& msg,
+    EigenTrajectoryPoint* trajectory_point) {
+  assert(trajectory_point != NULL);
+
+  trajectory_point->time_from_start_ns = 0;
+  trajectory_point->position_W = vector3FromPointMsg(msg.pose.position);
+  trajectory_point->orientation_W_B = quaternionFromMsg(msg.pose.orientation);
+  trajectory_point->velocity_W.setZero();
+  trajectory_point->angular_velocity_W.setZero();
+  trajectory_point->acceleration_W.setZero();
+  trajectory_point->jerk_W.setZero();
+  trajectory_point->snap_W.setZero();
+}
+
 inline void eigenTrajectoryPointFromMsg(
     const trajectory_msgs::MultiDOFJointTrajectoryPoint& msg,
     EigenTrajectoryPoint* trajectory_point) {
@@ -126,12 +140,43 @@ inline void eigenTrajectoryPointFromMsg(
 
   trajectory_point->time_from_start_ns = msg.time_from_start.toNSec();
   trajectory_point->position_W = vector3FromMsg(msg.transforms[0].translation);
-  trajectory_point->velocity_W = vector3FromMsg(msg.velocities[0].linear);
-  trajectory_point->acceleration_W = vector3FromMsg(msg.accelerations[0].linear);
+  trajectory_point->orientation_W_B = quaternionFromMsg(msg.transforms[0].rotation);
+  if (msg.velocities.size() > 0) {
+    trajectory_point->velocity_W = vector3FromMsg(msg.velocities[0].linear);
+    trajectory_point->angular_velocity_W = vector3FromMsg(msg.velocities[0].angular);
+  } else {
+    trajectory_point->velocity_W.setZero();
+    trajectory_point->angular_velocity_W.setZero();
+  }
+  if (msg.accelerations.size() > 0) {
+    trajectory_point->acceleration_W = vector3FromMsg(msg.accelerations[0].linear);
+  } else {
+    trajectory_point->acceleration_W.setZero();
+  }
   trajectory_point->jerk_W.setZero();
   trajectory_point->snap_W.setZero();
-  trajectory_point->orientation_W_B = quaternionFromMsg(msg.transforms[0].rotation);
-  trajectory_point->angular_velocity_W = vector3FromMsg(msg.velocities[0].angular);
+}
+
+inline void eigenTrajectoryPointVectorFromMsg(const trajectory_msgs::MultiDOFJointTrajectory& msg,
+                                              EigenTrajectoryPointVector* trajectory) {
+  assert(trajectory != NULL);
+  trajectory->clear();
+  for (const auto& msg_point : msg.points) {
+    EigenTrajectoryPoint point;
+    eigenTrajectoryPointFromMsg(msg_point, &point);
+    trajectory->push_back(point);
+  }
+}
+
+inline void eigenTrajectoryPointDequeFromMsg(const trajectory_msgs::MultiDOFJointTrajectory& msg,
+                                              EigenTrajectoryPointDeque* trajectory) {
+  assert(trajectory != NULL);
+  trajectory->clear();
+  for (const auto& msg_point : msg.points) {
+    EigenTrajectoryPoint point;
+    eigenTrajectoryPointFromMsg(msg_point, &point);
+    trajectory->push_back(point);
+  }
 }
 
 // In all these conversions, client is responsible for filling in message header.
@@ -246,20 +291,58 @@ inline void msgMultiDofJointTrajectoryFromPositionYaw(
   msgMultiDofJointTrajectoryFromEigen(point, msg);
 }
 
+inline void msgMultiDofJointTrajectoryFromEigen(const EigenTrajectoryPointVector& trajectory,
+                                                const std::string& link_name,
+                                                trajectory_msgs::MultiDOFJointTrajectory* msg) {
+  assert(msg != NULL);
 
-// TODO(helenol): replaced with aligned allocator headers from Simon.
-#define MAV_MSGS_CONCATENATE(x, y) x ## y
-#define MAV_MSGS_CONCATENATE2(x, y) MAV_MSGS_CONCATENATE(x, y)
-#define MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EIGEN_TYPE) \
-  typedef std::vector<EIGEN_TYPE, Eigen::aligned_allocator<EIGEN_TYPE> > MAV_MSGS_CONCATENATE2(EIGEN_TYPE, Vector); \
-  typedef std::deque<EIGEN_TYPE, Eigen::aligned_allocator<EIGEN_TYPE> > MAV_MSGS_CONCATENATE2(EIGEN_TYPE, Deque); \
+  if (trajectory.empty()) {
+    ROS_ERROR("EigenTrajectoryPointVector is empty.");
+    return;
+  }
 
-MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EigenAttitudeThrust)
-MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EigenActuators)
-MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EigenRateThrust)
-MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EigenTrajectoryPoint)
-MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EigenRollPitchYawrateThrust)
-MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EigenOdometry)
+  msg->joint_names.clear();
+  msg->joint_names.push_back(link_name);
+  msg->points.clear();
+
+  for (const auto& trajectory_point : trajectory) {
+    trajectory_msgs::MultiDOFJointTrajectoryPoint point_msg;
+    msgMultiDofJointTrajectoryPointFromEigen(trajectory_point, &point_msg);
+    msg->points.push_back(point_msg);
+  }
+}
+
+inline void msgMultiDofJointTrajectoryFromEigen(const EigenTrajectoryPointVector& trajectory,
+                                                trajectory_msgs::MultiDOFJointTrajectory* msg) {
+  msgMultiDofJointTrajectoryFromEigen(trajectory, "base_link", msg);
+}
+
+
+inline void msgMultiDofJointTrajectoryFromEigen(const EigenTrajectoryPointDeque& trajectory,
+                                                const std::string& link_name,
+                                                trajectory_msgs::MultiDOFJointTrajectory* msg) {
+  assert(msg != NULL);
+
+  if (trajectory.empty()) {
+    ROS_ERROR("EigenTrajectoryPointVector is empty.");
+    return;
+  }
+
+  msg->joint_names.clear();
+  msg->joint_names.push_back(link_name);
+  msg->points.clear();
+
+  for (const auto& trajectory_point : trajectory) {
+    trajectory_msgs::MultiDOFJointTrajectoryPoint point_msg;
+    msgMultiDofJointTrajectoryPointFromEigen(trajectory_point, &point_msg);
+    msg->points.push_back(point_msg);
+  }
+}
+
+inline void msgMultiDofJointTrajectoryFromEigen(const EigenTrajectoryPointDeque& trajectory,
+                                                trajectory_msgs::MultiDOFJointTrajectory* msg) {
+  msgMultiDofJointTrajectoryFromEigen(trajectory, "base_link", msg);
+}
 
 } // end namespace mav_msgs
 

@@ -26,6 +26,7 @@ catkin_package(
   LIBRARIES
   CATKIN_DEPENDS message_runtime std_msgs geometry_msgs trajectory_msgs
   DEPENDS Eigen
+  CFG_EXTRAS export_flags.cmake
 )
 
 install(
