@@ -41,9 +41,10 @@ inline Eigen::Quaterniond quaternionFromMsg(const geometry_msgs::Quaternion& msg
   // Make sure this always returns a valid Quaternion, even if the message was
   // uninitialized or only approximately set.
   Eigen::Quaterniond quaternion(msg.w, msg.x, msg.y, msg.z);
-  if (quaternion.norm() < 0.001) {
+  static const double kEpsilon = 0.001;
+  if (quaternion.norm() < kEpsilon) {
     quaternion.setIdentity();
-  } else if (fabs(quaternion.norm() - 1.0) > 0.001) {
+  } else if (std::abs(quaternion.norm() - 1.0) > kEpsilon) {
     quaternion.normalize();
   }
 
