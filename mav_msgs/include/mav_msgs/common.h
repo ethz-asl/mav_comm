@@ -39,10 +39,12 @@ inline Eigen::Vector3d vector3FromPointMsg(const geometry_msgs::Point& msg) {
 
 inline Eigen::Quaterniond quaternionFromMsg(const geometry_msgs::Quaternion& msg) {
   // Make sure this always returns a valid Quaternion, even if the message was
-  // uninitialized.
+  // uninitialized or only approximately set.
   Eigen::Quaterniond quaternion(msg.w, msg.x, msg.y, msg.z);
-  if (fabs(quaternion.norm() - 1.0) > 0.001) {
+  if (quaternion.norm() < std::numeric_limits<double>::epsilon()) {
     quaternion.setIdentity();
+  } else {
+    quaternion.normalize();
   }
   return quaternion;
 }
