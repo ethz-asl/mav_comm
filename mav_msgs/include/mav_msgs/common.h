@@ -43,8 +43,9 @@ inline Eigen::Quaterniond quaternionFromMsg(const geometry_msgs::Quaternion& msg
   Eigen::Quaterniond quaternion(msg.w, msg.x, msg.y, msg.z);
   if (quaternion.norm() < std::numeric_limits<double>::epsilon()) {
     quaternion.setIdentity();
+  } else {
+    quaternion.normalize();
   }
-  quaternion.normalize();
   return quaternion;
 }
 
