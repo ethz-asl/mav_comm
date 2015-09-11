@@ -85,6 +85,12 @@ inline Eigen::Quaterniond quaternionFromYaw(double yaw) {
   return Eigen::Quaterniond(Eigen::AngleAxisd(yaw, Eigen::Vector3d::UnitZ()));
 }
 
+inline Eigen::Quaterniond quaternionFromRPY(double roll, double pitch, double yaw) {
+  return Eigen::Quaterniond(Eigen::AngleAxisd(roll, Eigen::Vector3d::UnitX())
+      * Eigen::AngleAxisd(pitch, Eigen::Vector3d::UnitY())
+      * Eigen::AngleAxisd(yaw, Eigen::Vector3d::UnitZ()));
+}
+
 inline void setQuaternionMsgFromYaw(double yaw, geometry_msgs::Quaternion* msg) {
   assert(msg != NULL);
   Eigen::Quaterniond q_yaw = quaternionFromYaw(yaw);

@@ -153,6 +153,9 @@ struct EigenTrajectoryPoint {
   inline void setFromYaw(double yaw) {
     orientation_W_B = quaternionFromYaw(yaw);
   }
+  inline void setFromRPY(double roll, double pitch, double yaw) {
+    orientation_W_B = quaternionFromRPY(roll, pitch, yaw);
+  }
   inline void setFromYawRate(double yaw_rate) {
     angular_velocity_W.x() = 0.0;
     angular_velocity_W.y() = 0.0;
