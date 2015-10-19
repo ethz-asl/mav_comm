@@ -5,10 +5,11 @@ geometry_msgs/PoseStamped goal_pose #start pose for the planner
 geometry_msgs/Vector3 goal_velocity
 geometry_msgs/Vector3 bounding_box
 ---
-#response constants
-uint8 PLANNINGSUCCESS=1
-uint8 PLANNINGFAILED=2
-#response fields
-uint8 status
-PlanningResponse plan
-
+# True on success, false on planning failure
+bool success
+# Either contains a WayPointArray representing a polynomial trajectory:
+planning_msgs/WayPointArray polynomial_plan
+# or a MultiDOFJointTrajectory containing a sampled path (or straight-line
+# waypoints, depending on the planner).
+# Only one of these should be non-empty.
+trajectory_msgs/MultiDOFJointTrajectory sampled_plan
