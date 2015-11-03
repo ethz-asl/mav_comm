@@ -241,6 +241,14 @@ inline void msgOdometryFromEigen(const EigenOdometry& odometry, nav_msgs::Odomet
   vectorEigenToMsg(odometry.angular_velocity_B, &msg->twist.twist.angular);
 }
 
+// WARNING: discards all derivatives, etc.
+inline void msgPoseStampedFromEigenTrajectoryPoint(
+    const EigenTrajectoryPoint& trajectory_point,
+    geometry_msgs::PoseStamped* msg) {
+  pointEigenToMsg(trajectory_point.position_W, &msg->pose.position);
+  quaternionEigenToMsg(trajectory_point.orientation_W_B, &msg->pose.orientation);
+}
+
 inline void msgMultiDofJointTrajectoryPointFromEigen(
     const EigenTrajectoryPoint& trajectory_point,
     trajectory_msgs::MultiDOFJointTrajectoryPoint* msg) {
