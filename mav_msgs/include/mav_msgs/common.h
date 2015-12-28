@@ -3,6 +3,7 @@
  * Copyright 2015 Michael Burri, ASL, ETH Zurich, Switzerland
  * Copyright 2015 Markus Achtelik, ASL, ETH Zurich, Switzerland
  * Copyright 2015 Helen Oleynikova, ASL, ETH Zurich, Switzerland
+ * Copyright 2015 Mina Kamel, ASL, ETH Zurich, Switzerland
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -101,6 +102,16 @@ inline void setAngularVelocityMsgFromYawRate(double yaw_rate, geometry_msgs::Vec
   msg->x = 0.0;
   msg->y = 0.0;
   msg->z = yaw_rate;
+}
+
+inline void getEulerAnglesFromQuaternion(const Eigen::Quaternion<double> &q, Eigen::Vector3d* euler_angles){
+  {
+    assert(euler_angles != NULL);
+
+    *euler_angles << atan2(2.0 * (q.w() * q.x() + q.y() * q.z()), 1.0 - 2.0 * (q.x() * q.x() + q.y() * q.y())), 
+                     asin(2.0 * (q.w() * q.y() - q.z() * q.x())), atan2(2.0 * (q.w() * q.z() + q.x() * q.y()),
+                     1.0 - 2.0 * (q.y() * q.y() + q.z() * q.z()));
+  }
 }
 
 }  // namespace mav_msgs

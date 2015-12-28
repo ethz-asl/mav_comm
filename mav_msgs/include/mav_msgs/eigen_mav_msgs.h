@@ -3,6 +3,7 @@
  * Copyright 2015 Michael Burri, ASL, ETH Zurich, Switzerland
  * Copyright 2015 Markus Achtelik, ASL, ETH Zurich, Switzerland
  * Copyright 2015 Helen Oleynikova, ASL, ETH Zurich, Switzerland
+ * Copyright 2015 Mina Kamel, ASL, ETH Zurich, Switzerland
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -185,6 +186,9 @@ struct EigenOdometry {
   // Accessors for making dealing with orientation/angular velocity easier.
   inline double getYaw() const {
     return yawFromQuaternion(orientation_W_B);
+  }
+  inline void getEulerAngles(Eigen::Vector3d& euler_angles){
+    getEulerAnglesFromQuaternion(orientation_W_B, &euler_angles);
   }
   inline double getYawRate() const {
     return angular_velocity_B.z();
