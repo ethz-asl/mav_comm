@@ -30,6 +30,16 @@
 
 namespace mav_msgs {
 
+
+
+/// Magnitude of Earth's gravitational field at specific height [m] and latitude [rad] (from wikipedia).
+inline double MagnitudeOfGravity(const double height, const double latitude_radians) {
+  double sin_squared_latitude = sin(latitude_radians) * sin(latitude_radians);
+  double sin_squared_twice_latitude = sin(2 * latitude_radians) * sin(2 * latitude_radians);
+  return 9.780327
+      * ((1 + 0.0053024 * sin_squared_latitude - 0.0000058 * sin_squared_twice_latitude) - 3.155 * 1e-7 * height);
+}
+
 inline Eigen::Vector3d vector3FromMsg(const geometry_msgs::Vector3& msg) {
   return Eigen::Vector3d(msg.x, msg.y, msg.z);
 }

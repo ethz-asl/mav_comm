@@ -23,6 +23,7 @@
 
 #include <deque>
 #include <Eigen/Eigen>
+#include <iostream>
 
 #include "mav_msgs/common.h"
 
@@ -104,7 +105,51 @@ struct EigenRollPitchYawrateThrust {
   Eigen::Vector3d thrust;
 };
 
+
+
+/**
+ * \brief Container holding the state of a MAV: position, velocity, attitude and angular velocity.
+ *        In addition, holds the acceleration expressed in body coordinates, which is what the accelerometer
+ *        usually measures.
+ */
+class EigenMavState
+{
+public:
+  typedef std::vector<EigenMavState, Eigen::aligned_allocator<EigenMavState> >Vector;
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
+  /// Initializes all members to zero / identity.
+  EigenMavState()
+  : position_W(Eigen::Vector3d::Zero()),
+    velocity_W(Eigen::Vector3d::Zero()),
+    acceleration_B(Eigen::Vector3d::Zero()),
+    orientation_W_B(Eigen::Quaterniond::Identity()),
+    angular_velocity_B(Eigen::Vector3d::Zero()) {};
+
+  std::string toString() const {
+    std::stringstream ss;
+    ss << "position:              " << position_W.transpose() << std::endl
+        << "velocity:              " << velocity_W.transpose() << std::endl
+        << "acceleration_body:     " << acceleration_B.transpose() << std::endl
+        << "orientation (w-x-y-z): " << orientation_W_B.w() << " " << orientation_W_B.x() << " "
+                                     << orientation_W_B.y() << " " << orientation_W_B.z() << " " << std::endl
+        << "angular_velocity_body: " << angular_velocity_B.transpose() << std::endl;
+
+    return ss.str();
+  }
+
+  Eigen::Vector3d position_W;
+  Eigen::Vector3d velocity_W;
+  Eigen::Vector3d acceleration_B;
+  Eigen::Quaterniond orientation_W_B;
+  Eigen::Vector3d angular_velocity_B;
+};
+
+
+
+
 struct EigenTrajectoryPoint {
+  typedef std::vector<EigenTrajectoryPoint, Eigen::aligned_allocator<EigenTrajectoryPoint> >Vector;
   EigenTrajectoryPoint()
       : time_from_start_ns(0),
         position_W(Eigen::Vector3d::Zero()),
@@ -158,6 +203,19 @@ struct EigenTrajectoryPoint {
     angular_velocity_W.x() = 0.0;
     angular_velocity_W.y() = 0.0;
     angular_velocity_W.z() = yaw_rate;
+  }
+
+  std::string toString() const {
+    std::stringstream ss;
+    ss  << "position:          " << position_W.transpose() << std::endl
+        << "velocity:          " << velocity_W.transpose() << std::endl
+        << "acceleration:      " << acceleration_W.transpose() << std::endl
+        << "jerk:              " << jerk_W.transpose() << std::endl
+        << "snap:              " << snap_W.transpose() << std::endl
+        << "yaw:               " << getYaw() << std::endl
+        << "yaw_rate:          " << getYawRate() << std::endl;
+
+    return ss.str();
   }
 };
 
