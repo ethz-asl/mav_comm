@@ -10,8 +10,6 @@ include_directories(${Eigen_INCLUDE_DIRS})
 add_message_files(
   FILES
   PointCloudWithPose.msg
-  PolynomialSegment1D.msg
-  PolynomialSegment3D.msg
   PolynomialSegment4D.msg
   PolynomialTrajectory4D.msg
 )
