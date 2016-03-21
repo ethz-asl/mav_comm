@@ -32,7 +32,8 @@ static constexpr char STATUS[] = "status";
 
 static constexpr char COMMAND_ACTUATORS[] = "command/motor_speed";
 static constexpr char COMMAND_RATE_THRUST[] = "command/rate_thrust";
-static constexpr char COMMAND_ROLL_PITCH_YAWRATE_THRUST[] = "command/roll_pitch_yawrate_thrust";
+static constexpr char COMMAND_ROLL_PITCH_YAWRATE_THRUST[] =
+    "command/roll_pitch_yawrate_thrust";
 static constexpr char COMMAND_ATTITUDE_THRUST[] = "command/attitude_thrust";
 static constexpr char COMMAND_TRAJECTORY[] = "command/trajectory";
 static constexpr char COMMAND_POSE[] = "command/pose";
@@ -50,7 +51,7 @@ static constexpr char WIND[] = "wind";
 static constexpr char GROUND_TRUTH_POSE[] = "ground_truth/pose";
 static constexpr char GROUND_TRUTH_TWIST[] = "ground_truth/twist";
 
-} // end namespace default_topics
-} // end namespace mav_msgs
+}  // end namespace default_topics
+}  // end namespace mav_msgs
 
 #endif /* DEFAULT_TOPICS_H_ */

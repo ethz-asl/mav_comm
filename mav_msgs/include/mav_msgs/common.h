@@ -30,14 +30,16 @@
 
 namespace mav_msgs {
 
-
-
-/// Magnitude of Earth's gravitational field at specific height [m] and latitude [rad] (from wikipedia).
-inline double MagnitudeOfGravity(const double height, const double latitude_radians) {
+/// Magnitude of Earth's gravitational field at specific height [m] and latitude
+/// [rad] (from wikipedia).
+inline double MagnitudeOfGravity(const double height,
+                                 const double latitude_radians) {
   double sin_squared_latitude = sin(latitude_radians) * sin(latitude_radians);
-  double sin_squared_twice_latitude = sin(2 * latitude_radians) * sin(2 * latitude_radians);
-  return 9.780327
-      * ((1 + 0.0053024 * sin_squared_latitude - 0.0000058 * sin_squared_twice_latitude) - 3.155 * 1e-7 * height);
+  double sin_squared_twice_latitude =
+      sin(2 * latitude_radians) * sin(2 * latitude_radians);
+  return 9.780327 * ((1 + 0.0053024 * sin_squared_latitude -
+                      0.0000058 * sin_squared_twice_latitude) -
+                     3.155 * 1e-7 * height);
 }
 
 inline Eigen::Vector3d vector3FromMsg(const geometry_msgs::Vector3& msg) {
@@ -48,7 +50,8 @@ inline Eigen::Vector3d vector3FromPointMsg(const geometry_msgs::Point& msg) {
   return Eigen::Vector3d(msg.x, msg.y, msg.z);
 }
 
-inline Eigen::Quaterniond quaternionFromMsg(const geometry_msgs::Quaternion& msg) {
+inline Eigen::Quaterniond quaternionFromMsg(
+    const geometry_msgs::Quaternion& msg) {
   // Make sure this always returns a valid Quaternion, even if the message was
   // uninitialized or only approximately set.
   Eigen::Quaterniond quaternion(msg.w, msg.x, msg.y, msg.z);
@@ -60,14 +63,16 @@ inline Eigen::Quaterniond quaternionFromMsg(const geometry_msgs::Quaternion& msg
   return quaternion;
 }
 
-inline void vectorEigenToMsg(const Eigen::Vector3d& eigen, geometry_msgs::Vector3* msg) {
+inline void vectorEigenToMsg(const Eigen::Vector3d& eigen,
+                             geometry_msgs::Vector3* msg) {
   assert(msg != NULL);
   msg->x = eigen.x();
   msg->y = eigen.y();
   msg->z = eigen.z();
 }
 
-inline void pointEigenToMsg(const Eigen::Vector3d& eigen, geometry_msgs::Point* msg) {
+inline void pointEigenToMsg(const Eigen::Vector3d& eigen,
+                            geometry_msgs::Point* msg) {
   assert(msg != NULL);
   msg->x = eigen.x();
   msg->y = eigen.y();
@@ -75,7 +80,7 @@ inline void pointEigenToMsg(const Eigen::Vector3d& eigen, geometry_msgs::Point* 
 }
 
 inline void quaternionEigenToMsg(const Eigen::Quaterniond& eigen,
-    geometry_msgs::Quaternion* msg) {
+                                 geometry_msgs::Quaternion* msg) {
   assert(msg != NULL);
   msg->x = eigen.x();
   msg->y = eigen.y();
@@ -83,9 +88,9 @@ inline void quaternionEigenToMsg(const Eigen::Quaterniond& eigen,
   msg->w = eigen.w();
 }
 
-
 /**
- * \brief Extracts the yaw part from a quaternion, using RPY / euler (z-y'-z'') angles.
+ * \brief Extracts the yaw part from a quaternion, using RPY / euler (z-y'-z'')
+ * angles.
  * RPY rotates about the fixed axes in the order x-y-z,
  * which is the same as euler angles in the order z-y'-x''.
  */
@@ -98,7 +103,8 @@ inline Eigen::Quaterniond quaternionFromYaw(double yaw) {
   return Eigen::Quaterniond(Eigen::AngleAxisd(yaw, Eigen::Vector3d::UnitZ()));
 }
 
-inline void setQuaternionMsgFromYaw(double yaw, geometry_msgs::Quaternion* msg) {
+inline void setQuaternionMsgFromYaw(double yaw,
+                                    geometry_msgs::Quaternion* msg) {
   assert(msg != NULL);
   Eigen::Quaterniond q_yaw = quaternionFromYaw(yaw);
   msg->x = q_yaw.x();
@@ -107,20 +113,24 @@ inline void setQuaternionMsgFromYaw(double yaw, geometry_msgs::Quaternion* msg) 
   msg->w = q_yaw.w();
 }
 
-inline void setAngularVelocityMsgFromYawRate(double yaw_rate, geometry_msgs::Vector3* msg) {
+inline void setAngularVelocityMsgFromYawRate(double yaw_rate,
+                                             geometry_msgs::Vector3* msg) {
   assert(msg != NULL);
   msg->x = 0.0;
   msg->y = 0.0;
   msg->z = yaw_rate;
 }
 
-inline void getEulerAnglesFromQuaternion(const Eigen::Quaternion<double> &q, Eigen::Vector3d* euler_angles){
+inline void getEulerAnglesFromQuaternion(const Eigen::Quaternion<double>& q,
+                                         Eigen::Vector3d* euler_angles) {
   {
     assert(euler_angles != NULL);
 
-    *euler_angles << atan2(2.0 * (q.w() * q.x() + q.y() * q.z()), 1.0 - 2.0 * (q.x() * q.x() + q.y() * q.y())), 
-                     asin(2.0 * (q.w() * q.y() - q.z() * q.x())), atan2(2.0 * (q.w() * q.z() + q.x() * q.y()),
-                     1.0 - 2.0 * (q.y() * q.y() + q.z() * q.z()));
+    *euler_angles << atan2(2.0 * (q.w() * q.x() + q.y() * q.z()),
+                           1.0 - 2.0 * (q.x() * q.x() + q.y() * q.y())),
+        asin(2.0 * (q.w() * q.y() - q.z() * q.x())),
+        atan2(2.0 * (q.w() * q.z() + q.x() * q.y()),
+              1.0 - 2.0 * (q.y() * q.y() + q.z() * q.z()));
   }
 }
 
