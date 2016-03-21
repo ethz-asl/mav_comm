@@ -25,7 +25,7 @@
 namespace planning_msgs {
 
 struct EigenWayPoint {
-  EigenWayPoint():time(0.0), type(0) {};
+  EigenWayPoint() : time(0.0), type(0){};
 
   Eigen::VectorXd x;
   Eigen::VectorXd y;
@@ -36,7 +36,6 @@ struct EigenWayPoint {
 };
 
 typedef std::vector<EigenWayPoint> EigenWaypointArray;
-
 }
 
 #endif
