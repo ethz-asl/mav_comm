@@ -23,79 +23,83 @@
 #include <geometry_msgs/Quaternion.h>
 #include <geometry_msgs/Vector3.h>
 
-#include "planning_msgs/WayPoint.h"
-#include "planning_msgs/WayPointArray.h"
-#include "planning_msgs/WaypointType.h"
+#include "planning_msgs/PolynomialSegment4D.h"
+#include "planning_msgs/PolynomialTrajectory4D.h"
 #include "planning_msgs/eigen_planning_msgs.h"
 
 namespace planning_msgs {
 
-/// Converts a WayPoint double array to an Eigen::VectorXd.
-inline void vectorFromMsgArray(const WayPoint::_x_type& array,
+/// Converts a PolynomialSegment double array to an Eigen::VectorXd.
+inline void vectorFromMsgArray(const PolynomialSegment4D::_x_type& array,
                                Eigen::VectorXd* x) {
   *x = Eigen::Map<const Eigen::VectorXd>(&(array[0]), array.size());
 }
 
-/// Converts an Eigen::VectorXd to a WayPoint double array.
+/// Converts an Eigen::VectorXd to a PolynomialSegment double array.
 inline void msgArrayFromVector(const Eigen::VectorXd& x,
-                               WayPoint::_x_type* array) {
+                               PolynomialSegment4D::_x_type* array) {
   array->resize(x.size());
   Eigen::Map<Eigen::VectorXd> map =
       Eigen::Map<Eigen::VectorXd>(&((*array)[0]), array->size());
   map = x;
 }
 
-/// Converts a WayPoint message to an EigenWayPoint structure.
-inline void eigenWaypointFromMsg(const WayPoint& msg, EigenWayPoint* waypoint) {
-  assert(waypoint != NULL);
+/// Converts a PolynomialSegment message to an EigenPolynomialSegment structure.
+inline void eigenPolynomialSegmentFromMsg(
+    const PolynomialSegment4D& msg, EigenPolynomialSegment* segment) {
+  assert(segment != NULL);
 
-  vectorFromMsgArray(msg.x, &(waypoint->x));
-  vectorFromMsgArray(msg.y, &(waypoint->y));
-  vectorFromMsgArray(msg.z, &(waypoint->z));
-  vectorFromMsgArray(msg.yaw, &(waypoint->yaw));
+  vectorFromMsgArray(msg.x, &(segment->x));
+  vectorFromMsgArray(msg.y, &(segment->y));
+  vectorFromMsgArray(msg.z, &(segment->z));
+  vectorFromMsgArray(msg.yaw, &(segment->yaw));
 
-  waypoint->time = msg.time;
-  waypoint->type = msg.type;
+  segment->segment_time_ns = msg.segment_time.toNSec();
+  segment->num_coeffs = msg.num_coeffs;
 }
 
-/// Converts a WayPointArray message to a EigenWayPointArray
-inline void eigenWaypointArrayFromMsg(const WayPointArray& msg,
-                                      EigenWaypointArray* waypoint_array) {
-  assert(waypoint_array != NULL);
-  waypoint_array->clear();
-  waypoint_array->reserve(msg.waypoints.size());
-  for (WayPointArray::_waypoints_type::const_iterator it =
-           msg.waypoints.begin();
-       it != msg.waypoints.end(); ++it) {
-    EigenWayPoint wp;
-    eigenWaypointFromMsg(*it, &wp);
-    waypoint_array->push_back(wp);
+/// Converts a PolynomialTrajectory message to a EigenPolynomialTrajectory
+inline void eigenPolynomialTrajectoryFromMsg(
+    const PolynomialTrajectory4D& msg,
+    EigenPolynomialTrajectory* eigen_trajectory) {
+  assert(eigen_trajectory != NULL);
+  eigen_trajectory->clear();
+  eigen_trajectory->reserve(msg.segments.size());
+  for (PolynomialTrajectory4D::_segments_type::const_iterator it =
+           msg.segments.begin();
+       it != msg.segments.end(); ++it) {
+    EigenPolynomialSegment segment;
+    eigenPolynomialSegmentFromMsg(*it, &segment);
+    eigen_trajectory->push_back(segment);
   }
 }
 
-/// Converts an EigenWayPoint to a WayPoint message. Does NOT set the header!
-inline void wayPointMsgFromEigen(const EigenWayPoint& waypoint, WayPoint* msg) {
+/// Converts an EigenPolynomialSegment to a PolynomialSegment message. Does NOT
+/// set the header!
+inline void polynomialSegmentMsgFromEigen(
+    const EigenPolynomialSegment& segment, PolynomialSegment4D* msg) {
   assert(msg != NULL);
-  msgArrayFromVector(waypoint.x, &(msg->x));
-  msgArrayFromVector(waypoint.y, &(msg->y));
-  msgArrayFromVector(waypoint.z, &(msg->z));
-  msgArrayFromVector(waypoint.yaw, &(msg->yaw));
+  msgArrayFromVector(segment.x, &(msg->x));
+  msgArrayFromVector(segment.y, &(msg->y));
+  msgArrayFromVector(segment.z, &(msg->z));
+  msgArrayFromVector(segment.yaw, &(msg->yaw));
 
-  msg->time = waypoint.time;
-  msg->type = waypoint.type;
+  msg->segment_time.fromNSec(segment.segment_time_ns);
+  msg->num_coeffs = segment.num_coeffs;
 }
 
-/// Converts an EigenWayPointArray to a WayPointArray message. Does NOT set the
-/// header!
-inline void waypointArrayMsgFromEigen(const EigenWaypointArray& waypoint_array,
-                                      WayPointArray* msg) {
+/// Converts an EigenPolynomialTrajectory to a PolynomialTrajectory message.
+/// Does NOT set the header!
+inline void polynomialTrajectoryMsgFromEigen(
+    const EigenPolynomialTrajectory& eigen_trajectory,
+    PolynomialTrajectory4D* msg) {
   assert(msg != NULL);
-  msg->waypoints.reserve(waypoint_array.size());
-  for (EigenWaypointArray::const_iterator it = waypoint_array.begin();
-       it != waypoint_array.end(); ++it) {
-    WayPoint wp;
-    wayPointMsgFromEigen(*it, &wp);
-    msg->waypoints.push_back(wp);
+  msg->segments.reserve(eigen_trajectory.size());
+  for (EigenPolynomialTrajectory::const_iterator it = eigen_trajectory.begin();
+       it != eigen_trajectory.end(); ++it) {
+    PolynomialSegment4D segment;
+    polynomialSegmentMsgFromEigen(*it, &segment);
+    msg->segments.push_back(segment);
   }
 }
 }

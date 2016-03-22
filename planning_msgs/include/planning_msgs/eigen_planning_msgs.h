@@ -24,18 +24,19 @@
 
 namespace planning_msgs {
 
-struct EigenWayPoint {
-  EigenWayPoint() : time(0.0), type(0){};
+struct EigenPolynomialSegment {
+  EigenPolynomialSegment() : segment_time_ns(0), num_coeffs(0) {};
 
   Eigen::VectorXd x;
   Eigen::VectorXd y;
   Eigen::VectorXd z;
   Eigen::VectorXd yaw;
-  double time;
-  int type;
+  uint64_t segment_time_ns;
+  int num_coeffs;
 };
 
-typedef std::vector<EigenWayPoint> EigenWaypointArray;
+typedef std::vector<EigenPolynomialSegment> EigenPolynomialTrajectory;
+
 }
 
 #endif
