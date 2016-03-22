@@ -55,7 +55,7 @@ inline void eigenPolynomialSegmentFromMsg(
   vectorFromMsgArray(msg.yaw, &(segment->yaw));
 
   segment->segment_time_ns = msg.segment_time.toNSec();
-  segment->N = msg.N;
+  segment->num_coeffs = msg.num_coeffs;
 }
 
 /// Converts a PolynomialTrajectory message to a EigenPolynomialTrajectory
@@ -85,7 +85,7 @@ inline void polynomialSegmentMsgFromEigen(
   msgArrayFromVector(segment.yaw, &(msg->yaw));
 
   msg->segment_time.fromNSec(segment.segment_time_ns);
-  msg->N = segment.N;
+  msg->num_coeffs = segment.num_coeffs;
 }
 
 /// Converts an EigenPolynomialTrajectory to a PolynomialTrajectory message.
