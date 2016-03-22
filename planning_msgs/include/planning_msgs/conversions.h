@@ -68,9 +68,9 @@ inline void eigenPolynomialTrajectoryFromMsg(
   for (PolynomialTrajectory4D::_segments_type::const_iterator it =
            msg.segments.begin();
        it != msg.segments.end(); ++it) {
-    EigenPolynomialSegment wp;
-    eigenPolynomialSegmentFromMsg(*it, &wp);
-    eigen_trajectory->push_back(wp);
+    EigenPolynomialSegment segment;
+    eigenPolynomialSegmentFromMsg(*it, &segment);
+    eigen_trajectory->push_back(segment);
   }
 }
 
@@ -97,9 +97,9 @@ inline void polynomialTrajectoryMsgFromEigen(
   msg->segments.reserve(eigen_trajectory.size());
   for (EigenPolynomialTrajectory::const_iterator it = eigen_trajectory.begin();
        it != eigen_trajectory.end(); ++it) {
-    PolynomialSegment4D wp;
-    polynomialSegmentMsgFromEigen(*it, &wp);
-    msg->segments.push_back(wp);
+    PolynomialSegment4D segment;
+    polynomialSegmentMsgFromEigen(*it, &segment);
+    msg->segments.push_back(segment);
   }
 }
 }
