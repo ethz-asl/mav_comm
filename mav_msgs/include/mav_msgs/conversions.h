@@ -26,6 +26,7 @@
 #include <geometry_msgs/Point.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/Quaternion.h>
+#include <geometry_msgs/TransformStamped.h>
 #include <geometry_msgs/Vector3.h>
 #include <nav_msgs/Odometry.h>
 #include <ros/ros.h>
@@ -113,12 +114,31 @@ inline void eigenOdometryFromMsg(const nav_msgs::Odometry& msg,
       mav_msgs::vector3FromMsg(msg.twist.twist.angular);
 }
 
+inline void eigenTrajectoryPointFromTransformMsg(
+    const geometry_msgs::TransformStamped& msg,
+    EigenTrajectoryPoint* trajectory_point) {
+  assert(trajectory_point != NULL);
+
+  ros::Time timestamp = msg.header.stamp;
+
+  trajectory_point->time_from_start_ns = timestamp.toNSec();
+  trajectory_point->position_W = vector3FromMsg(msg.transform.translation);
+  trajectory_point->orientation_W_B = quaternionFromMsg(msg.transform.rotation);
+  trajectory_point->velocity_W.setZero();
+  trajectory_point->angular_velocity_W.setZero();
+  trajectory_point->acceleration_W.setZero();
+  trajectory_point->jerk_W.setZero();
+  trajectory_point->snap_W.setZero();
+}
+
 inline void eigenTrajectoryPointFromPoseMsg(
     const geometry_msgs::PoseStamped& msg,
     EigenTrajectoryPoint* trajectory_point) {
   assert(trajectory_point != NULL);
 
-  trajectory_point->time_from_start_ns = 0;
+  ros::Time timestamp = msg.header.stamp;
+
+  trajectory_point->time_from_start_ns = timestamp.toNSec();
   trajectory_point->position_W = vector3FromPointMsg(msg.pose.position);
   trajectory_point->orientation_W_B = quaternionFromMsg(msg.pose.orientation);
   trajectory_point->velocity_W.setZero();
@@ -375,6 +395,7 @@ inline void msgOdometryFromEigen(const EigenOdometry& odometry,
 inline void msgPoseStampedFromEigenTrajectoryPoint(
     const EigenTrajectoryPoint& trajectory_point,
     geometry_msgs::PoseStamped* msg) {
+  msg->header.stamp.fromNSec(trajectory_point.time_from_start_ns);
   pointEigenToMsg(trajectory_point.position_W, &msg->pose.position);
   quaternionEigenToMsg(trajectory_point.orientation_W_B,
                        &msg->pose.orientation);
