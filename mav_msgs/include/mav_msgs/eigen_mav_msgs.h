@@ -144,7 +144,8 @@ struct EigenTrajectoryPoint {
   typedef std::vector<EigenTrajectoryPoint,
                       Eigen::aligned_allocator<EigenTrajectoryPoint> > Vector;
   EigenTrajectoryPoint()
-      : time_from_start_ns(0),
+      : timestamp_ns(-1),
+        time_from_start_ns(0),
         position_W(Eigen::Vector3d::Zero()),
         velocity_W(Eigen::Vector3d::Zero()),
         acceleration_W(Eigen::Vector3d::Zero()),
@@ -171,6 +172,7 @@ struct EigenTrajectoryPoint {
         angular_velocity_W(_angular_velocity) {}
 
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  int64_t timestamp_ns;  // Time since epoch, negative value = invalid timestamp.
   int64_t time_from_start_ns;
   Eigen::Vector3d position_W;
   Eigen::Vector3d velocity_W;
