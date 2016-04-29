@@ -395,7 +395,6 @@ inline void msgOdometryFromEigen(const EigenOdometry& odometry,
 inline void msgPoseStampedFromEigenTrajectoryPoint(
     const EigenTrajectoryPoint& trajectory_point,
     geometry_msgs::PoseStamped* msg) {
-  msg->header.stamp.fromNSec(trajectory_point.timestamp_ns);
   pointEigenToMsg(trajectory_point.position_W, &msg->pose.position);
   quaternionEigenToMsg(trajectory_point.orientation_W_B,
                        &msg->pose.orientation);
