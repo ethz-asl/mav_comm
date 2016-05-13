@@ -383,7 +383,9 @@ inline void msgOdometryFromEigen(const EigenOdometry& odometry,
                                  nav_msgs::Odometry* msg) {
   assert(msg != NULL);
 
-  msg->header.stamp.fromNSec(odometry.timestamp_ns);
+  if (odometry.timestamp_ns >= 0) {
+    msg->header.stamp.fromNSec(odometry.timestamp_ns);
+  }
   pointEigenToMsg(odometry.position_W, &msg->pose.pose.position);
   quaternionEigenToMsg(odometry.orientation_W_B, &msg->pose.pose.orientation);
 
