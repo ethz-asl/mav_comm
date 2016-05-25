@@ -29,6 +29,7 @@ static constexpr char MAGNETIC_FIELD[] = "magnetic_field";
 static constexpr char GPS[] = "gps";
 static constexpr char RC[] = "rc";
 static constexpr char STATUS[] = "status";
+static constexpr char FILTERED_SENSOR_DATA[] = "filtered_sensor_data";
 
 static constexpr char COMMAND_ACTUATORS[] = "command/motor_speed";
 static constexpr char COMMAND_RATE_THRUST[] = "command/rate_thrust";
@@ -36,6 +37,7 @@ static constexpr char COMMAND_ROLL_PITCH_YAWRATE_THRUST[] = "command/roll_pitch_
 static constexpr char COMMAND_ATTITUDE_THRUST[] = "command/attitude_thrust";
 static constexpr char COMMAND_TRAJECTORY[] = "command/trajectory";
 static constexpr char COMMAND_POSE[] = "command/pose";
+static constexpr char COMMAND_GPS_WAYPOINT[] = "command/gps_waypoint";
 
 static constexpr char POSE[] = "pose";
 static constexpr char POSE_WITH_COVARIANCE[] = "pose_with_covariance";

@@ -17,6 +17,8 @@ add_message_files(
   RollPitchYawrateThrust.msg
   TorqueThrust.msg
   Status.msg
+  FilteredSensorData.msg
+  GpsWaypoint.msg
 )
 
 generate_messages(DEPENDENCIES std_msgs geometry_msgs)
