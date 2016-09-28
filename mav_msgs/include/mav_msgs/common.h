@@ -134,6 +134,18 @@ inline void getEulerAnglesFromQuaternion(const Eigen::Quaternion<double>& q,
   }
 }
 
+inline double getShortestYawDistance(double yaw1, double yaw2) {
+  // From burrimi's implementation in mav_flight_manager/devel/iros2015.
+  double yaw_mod = std::fmod(yaw1 - yaw2, 2 * M_PI);
+  if (yaw_mod < -M_PI) {
+    yaw_mod += 2 * M_PI;
+  } else if (yaw_mod > M_PI) {
+    yaw_mod -= 2 * M_PI;
+  }
+
+  return yaw_mod;
+}
+
 }  // namespace mav_msgs
 
 #endif  // MAV_MSGS_COMMON_H
