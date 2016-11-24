@@ -30,6 +30,8 @@ static constexpr char GPS[] = "gps";
 static constexpr char RC[] = "rc";
 static constexpr char STATUS[] = "status";
 static constexpr char FILTERED_SENSOR_DATA[] = "filtered_sensor_data";
+static constexpr char AIR_SPEED[] = "air_speed";
+static constexpr char GROUND_SPEED[] = "ground_speed";
 
 static constexpr char COMMAND_ACTUATORS[] = "command/motor_speed";
 static constexpr char COMMAND_RATE_THRUST[] = "command/rate_thrust";
