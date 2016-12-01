@@ -3,6 +3,7 @@
  * Copyright 2015 Michael Burri, ASL, ETH Zurich, Switzerland
  * Copyright 2015 Markus Achtelik, ASL, ETH Zurich, Switzerland
  * Copyright 2015 Helen Oleynikova, ASL, ETH Zurich, Switzerland
+ * Copyright 2015 Mina Kamel, ASL, ETH Zurich, Switzerland
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -103,6 +104,48 @@ struct EigenRollPitchYawrateThrust {
   Eigen::Vector3d thrust;
 };
 
+/**
+ * \brief Container holding the state of a MAV: position, velocity, attitude and
+ * angular velocity.
+ *        In addition, holds the acceleration expressed in body coordinates,
+ * which is what the accelerometer
+ *        usually measures.
+ */
+class EigenMavState {
+ public:
+  typedef std::vector<EigenMavState, Eigen::aligned_allocator<EigenMavState> >
+      Vector;
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
+  /// Initializes all members to zero / identity.
+  EigenMavState()
+      : position_W(Eigen::Vector3d::Zero()),
+        velocity_W(Eigen::Vector3d::Zero()),
+        acceleration_B(Eigen::Vector3d::Zero()),
+        orientation_W_B(Eigen::Quaterniond::Identity()),
+        angular_velocity_B(Eigen::Vector3d::Zero()){};
+
+  std::string toString() const {
+    std::stringstream ss;
+    ss << "position:              " << position_W.transpose() << std::endl
+       << "velocity:              " << velocity_W.transpose() << std::endl
+       << "acceleration_body:     " << acceleration_B.transpose() << std::endl
+       << "orientation (w-x-y-z): " << orientation_W_B.w() << " "
+       << orientation_W_B.x() << " " << orientation_W_B.y() << " "
+       << orientation_W_B.z() << " " << std::endl
+       << "angular_velocity_body: " << angular_velocity_B.transpose()
+       << std::endl;
+
+    return ss.str();
+  }
+
+  Eigen::Vector3d position_W;
+  Eigen::Vector3d velocity_W;
+  Eigen::Vector3d acceleration_B;
+  Eigen::Quaterniond orientation_W_B;
+  Eigen::Vector3d angular_velocity_B;
+};
+
 struct EigenTrajectoryPoint {
   EigenTrajectoryPoint()
       : time_from_start_ns(0),
@@ -185,6 +228,9 @@ struct EigenOdometry {
   // Accessors for making dealing with orientation/angular velocity easier.
   inline double getYaw() const {
     return yawFromQuaternion(orientation_W_B);
+  }
+  inline void getEulerAngles(Eigen::Vector3d& euler_angles) const {
+    getEulerAnglesFromQuaternion(orientation_W_B, &euler_angles);
   }
   inline double getYawRate() const {
     return angular_velocity_B.z();
