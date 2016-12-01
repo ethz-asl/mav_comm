@@ -7,7 +7,9 @@ Changelog for package mav_msgs
 * Improved quaternionFromMsg unit quaternion checking.
 * Add EigenMavState to eigen_mav_msgs.
 * Add EigenMavStateFromEigenTrajectoryPoint conversion.
-* Add in_air bool to Status.msg
+* Add `timestamp_ns` to EigenTrajectoryPoint.
+* Add default values in a seperate header.
+* Add in_air bool to Status.msg.
 * Add many helper function to calculate earth gravitational field based on hight and latitude, get euler angles from quaternion and shortest distance between two yaw angles.
 * Contributors: Mina Kamel, Helen Oleynikova, Michael Burri
 
