@@ -35,6 +35,7 @@
 #include "mav_msgs/Actuators.h"
 #include "mav_msgs/AttitudeThrust.h"
 #include "mav_msgs/common.h"
+#include "mav_msgs/default_values.h"
 #include "mav_msgs/eigen_mav_msgs.h"
 #include "mav_msgs/RateThrust.h"
 #include "mav_msgs/RollPitchYawrateThrust.h"
@@ -122,6 +123,44 @@ inline void eigenTrajectoryPointFromPoseMsg(
   trajectory_point->acceleration_W.setZero();
   trajectory_point->jerk_W.setZero();
   trajectory_point->snap_W.setZero();
+}
+
+/**
+ * \brief Computes the MAV state (position, velocity, attitude, angular
+ * velocity) from the flat state.
+ *        Additionally, computes the acceleration expressed in body coordinates,
+ * i.e. the acceleration
+ *        measured by the IMU. No air-drag is assumed here.
+ *
+ * \param[in] acceleration Acceleration of the MAV, expressed in world
+ * coordinates.
+ * \param[in] jerk Jerk of the MAV, expressed in world coordinates.
+ * \param[in] yaw Yaw angle of the MAV, expressed in world coordinates.
+ * \param[in] yaw_rate Yaw rate, expressed in world coordinates.
+ * \param[in] magnitude_of_gravity Magnitude of the gravity vector.
+ * \param[out] orientation Quaternion representing the attitude of the MAV.
+ * \param[out] acceleration_body Acceleration expressed in body coordinates,
+ * i.e. the acceleration usually
+ *                               by the IMU.
+ * \param[out] angular_velocity_body Angular velocity of the MAV, expressed in
+ * body coordinates.
+ */
+void EigenMavStateFromEigenTrajectoryPoint(
+    const Eigen::Vector3d& acceleration, const Eigen::Vector3d& jerk,
+    double yaw, double yaw_rate, double magnitude_of_gravity,
+    Eigen::Quaterniond* orientation, Eigen::Vector3d* acceleration_body,
+    Eigen::Vector3d* angular_velocity_body);
+
+/// Convenience function with default value for the magnitude of the gravity
+/// vector.
+inline void EigenMavStateFromEigenTrajectoryPoint(
+    const Eigen::Vector3d& acceleration, const Eigen::Vector3d& jerk,
+    double yaw, double yaw_rate, Eigen::Quaterniond* orientation,
+    Eigen::Vector3d* acceleration_body,
+    Eigen::Vector3d* angular_velocity_body) {
+  EigenMavStateFromEigenTrajectoryPoint(
+      acceleration, jerk, yaw, yaw_rate, kGravity, orientation,
+      acceleration_body, angular_velocity_body);
 }
 
 /// Convenience function with EigenTrajectoryPoint as input and EigenMavState as
