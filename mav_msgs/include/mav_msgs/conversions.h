@@ -3,6 +3,7 @@
  * Copyright 2015 Michael Burri, ASL, ETH Zurich, Switzerland
  * Copyright 2015 Markus Achtelik, ASL, ETH Zurich, Switzerland
  * Copyright 2015 Helen Oleynikova, ASL, ETH Zurich, Switzerland
+ * Copyright 2015 Mina Kamel, ASL, ETH Zurich, Switzerland
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -123,6 +124,83 @@ inline void eigenTrajectoryPointFromPoseMsg(
   trajectory_point->snap_W.setZero();
 }
 
+/// Convenience function with EigenTrajectoryPoint as input and EigenMavState as
+/// output.
+inline void EigenMavStateFromEigenTrajectoryPoint(
+    const EigenTrajectoryPoint& flat_state, double magnitude_of_gravity,
+    EigenMavState* mav_state) {
+  assert(mav_state != NULL);
+  EigenMavStateFromEigenTrajectoryPoint(
+      flat_state.acceleration_W, flat_state.jerk_W, flat_state.getYaw(),
+      flat_state.getYawRate(), magnitude_of_gravity,
+      &(mav_state->orientation_W_B), &(mav_state->acceleration_B),
+      &(mav_state->angular_velocity_B));
+  mav_state->position_W = flat_state.position_W;
+  mav_state->velocity_W = flat_state.velocity_W;
+}
+
+/**
+ * \brief Convenience function with EigenTrajectoryPoint as input and
+ * EigenMavState as output
+ *        with default value for the magnitude of the gravity vector.
+ */
+inline void EigenMavStateFromEigenTrajectoryPoint(
+    const EigenTrajectoryPoint& flat_state, EigenMavState* mav_state) {
+  EigenMavStateFromEigenTrajectoryPoint(flat_state, kGravity, mav_state);
+}
+
+inline void EigenMavStateFromEigenTrajectoryPoint(
+    const Eigen::Vector3d& acceleration, const Eigen::Vector3d& jerk,
+    double yaw, double yaw_rate, double magnitude_of_gravity,
+    Eigen::Quaterniond* orientation, Eigen::Vector3d* acceleration_body,
+    Eigen::Vector3d* angular_velocity_body) {
+  //  zb = acc+[0 0 magnitude_of_gravity]';
+  //  thrust =  norm(zb);
+  //  zb = zb / thrust;
+  //
+  //  xc = [cos(yaw) sin(yaw) 0]';
+  //
+  //  yb = cross(zb, xc);
+  //  yb = yb/norm(yb);
+  //
+  //  xb = cross(yb, zb);
+  //
+  //  q(:,i) = rot2quat([xb yb zb]);
+  //
+  //  h_w = 1/thrust*acc_dot);
+  //
+  //  w(1,i) = -h_w'*yb;
+  //  w(2,i) = h_w'*xb;
+  //  w(3,i) = yaw_dot*[0 0 1]*zb;
+
+  assert(acceleration_body != nullptr);
+  assert(angular_velocity_body != nullptr);
+
+  Eigen::Vector3d xb;
+  Eigen::Vector3d yb;
+  Eigen::Vector3d zb(acceleration);
+
+  zb[2] += magnitude_of_gravity;
+  const double thrust = zb.norm();
+  const double inv_thrust = 1.0 / thrust;
+  zb = zb * inv_thrust;
+
+  yb = zb.cross(Eigen::Vector3d(cos(yaw), sin(yaw), 0));
+  yb.normalize();
+
+  xb = yb.cross(zb);
+
+  const Eigen::Matrix3d R((Eigen::Matrix3d() << xb, yb, zb).finished());
+
+  const Eigen::Vector3d h_w = inv_thrust * jerk;
+
+  *orientation = Eigen::Quaterniond(R);
+  *acceleration_body = R.transpose() * zb * thrust;
+  (*angular_velocity_body)[0] = -h_w.transpose() * yb;
+  (*angular_velocity_body)[1] = h_w.transpose() * xb;
+  (*angular_velocity_body)[2] = yaw_rate * zb[2];
+}
+
 inline void eigenTrajectoryPointFromMsg(
     const trajectory_msgs::MultiDOFJointTrajectoryPoint& msg,
     EigenTrajectoryPoint* trajectory_point) {
@@ -239,6 +317,18 @@ inline void msgOdometryFromEigen(const EigenOdometry& odometry, nav_msgs::Odomet
 
   vectorEigenToMsg(odometry.velocity_B, &msg->twist.twist.linear);
   vectorEigenToMsg(odometry.angular_velocity_B, &msg->twist.twist.angular);
+}
+
+// WARNING: discards all derivatives, etc.
+inline void msgPoseStampedFromEigenTrajectoryPoint(
+    const EigenTrajectoryPoint& trajectory_point,
+    geometry_msgs::PoseStamped* msg) {
+  if (trajectory_point.timestamp_ns >= 0) {
+    msg->header.stamp.fromNSec(trajectory_point.timestamp_ns);
+  }
+  pointEigenToMsg(trajectory_point.position_W, &msg->pose.position);
+  quaternionEigenToMsg(trajectory_point.orientation_W_B,
+                       &msg->pose.orientation);
 }
 
 inline void msgMultiDofJointTrajectoryPointFromEigen(
