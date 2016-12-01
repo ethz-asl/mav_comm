@@ -3,6 +3,7 @@
  * Copyright 2015 Michael Burri, ASL, ETH Zurich, Switzerland
  * Copyright 2015 Markus Achtelik, ASL, ETH Zurich, Switzerland
  * Copyright 2015 Helen Oleynikova, ASL, ETH Zurich, Switzerland
+ * Copyright 2015 Mina Kamel, ASL, ETH Zurich, Switzerland
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +30,18 @@
 
 namespace mav_msgs {
 
+  /// Magnitude of Earth's gravitational field at specific height [m] and latitude
+/// [rad] (from wikipedia).
+inline double MagnitudeOfGravity(const double height,
+                                 const double latitude_radians) {
+  double sin_squared_latitude = sin(latitude_radians) * sin(latitude_radians);
+  double sin_squared_twice_latitude =
+      sin(2 * latitude_radians) * sin(2 * latitude_radians);
+  return 9.780327 * ((1 + 0.0053024 * sin_squared_latitude -
+                      0.0000058 * sin_squared_twice_latitude) -
+                     3.155 * 1e-7 * height);
+}
+
 inline Eigen::Vector3d vector3FromMsg(const geometry_msgs::Vector3& msg) {
   return Eigen::Vector3d(msg.x, msg.y, msg.z);
 }
@@ -39,10 +52,12 @@ inline Eigen::Vector3d vector3FromPointMsg(const geometry_msgs::Point& msg) {
 
 inline Eigen::Quaterniond quaternionFromMsg(const geometry_msgs::Quaternion& msg) {
   // Make sure this always returns a valid Quaternion, even if the message was
-  // uninitialized.
+  // uninitialized or only approximately set.
   Eigen::Quaterniond quaternion(msg.w, msg.x, msg.y, msg.z);
-  if (fabs(quaternion.norm() - 1.0) > 0.001) {
+  if (quaternion.norm() < std::numeric_limits<double>::epsilon()) {
     quaternion.setIdentity();
+  } else {
+    quaternion.normalize();
   }
   return quaternion;
 }
@@ -99,6 +114,32 @@ inline void setAngularVelocityMsgFromYawRate(double yaw_rate, geometry_msgs::Vec
   msg->x = 0.0;
   msg->y = 0.0;
   msg->z = yaw_rate;
+}
+
+
+inline void getEulerAnglesFromQuaternion(const Eigen::Quaternion<double>& q,
+                                         Eigen::Vector3d* euler_angles) {
+  {
+    assert(euler_angles != NULL);
+
+    *euler_angles << atan2(2.0 * (q.w() * q.x() + q.y() * q.z()),
+                           1.0 - 2.0 * (q.x() * q.x() + q.y() * q.y())),
+        asin(2.0 * (q.w() * q.y() - q.z() * q.x())),
+        atan2(2.0 * (q.w() * q.z() + q.x() * q.y()),
+              1.0 - 2.0 * (q.y() * q.y() + q.z() * q.z()));
+  }
+}
+
+inline double getShortestYawDistance(double yaw1, double yaw2) {
+  // From burrimi's implementation in mav_flight_manager/devel/iros2015.
+  double yaw_mod = std::fmod(yaw1 - yaw2, 2 * M_PI);
+  if (yaw_mod < -M_PI) {
+    yaw_mod += 2 * M_PI;
+  } else if (yaw_mod > M_PI) {
+    yaw_mod -= 2 * M_PI;
+  }
+
+  return yaw_mod;
 }
 
 }  // namespace mav_msgs
