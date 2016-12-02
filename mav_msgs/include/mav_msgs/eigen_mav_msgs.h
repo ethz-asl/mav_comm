@@ -231,8 +231,8 @@ struct EigenOdometry {
   inline double getYaw() const {
     return yawFromQuaternion(orientation_W_B);
   }
-  inline void getEulerAngles(Eigen::Vector3d& euler_angles) const {
-    getEulerAnglesFromQuaternion(orientation_W_B, &euler_angles);
+  inline void getEulerAngles(Eigen::Vector3d* euler_angles) const {
+    getEulerAnglesFromQuaternion(orientation_W_B, euler_angles);
   }
   inline double getYawRate() const {
     return angular_velocity_B.z();
