@@ -34,12 +34,19 @@ namespace mav_msgs {
 /// [rad] (from wikipedia).
 inline double MagnitudeOfGravity(const double height,
                                  const double latitude_radians) {
+
+  // gravity calculation constants
+  const double kGravity_0 = 9.780327;
+  const double kGravity_a = 0.0053024;
+  const double kGravity_b = 0.0000058;
+  const double kGravity_c = 3.155 * 1e-7;
+
   double sin_squared_latitude = sin(latitude_radians) * sin(latitude_radians);
   double sin_squared_twice_latitude =
       sin(2 * latitude_radians) * sin(2 * latitude_radians);
-  return 9.780327 * ((1 + 0.0053024 * sin_squared_latitude -
-                      0.0000058 * sin_squared_twice_latitude) -
-                     3.155 * 1e-7 * height);
+  return kGravity_0 * ((1 + kGravity_a * sin_squared_latitude -
+                      kGravity_b * sin_squared_twice_latitude) -
+                      kGravity_c * height);
 }
 
 inline Eigen::Vector3d vector3FromMsg(const geometry_msgs::Vector3& msg) {
