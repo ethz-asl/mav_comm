@@ -237,8 +237,8 @@ struct EigenOdometry {
 
   // Accessors for making dealing with orientation/angular velocity easier.
   inline double getYaw() const { return yawFromQuaternion(orientation_W_B); }
-  inline void getEulerAngles(Eigen::Vector3d& euler_angles) const {
-    getEulerAnglesFromQuaternion(orientation_W_B, &euler_angles);
+  inline void getEulerAngles(Eigen::Vector3d* euler_angles) const {
+    getEulerAnglesFromQuaternion(orientation_W_B, euler_angles);
   }
   inline double getYawRate() const { return angular_velocity_B.z(); }
   // WARNING: sets roll and pitch to 0.
