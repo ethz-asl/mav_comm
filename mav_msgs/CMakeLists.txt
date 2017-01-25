@@ -13,6 +13,7 @@ add_message_files(
   FILES
   Actuators.msg
   AttitudeThrust.msg
+  BarometricHeight.msg
   RateThrust.msg
   RollPitchYawrateThrust.msg
   TorqueThrust.msg
