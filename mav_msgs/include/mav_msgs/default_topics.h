@@ -51,8 +51,8 @@ static constexpr char POSITION[] = "position";
 
 // Simulation-specific topic names.
 static constexpr char WRENCH[] = "wrench";
-static constexpr char WIND[] = "wind";
 static constexpr char WIND_SPEED[] = "wind_speed";
+static constexpr char EXTERNAL_FORCE[] = "external_force";
 
 static constexpr char GROUND_TRUTH_POSE[] = "ground_truth/pose";
 static constexpr char GROUND_TRUTH_TWIST[] = "ground_truth/twist";
