@@ -112,6 +112,10 @@ inline void eigenOdometryFromMsg(const nav_msgs::Odometry& msg,
   odometry->velocity_B = mav_msgs::vector3FromMsg(msg.twist.twist.linear);
   odometry->angular_velocity_B =
       mav_msgs::vector3FromMsg(msg.twist.twist.angular);
+  odometry->pose_covariance_ = Eigen::Map<const Eigen::Matrix<double, 6, 6>>(
+      msg.pose.covariance.data());
+  odometry->twist_covariance_ = Eigen::Map<const Eigen::Matrix<double, 6, 6>>(
+      msg.twist.covariance.data());
 }
 
 inline void eigenTrajectoryPointFromTransformMsg(

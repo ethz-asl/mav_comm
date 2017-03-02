@@ -234,6 +234,8 @@ struct EigenOdometry {
   Eigen::Quaterniond orientation_W_B;
   Eigen::Vector3d velocity_B;  // Velocity in expressed in the Body frame!
   Eigen::Vector3d angular_velocity_B;
+  Eigen::Matrix<double, 6, 6> pose_covariance_;
+  Eigen::Matrix<double, 6, 6> twist_covariance_;
 
   // Accessors for making dealing with orientation/angular velocity easier.
   inline double getYaw() const { return yawFromQuaternion(orientation_W_B); }
