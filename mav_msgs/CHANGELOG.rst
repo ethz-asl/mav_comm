@@ -1,7 +1,7 @@
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Changelog for package mav_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-3.1.0 (2017-03-02)
+3.2.0 (2017-03-02)
 ------------------
 * Access covariance in eigen odometry
 * External force default topic
