@@ -1,6 +1,12 @@
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Changelog for package mav_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+3.1.0 (2017-03-02)
+------------------
+* Access covariance in eigen odometry
+* External force default topic
+* External wind speed default topic
+
 3.1.0 (2016-12-01)
 ------------------
 * Add getEulerAngles method to EigenOdometry message.
