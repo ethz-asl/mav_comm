@@ -211,7 +211,6 @@ inline void EigenMavStateFromEigenTrajectoryPoint(
       &(mav_state->angular_acceleration_B));
   mav_state->position_W = flat_state.position_W;
   mav_state->velocity_W = flat_state.velocity_W;
-  mav_state->rotor_rates_squared.setZero();
 }
 
 /**
@@ -276,7 +275,8 @@ inline void EigenMavStateFromEigenTrajectoryPoint(
 
   const Eigen::Matrix3d R((Eigen::Matrix3d() << xb, yb, zb).finished());
 
-  const Eigen::Vector3d h_w = inv_thrust * (jerk - zb.transpose() * jerk * zb);
+  const Eigen::Vector3d h_w =
+      inv_thrust * (jerk - double(zb.transpose() * jerk) * zb);
 
   *orientation = Eigen::Quaterniond(R);
   *acceleration_body = R.transpose() * zb * thrust;
@@ -287,9 +287,9 @@ inline void EigenMavStateFromEigenTrajectoryPoint(
   // Calculate angular accelerations.
   const Eigen::Vector3d wcrossz = (*angular_velocity_body).cross(zb);
   const Eigen::Vector3d wcrosswcrossz = (*angular_velocity_body).cross(wcrossz);
-  const Eigen::Vector3d h_a = inv_thrust * (snap - zb.transpose() * snap * zb) -
-                              2 * wcrossz - wcrosswcrossz +
-                              zb.transpose() * wcrosswcrossz * zb;
+  const Eigen::Vector3d h_a =
+      inv_thrust * (snap - double(zb.transpose() * snap) * zb) - 2 * wcrossz -
+      wcrosswcrossz + double(zb.transpose() * wcrosswcrossz) * zb;
 
   (*angular_acceleration_body)[0] = -h_a.transpose() * yb;
   (*angular_acceleration_body)[1] = h_a.transpose() * xb;

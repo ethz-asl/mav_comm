@@ -170,6 +170,8 @@ inline void getSquaredRotorSpeedsFromAllocationAndState(
       inertia.asDiagonal() * angular_acceleration_B +
       angular_velocity_B.cross(inertia.asDiagonal() * angular_velocity_B);
   const double thrust_force = mass * acceleration_B.norm();
+  Eigen::Vector4d input;
+  input << torque, thrust_force;
   *rotor_rates_squared = allocation_inv * input;
 }
 
