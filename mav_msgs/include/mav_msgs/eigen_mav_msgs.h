@@ -152,7 +152,27 @@ struct EigenTrajectoryPoint {
         jerk_W(Eigen::Vector3d::Zero()),
         snap_W(Eigen::Vector3d::Zero()),
         orientation_W_B(Eigen::Quaterniond::Identity()),
-        angular_velocity_W(Eigen::Vector3d::Zero()){};
+        angular_velocity_W(Eigen::Vector3d::Zero()),
+        angular_acceleration_W(Eigen::Vector3d::Zero()){};
+
+  EigenTrajectoryPoint(int64_t _time_from_start_ns,
+                       const Eigen::Vector3d& _position,
+                       const Eigen::Vector3d& _velocity,
+                       const Eigen::Vector3d& _acceleration,
+                       const Eigen::Vector3d& _jerk,
+                       const Eigen::Vector3d& _snap,
+                       const Eigen::Quaterniond& _orientation,
+                       const Eigen::Vector3d& _angular_velocity,
+                       const Eigen::Vector3d& _angular_acceleration)
+      : time_from_start_ns(_time_from_start_ns),
+        position_W(_position),
+        velocity_W(_velocity),
+        acceleration_W(_acceleration),
+        jerk_W(_jerk),
+        snap_W(_snap),
+        orientation_W_B(_orientation),
+        angular_velocity_W(_angular_velocity),
+        angular_acceleration_W(_angular_acceleration) {}
 
   EigenTrajectoryPoint(int64_t _time_from_start_ns,
                        const Eigen::Vector3d& _position,
@@ -162,14 +182,9 @@ struct EigenTrajectoryPoint {
                        const Eigen::Vector3d& _snap,
                        const Eigen::Quaterniond& _orientation,
                        const Eigen::Vector3d& _angular_velocity)
-      : time_from_start_ns(_time_from_start_ns),
-        position_W(_position),
-        velocity_W(_velocity),
-        acceleration_W(_acceleration),
-        jerk_W(_jerk),
-        snap_W(_snap),
-        orientation_W_B(_orientation),
-        angular_velocity_W(_angular_velocity) {}
+      : EigenTrajectoryPoint(_time_from_start_ns, _position, _velocity,
+                             _acceleration, _jerk, _snap, _orientation,
+                             _angular_velocity, Eigen::Vector3d::Zero()) {}
 
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   int64_t timestamp_ns;  // Time since epoch, negative value = invalid timestamp.
@@ -182,10 +197,12 @@ struct EigenTrajectoryPoint {
 
   Eigen::Quaterniond orientation_W_B;
   Eigen::Vector3d angular_velocity_W;
+  Eigen::Vector3d angular_acceleration_W;
 
   // Accessors for making dealing with orientation/angular velocity easier.
   inline double getYaw() const { return yawFromQuaternion(orientation_W_B); }
   inline double getYawRate() const { return angular_velocity_W.z(); }
+  inline double getYawAcc() const { return angular_acceleration_W.z(); }
   // WARNING: sets roll and pitch to 0.
   inline void setFromYaw(double yaw) {
     orientation_W_B = quaternionFromYaw(yaw);
@@ -194,6 +211,11 @@ struct EigenTrajectoryPoint {
     angular_velocity_W.x() = 0.0;
     angular_velocity_W.y() = 0.0;
     angular_velocity_W.z() = yaw_rate;
+  }
+  inline void setFromYawAcc(double yaw_acc) {
+    angular_acceleration_W.x() = 0.0;
+    angular_acceleration_W.y() = 0.0;
+    angular_acceleration_W.z() = yaw_acc;
   }
 
   std::string toString() const {
@@ -204,7 +226,8 @@ struct EigenTrajectoryPoint {
        << "jerk:              " << jerk_W.transpose() << std::endl
        << "snap:              " << snap_W.transpose() << std::endl
        << "yaw:               " << getYaw() << std::endl
-       << "yaw_rate:          " << getYawRate() << std::endl;
+       << "yaw_rate:          " << getYawRate() << std::endl
+       << "yaw_acc:           " << getYawAcc() << std::endl;
 
     return ss.str();
   }
