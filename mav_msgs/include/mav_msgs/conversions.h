@@ -147,6 +147,7 @@ inline void eigenTrajectoryPointFromPoseMsg(
   trajectory_point->orientation_W_B = quaternionFromMsg(msg.pose.orientation);
   trajectory_point->velocity_W.setZero();
   trajectory_point->angular_velocity_W.setZero();
+  trajectory_point->angular_acceleration_W.setZero();
   trajectory_point->acceleration_W.setZero();
   trajectory_point->jerk_W.setZero();
   trajectory_point->snap_W.setZero();
@@ -154,40 +155,46 @@ inline void eigenTrajectoryPointFromPoseMsg(
 
 /**
  * \brief Computes the MAV state (position, velocity, attitude, angular
- * velocity) from the flat state.
- *        Additionally, computes the acceleration expressed in body coordinates,
- * i.e. the acceleration
- *        measured by the IMU. No air-drag is assumed here.
+ * velocity, angular acceleration) from the flat state.
+ * Additionally, computes the acceleration expressed in body coordinates,
+ * i.e. the acceleration measured by the IMU. No air-drag is assumed here.
  *
  * \param[in] acceleration Acceleration of the MAV, expressed in world
  * coordinates.
  * \param[in] jerk Jerk of the MAV, expressed in world coordinates.
+ * \param[in] snap Snap of the MAV, expressed in world coordinates.
  * \param[in] yaw Yaw angle of the MAV, expressed in world coordinates.
  * \param[in] yaw_rate Yaw rate, expressed in world coordinates.
+ * \param[in] yaw_acceleration Yaw acceleration, expressed in world coordinates.
  * \param[in] magnitude_of_gravity Magnitude of the gravity vector.
  * \param[out] orientation Quaternion representing the attitude of the MAV.
  * \param[out] acceleration_body Acceleration expressed in body coordinates,
- * i.e. the acceleration usually
- *                               by the IMU.
+ * i.e. the acceleration usually by the IMU.
  * \param[out] angular_velocity_body Angular velocity of the MAV, expressed in
  * body coordinates.
+ * \param[out] angular_acceleration_body Angular acceleration of the MAV,
+ * expressed in body coordinates.
  */
 void EigenMavStateFromEigenTrajectoryPoint(
     const Eigen::Vector3d& acceleration, const Eigen::Vector3d& jerk,
-    double yaw, double yaw_rate, double magnitude_of_gravity,
+    const Eigen::Vector3d& snap, double yaw, double yaw_rate,
+    double yaw_acceleration, double magnitude_of_gravity,
     Eigen::Quaterniond* orientation, Eigen::Vector3d* acceleration_body,
-    Eigen::Vector3d* angular_velocity_body);
+    Eigen::Vector3d* angular_velocity_body,
+    Eigen::Vector3d* angular_acceleration_body);
 
 /// Convenience function with default value for the magnitude of the gravity
 /// vector.
 inline void EigenMavStateFromEigenTrajectoryPoint(
     const Eigen::Vector3d& acceleration, const Eigen::Vector3d& jerk,
-    double yaw, double yaw_rate, Eigen::Quaterniond* orientation,
-    Eigen::Vector3d* acceleration_body,
-    Eigen::Vector3d* angular_velocity_body) {
+    const Eigen::Vector3d& snap, double yaw, double yaw_rate,
+    double yaw_acceleration, Eigen::Quaterniond* orientation,
+    Eigen::Vector3d* acceleration_body, Eigen::Vector3d* angular_velocity_body,
+    Eigen::Vector3d* angular_acceleration_body) {
   EigenMavStateFromEigenTrajectoryPoint(
-      acceleration, jerk, yaw, yaw_rate, kGravity, orientation,
-      acceleration_body, angular_velocity_body);
+      acceleration, jerk, snap, yaw, yaw_rate, yaw_acceleration, kGravity,
+      orientation, acceleration_body, angular_velocity_body,
+      angular_acceleration_body);
 }
 
 /// Convenience function with EigenTrajectoryPoint as input and EigenMavState as
@@ -197,12 +204,14 @@ inline void EigenMavStateFromEigenTrajectoryPoint(
     EigenMavState* mav_state) {
   assert(mav_state != NULL);
   EigenMavStateFromEigenTrajectoryPoint(
-      flat_state.acceleration_W, flat_state.jerk_W, flat_state.getYaw(),
-      flat_state.getYawRate(), magnitude_of_gravity,
-      &(mav_state->orientation_W_B), &(mav_state->acceleration_B),
-      &(mav_state->angular_velocity_B));
+      flat_state.acceleration_W, flat_state.jerk_W, flat_state.snap_W,
+      flat_state.getYaw(), flat_state.getYawRate(), flat_state.getYawAcc(),
+      magnitude_of_gravity, &(mav_state->orientation_W_B),
+      &(mav_state->acceleration_B), &(mav_state->angular_velocity_B),
+      &(mav_state->angular_acceleration_B));
   mav_state->position_W = flat_state.position_W;
   mav_state->velocity_W = flat_state.velocity_W;
+  mav_state->rotor_rates_squared.setZero();
 }
 
 /**
@@ -217,9 +226,16 @@ inline void EigenMavStateFromEigenTrajectoryPoint(
 
 inline void EigenMavStateFromEigenTrajectoryPoint(
     const Eigen::Vector3d& acceleration, const Eigen::Vector3d& jerk,
-    double yaw, double yaw_rate, double magnitude_of_gravity,
+    const Eigen::Vector3d& snap, double yaw, double yaw_rate,
+    double yaw_acceleration, double magnitude_of_gravity,
     Eigen::Quaterniond* orientation, Eigen::Vector3d* acceleration_body,
-    Eigen::Vector3d* angular_velocity_body) {
+    Eigen::Vector3d* angular_velocity_body,
+    Eigen::Vector3d* angular_acceleration_body) {
+  // Mapping from flat state to full state following to Mellinger [1]:
+  // See [1]: Mellinger, Daniel Warren. "Trajectory generation and control for
+  //          quadrotors." (2012), Phd-thesis, p. 15ff.
+  // http://repository.upenn.edu/cgi/viewcontent.cgi?article=1705&context=edissertations
+  //
   //  zb = acc+[0 0 magnitude_of_gravity]';
   //  thrust =  norm(zb);
   //  zb = zb / thrust;
@@ -233,14 +249,16 @@ inline void EigenMavStateFromEigenTrajectoryPoint(
   //
   //  q(:,i) = rot2quat([xb yb zb]);
   //
-  //  h_w = 1/thrust*acc_dot);
+  //  h_w = 1/thrust*(acc_dot - zb' * acc_dot * zb;
   //
   //  w(1,i) = -h_w'*yb;
   //  w(2,i) = h_w'*xb;
   //  w(3,i) = yaw_dot*[0 0 1]*zb;
 
+  assert(orientation != nullptr);
   assert(acceleration_body != nullptr);
   assert(angular_velocity_body != nullptr);
+  assert(angular_acceleration_body != nullptr);
 
   Eigen::Vector3d xb;
   Eigen::Vector3d yb;
@@ -251,20 +269,31 @@ inline void EigenMavStateFromEigenTrajectoryPoint(
   const double inv_thrust = 1.0 / thrust;
   zb = zb * inv_thrust;
 
-  yb = zb.cross(Eigen::Vector3d(cos(yaw), sin(yaw), 0));
+  yb = zb.cross(Eigen::Vector3d(cos(yaw), sin(yaw), 0.0));
   yb.normalize();
 
   xb = yb.cross(zb);
 
   const Eigen::Matrix3d R((Eigen::Matrix3d() << xb, yb, zb).finished());
 
-  const Eigen::Vector3d h_w = inv_thrust * jerk;
+  const Eigen::Vector3d h_w = inv_thrust * (jerk - zb.transpose() * jerk * zb);
 
   *orientation = Eigen::Quaterniond(R);
   *acceleration_body = R.transpose() * zb * thrust;
   (*angular_velocity_body)[0] = -h_w.transpose() * yb;
   (*angular_velocity_body)[1] = h_w.transpose() * xb;
   (*angular_velocity_body)[2] = yaw_rate * zb[2];
+
+  // Calculate angular accelerations.
+  const Eigen::Vector3d wcrossz = (*angular_velocity_body).cross(zb);
+  const Eigen::Vector3d wcrosswcrossz = (*angular_velocity_body).cross(wcrossz);
+  const Eigen::Vector3d h_a = inv_thrust * (snap - zb.transpose() * snap * zb) -
+                              2 * wcrossz - wcrosswcrossz +
+                              zb.transpose() * wcrosswcrossz * zb;
+
+  (*angular_acceleration_body)[0] = -h_a.transpose() * yb;
+  (*angular_acceleration_body)[1] = h_a.transpose() * xb;
+  (*angular_acceleration_body)[2] = yaw_acceleration * zb[2];
 }
 
 inline void eigenTrajectoryPointFromMsg(
