@@ -117,7 +117,24 @@ class EigenMavState {
         velocity_W(Eigen::Vector3d::Zero()),
         acceleration_B(Eigen::Vector3d::Zero()),
         orientation_W_B(Eigen::Quaterniond::Identity()),
-        angular_velocity_B(Eigen::Vector3d::Zero()){};
+        angular_velocity_B(Eigen::Vector3d::Zero()),
+        angular_acceleration_B(Eigen::Vector3d::Zero()),
+        rotor_rates_squared(Eigen::VectorXd::Zero(6)){};
+
+  EigenMavState(const Eigen::Vector3d& position_W,
+                const Eigen::Vector3d& velocity_W,
+                const Eigen::Vector3d& acceleration_B,
+                const Eigen::Quaterniond& orientation_W_B,
+                const Eigen::Vector3d& angular_velocity_B,
+                const Eigen::Vector3d& angular_acceleration_B,
+                const Eigen::VectorXd& rotor_rates_squared)
+      : position_W(position_W),
+        velocity_W(velocity_W),
+        acceleration_B(acceleration_B),
+        orientation_W_B(orientation_W_B),
+        angular_velocity_B(angular_velocity_B),
+        angular_acceleration_B(angular_acceleration_B),
+        rotor_rates_squared(rotor_rates_squared) {}
 
   std::string toString() const {
     std::stringstream ss;
@@ -128,6 +145,10 @@ class EigenMavState {
        << orientation_W_B.x() << " " << orientation_W_B.y() << " "
        << orientation_W_B.z() << " " << std::endl
        << "angular_velocity_body: " << angular_velocity_B.transpose()
+       << std::endl
+       << "angular_acceleration_body: " << angular_acceleration_B.transpose()
+       << std::endl
+       << "rotor_rates_squared: " << rotor_rates_squared.transpose()
        << std::endl;
 
     return ss.str();
@@ -138,6 +159,9 @@ class EigenMavState {
   Eigen::Vector3d acceleration_B;
   Eigen::Quaterniond orientation_W_B;
   Eigen::Vector3d angular_velocity_B;
+  Eigen::Vector3d angular_acceleration_B;
+
+  Eigen::VectorXd rotor_rates_squared;
 };
 
 struct EigenTrajectoryPoint {
