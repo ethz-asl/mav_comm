@@ -153,6 +153,26 @@ inline double getShortestYawDistance(double yaw1, double yaw2) {
   return yaw_mod;
 }
 
+// Calculate the nominal rotor rates given the MAV mass, allocation matrix,
+// angular velocity, angular acceleration, and body acceleration (normalized
+// thrust).
+//
+// [torques, thrust]' = A * n^2, where
+// torques = J * ang_acc + ang_vel x J
+// thrust = m * norm(acc)
+inline void getSquaredRotorSpeedsFromAllocationAndState(
+    const Eigen::MatrixXd& allocation_inv, const Eigen::Vector3d& inertia,
+    double mass, const Eigen::Vector3d& angular_velocity_B,
+    const Eigen::Vector3d& angular_acceleration_B,
+    const Eigen::Vector3d& acceleration_B,
+    Eigen::VectorXd* rotor_rates_squared) {
+  const Eigen::Vector3d torque =
+      inertia.asDiagonal() * angular_acceleration_B +
+      angular_velocity_B.cross(inertia.asDiagonal() * angular_velocity_B);
+  const double thrust_force = mass * acceleration_B.norm();
+  *rotor_rates_squared = allocation_inv * input;
+}
+
 }  // namespace mav_msgs
 
 #endif  // MAV_MSGS_COMMON_H
