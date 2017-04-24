@@ -131,6 +131,7 @@ inline void eigenTrajectoryPointFromTransformMsg(
   trajectory_point->velocity_W.setZero();
   trajectory_point->angular_velocity_W.setZero();
   trajectory_point->acceleration_W.setZero();
+  trajectory_point->angular_acceleration_W.setZero();
   trajectory_point->jerk_W.setZero();
   trajectory_point->snap_W.setZero();
 }
@@ -147,8 +148,8 @@ inline void eigenTrajectoryPointFromPoseMsg(
   trajectory_point->orientation_W_B = quaternionFromMsg(msg.pose.orientation);
   trajectory_point->velocity_W.setZero();
   trajectory_point->angular_velocity_W.setZero();
-  trajectory_point->angular_acceleration_W.setZero();
   trajectory_point->acceleration_W.setZero();
+  trajectory_point->angular_acceleration_W.setZero();
   trajectory_point->jerk_W.setZero();
   trajectory_point->snap_W.setZero();
 }
@@ -328,8 +329,10 @@ inline void eigenTrajectoryPointFromMsg(
   if (msg.accelerations.size() > 0) {
     trajectory_point->acceleration_W =
         vector3FromMsg(msg.accelerations[0].linear);
+    trajectory_point->angular_acceleration_W = vector3FromMsg(msg.accelerations[0].angular);
   } else {
     trajectory_point->acceleration_W.setZero();
+    trajectory_point->angular_acceleration_W.setZero();
   }
   trajectory_point->jerk_W.setZero();
   trajectory_point->snap_W.setZero();
