@@ -159,6 +159,22 @@ inline double getShortestYawDistance(double yaw1, double yaw2) {
 // [torques, thrust]' = A * n^2, where
 // torques = J * ang_acc + ang_vel x J
 // thrust = m * norm(acc)
+//
+// The allocation matrix A has of a hexacopter is:
+// A = K * B, where
+// K = diag(l*c_T, l*c_T, c_M, c_T),
+//     [ s  1  s -s -1 -s]
+// B = [-c  0  c  c  0 -c]
+//     [-1  1 -1  1 -1  1]
+//     [ 1  1  1  1  1  1],
+// l: arm length
+// c_T: thrust constant
+// c_M: moment constant
+// s: sin(30°)
+// c: cos(30°)
+//
+// The inverse can be computed computationally efficient:
+// A^-1 \approx B^pseudo * K^-1
 inline void getSquaredRotorSpeedsFromAllocationAndState(
     const Eigen::MatrixXd& allocation_inv, const Eigen::Vector3d& inertia,
     double mass, const Eigen::Vector3d& angular_velocity_B,
