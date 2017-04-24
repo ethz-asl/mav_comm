@@ -34,12 +34,12 @@
 
 #include "mav_msgs/Actuators.h"
 #include "mav_msgs/AttitudeThrust.h"
-#include "mav_msgs/common.h"
-#include "mav_msgs/default_values.h"
-#include "mav_msgs/eigen_mav_msgs.h"
 #include "mav_msgs/RateThrust.h"
 #include "mav_msgs/RollPitchYawrateThrust.h"
 #include "mav_msgs/TorqueThrust.h"
+#include "mav_msgs/common.h"
+#include "mav_msgs/default_values.h"
+#include "mav_msgs/eigen_mav_msgs.h"
 
 namespace mav_msgs {
 
@@ -112,8 +112,8 @@ inline void eigenOdometryFromMsg(const nav_msgs::Odometry& msg,
   odometry->velocity_B = mav_msgs::vector3FromMsg(msg.twist.twist.linear);
   odometry->angular_velocity_B =
       mav_msgs::vector3FromMsg(msg.twist.twist.angular);
-  odometry->pose_covariance_ = Eigen::Map<const Eigen::Matrix<double, 6, 6>>(
-      msg.pose.covariance.data());
+  odometry->pose_covariance_ =
+      Eigen::Map<const Eigen::Matrix<double, 6, 6>>(msg.pose.covariance.data());
   odometry->twist_covariance_ = Eigen::Map<const Eigen::Matrix<double, 6, 6>>(
       msg.twist.covariance.data());
 }

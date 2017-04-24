@@ -23,10 +23,10 @@
 #ifndef MAV_MSGS_COMMON_H
 #define MAV_MSGS_COMMON_H
 
-#include <Eigen/Geometry>
 #include <geometry_msgs/Point.h>
 #include <geometry_msgs/Quaternion.h>
 #include <geometry_msgs/Vector3.h>
+#include <Eigen/Geometry>
 
 namespace mav_msgs {
 
@@ -34,7 +34,6 @@ namespace mav_msgs {
 /// [rad] (from wikipedia).
 inline double MagnitudeOfGravity(const double height,
                                  const double latitude_radians) {
-
   // gravity calculation constants
   const double kGravity_0 = 9.780327;
   const double kGravity_a = 0.0053024;
@@ -45,8 +44,8 @@ inline double MagnitudeOfGravity(const double height,
   double sin_squared_twice_latitude =
       sin(2 * latitude_radians) * sin(2 * latitude_radians);
   return kGravity_0 * ((1 + kGravity_a * sin_squared_latitude -
-                      kGravity_b * sin_squared_twice_latitude) -
-                      kGravity_c * height);
+                        kGravity_b * sin_squared_twice_latitude) -
+                       kGravity_c * height);
 }
 
 inline Eigen::Vector3d vector3FromMsg(const geometry_msgs::Vector3& msg) {

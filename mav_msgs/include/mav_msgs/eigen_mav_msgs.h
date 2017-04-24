@@ -21,8 +21,8 @@
 #ifndef MAV_MSGS_EIGEN_MAV_MSGS_H
 #define MAV_MSGS_EIGEN_MAV_MSGS_H
 
-#include <deque>
 #include <Eigen/Eigen>
+#include <deque>
 #include <iostream>
 
 #include "mav_msgs/common.h"
@@ -32,7 +32,7 @@ namespace mav_msgs {
 struct EigenAttitudeThrust {
   EigenAttitudeThrust()
       : attitude(Eigen::Quaterniond::Identity()),
-        thrust(Eigen::Vector3d::Zero()){};
+        thrust(Eigen::Vector3d::Zero()) {}
   EigenAttitudeThrust(const Eigen::Quaterniond& _attitude,
                       const Eigen::Vector3d& _thrust) {
     attitude = _attitude;
@@ -49,7 +49,7 @@ struct EigenActuators {
 
   EigenActuators(const Eigen::VectorXd& _angular_velocities) {
     angular_velocities = _angular_velocities;
-  };
+  }
 
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   Eigen::VectorXd angles;              // In rad.
@@ -86,7 +86,7 @@ struct EigenTorqueThrust {
 
 struct EigenRollPitchYawrateThrust {
   EigenRollPitchYawrateThrust()
-      : roll(0.0), pitch(0.0), yaw_rate(0.0), thrust(Eigen::Vector3d::Zero()){};
+      : roll(0.0), pitch(0.0), yaw_rate(0.0), thrust(Eigen::Vector3d::Zero()) {}
 
   EigenRollPitchYawrateThrust(double _roll, double _pitch, double _yaw_rate,
                               const Eigen::Vector3d& _thrust)
@@ -107,7 +107,7 @@ struct EigenRollPitchYawrateThrust {
  */
 class EigenMavState {
  public:
-  typedef std::vector<EigenMavState, Eigen::aligned_allocator<EigenMavState> >
+  typedef std::vector<EigenMavState, Eigen::aligned_allocator<EigenMavState>>
       Vector;
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
@@ -118,7 +118,7 @@ class EigenMavState {
         acceleration_B(Eigen::Vector3d::Zero()),
         orientation_W_B(Eigen::Quaterniond::Identity()),
         angular_velocity_B(Eigen::Vector3d::Zero()),
-        angular_acceleration_B(Eigen::Vector3d::Zero()){};
+        angular_acceleration_B(Eigen::Vector3d::Zero()) {}
 
   EigenMavState(const Eigen::Vector3d& position_W,
                 const Eigen::Vector3d& velocity_W,
@@ -159,7 +159,8 @@ class EigenMavState {
 
 struct EigenTrajectoryPoint {
   typedef std::vector<EigenTrajectoryPoint,
-                      Eigen::aligned_allocator<EigenTrajectoryPoint> > Vector;
+                      Eigen::aligned_allocator<EigenTrajectoryPoint>>
+      Vector;
   EigenTrajectoryPoint()
       : timestamp_ns(-1),
         time_from_start_ns(0),
@@ -170,7 +171,7 @@ struct EigenTrajectoryPoint {
         snap_W(Eigen::Vector3d::Zero()),
         orientation_W_B(Eigen::Quaterniond::Identity()),
         angular_velocity_W(Eigen::Vector3d::Zero()),
-        angular_acceleration_W(Eigen::Vector3d::Zero()){};
+        angular_acceleration_W(Eigen::Vector3d::Zero()) {}
 
   EigenTrajectoryPoint(int64_t _time_from_start_ns,
                        const Eigen::Vector3d& _position,
@@ -204,7 +205,8 @@ struct EigenTrajectoryPoint {
                              _angular_velocity, Eigen::Vector3d::Zero()) {}
 
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-  int64_t timestamp_ns;  // Time since epoch, negative value = invalid timestamp.
+  int64_t
+      timestamp_ns;  // Time since epoch, negative value = invalid timestamp.
   int64_t time_from_start_ns;
   Eigen::Vector3d position_W;
   Eigen::Vector3d velocity_W;
@@ -304,10 +306,10 @@ struct EigenOdometry {
 // TODO(helenol): replaced with aligned allocator headers from Simon.
 #define MAV_MSGS_CONCATENATE(x, y) x##y
 #define MAV_MSGS_CONCATENATE2(x, y) MAV_MSGS_CONCATENATE(x, y)
-#define MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EIGEN_TYPE)                     \
-  typedef std::vector<EIGEN_TYPE, Eigen::aligned_allocator<EIGEN_TYPE> > \
-      MAV_MSGS_CONCATENATE2(EIGEN_TYPE, Vector);                         \
-  typedef std::deque<EIGEN_TYPE, Eigen::aligned_allocator<EIGEN_TYPE> >  \
+#define MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EIGEN_TYPE)                    \
+  typedef std::vector<EIGEN_TYPE, Eigen::aligned_allocator<EIGEN_TYPE>> \
+      MAV_MSGS_CONCATENATE2(EIGEN_TYPE, Vector);                        \
+  typedef std::deque<EIGEN_TYPE, Eigen::aligned_allocator<EIGEN_TYPE>>  \
       MAV_MSGS_CONCATENATE2(EIGEN_TYPE, Deque);
 
 MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EigenAttitudeThrust)
