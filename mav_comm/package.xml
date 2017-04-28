@@ -24,7 +24,6 @@
 
   <!-- Dependencies needed after this package is compiled. -->
   <run_depend>mav_msgs</run_depend>
-  <run_depend>planning_msgs</run_depend>
 
   <export>
     <metapackage/>
