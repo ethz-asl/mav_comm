@@ -136,6 +136,23 @@ inline void eigenTrajectoryPointFromTransformMsg(
   trajectory_point->snap_W.setZero();
 }
 
+// 2 versions of this: one for PoseStamped (which fills in the timestamps
+// correctly and should be used if at all possible), and one for a raw pose
+// message.
+inline void eigenTrajectoryPointFromPoseMsg(
+    const geometry_msgs::Pose& msg, EigenTrajectoryPoint* trajectory_point) {
+  assert(trajectory_point != NULL);
+
+  trajectory_point->position_W = vector3FromPointMsg(msg.position);
+  trajectory_point->orientation_W_B = quaternionFromMsg(msg.orientation);
+  trajectory_point->velocity_W.setZero();
+  trajectory_point->angular_velocity_W.setZero();
+  trajectory_point->acceleration_W.setZero();
+  trajectory_point->angular_acceleration_W.setZero();
+  trajectory_point->jerk_W.setZero();
+  trajectory_point->snap_W.setZero();
+}
+
 inline void eigenTrajectoryPointFromPoseMsg(
     const geometry_msgs::PoseStamped& msg,
     EigenTrajectoryPoint* trajectory_point) {
@@ -144,14 +161,7 @@ inline void eigenTrajectoryPointFromPoseMsg(
   ros::Time timestamp = msg.header.stamp;
 
   trajectory_point->timestamp_ns = timestamp.toNSec();
-  trajectory_point->position_W = vector3FromPointMsg(msg.pose.position);
-  trajectory_point->orientation_W_B = quaternionFromMsg(msg.pose.orientation);
-  trajectory_point->velocity_W.setZero();
-  trajectory_point->angular_velocity_W.setZero();
-  trajectory_point->acceleration_W.setZero();
-  trajectory_point->angular_acceleration_W.setZero();
-  trajectory_point->jerk_W.setZero();
-  trajectory_point->snap_W.setZero();
+  eigenTrajectoryPointFromPoseMsg(msg.pose, trajectory_point);
 }
 
 /**
