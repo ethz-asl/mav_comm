@@ -18,6 +18,7 @@ add_service_files(
   FILES
   PlannerService.srv
   StringService.srv
+  ConvertWGSToENU.srv
 )
 
 generate_messages(

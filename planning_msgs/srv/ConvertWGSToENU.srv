@@ -1,0 +1,61 @@
+#request fields
+# Name of YAML File with GPS coordinates to be converted to ENU without the extension
+std_msgs/String gps_path_file
+---
+#response fields
+# Service returns true on success, false on conversion failure
+# Polygon and hole coordinates as a yaml formatted string
+std_msgs/String polygon_data_yaml
+
+####### SAMPLE GPS Input File, Contains additional fields for possible later use################
+# coordinate_type: 'gps'
+# # Method of sending commands to controller ('poses'/'polynomial' trajectory)
+# path_mode: 'polynomial'
+
+# # Limit distance between poses ('true'/'false')
+# intermediate_poses: true
+# # Maximum distance between poses [m]
+# intermediate_pose_separation: 1
+
+# # Maximum speed [m/s] and acceleration [m/s^2] for trajectories
+# reference_speed: 2
+# reference_acceleration: 1
+
+# # Height for takeoff command [m]
+# takeoff_height: 0.7
+# # Height for landing command [m]
+# landing_height: -0.5
+
+# # Heading mode ('auto'/'manual'/'zero')
+# # 'auto': faces in the direction of travel
+# # 'manual': user-specified (below)
+# # 'zero': heading is zero for entire trajectory
+# heading_mode: 'zero' 
+# easting: [8.68118159824755, 8.681539898253458, 8.681491040759797, 8.681138220359543, 8.681094842435487, 8.681442183232685, 8.681393325672122, 8.681051464475381, 8.681008086479226, 8.68134446807811, 8.68129561045065, 8.680964708447021, 8.680921330378768, 8.68124675278974, 8.68119789509538, 8.680910946052181, 8.681125631656773, 8.68114903736757]
+# northing: [47.44984810188486, 47.45009950188497, 47.450117601033924, 47.4498700455812, 47.449891989260955, 47.45013570016192, 47.45015379926896, 47.449913932924126, 47.44993587657071, 47.45017189835504, 47.45018999742017, 47.44995782020073, 47.44997976381417, 47.450208096464344, 47.450226195487566, 47.450024857645126, 47.4502278719386, 47.45024429448983]
+# height: [5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0]
+# heading: [45.96864882089229, 151.36003160631142, -134.03135110357977, 143.28536612245225, 45.968648971849056, 151.36003176105257, -134.03135095296778, 143.2853663130652, 45.96864912337037, 151.3600318907722, -134.03135080298128, 143.28536646815286, 45.968649272896236, 151.36003201234004, -134.03135060663485, 54.34754259446647, 45.96864980377702, -86.8092404350786]
+# waiting_time: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+###################### SAMPLE Response String with Polygon Data ########################
+# polygon:
+#  hull:
+#    - [-30.0, 30.0]
+#    - [30.0, 30.0]
+#    - [30.0, 10.0]
+#    - [60.0, 0.0]
+#    - [30.0, -40.0]
+#    - [-30.0, -40.0]
+#  holes:
+#    - hole:
+#      - [-5.0, 10.0]
+#      - [-5.0, 15.0]
+#      - [-15.0, 15.0]
+#      - [-15.0, 0.0]
+#      - [10.0, 0.0]
+#      - [10.0, 10.0]
+#    - hole:
+#      - [-1.0, -14.0]
+#      - [-1.0, -16.0]
+#      - [1.0, -16.0]
+#     - [1.0, -14.0]
