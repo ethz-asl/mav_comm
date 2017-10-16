@@ -98,6 +98,23 @@ struct EigenRollPitchYawrateThrust {
   Eigen::Vector3d thrust;
 };
 
+struct EigenRollPitchYawrateThrustFeedForward {
+  EigenRollPitchYawrateThrustFeedForward()
+      : roll(0.0), pitch(0.0), yaw_rate(0.0), torque_ff(Eigen::Vector3d::Zero()),
+        thrust(Eigen::Vector3d::Zero()) {}
+
+  EigenRollPitchYawrateThrustFeedForward(double _roll, double _pitch, double _yaw_rate,
+                                         const Eigen::Vector3d& torque_ff, const Eigen::Vector3d& _thrust)
+      : roll(_roll), pitch(_pitch), yaw_rate(_yaw_rate), thrust(_thrust) {}
+
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  double roll;
+  double pitch;
+  double yaw_rate;
+  Eigen::Vector3d torque_ff;
+  Eigen::Vector3d thrust;
+};
+
 /**
  * \brief Container holding the state of a MAV: position, velocity, attitude and
  * angular velocity.
