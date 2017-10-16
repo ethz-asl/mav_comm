@@ -38,6 +38,8 @@ static constexpr char COMMAND_ACTUATORS[] = "command/motor_speed";
 static constexpr char COMMAND_RATE_THRUST[] = "command/rate_thrust";
 static constexpr char COMMAND_ROLL_PITCH_YAWRATE_THRUST[] =
     "command/roll_pitch_yawrate_thrust";
+static constexpr char COMMAND_ROLL_PITCH_YAWRATE_THRUST_FEEDFORWARD[] =
+    "command/roll_pitch_yawrate_thrust_feedforward";
 static constexpr char COMMAND_ATTITUDE_THRUST[] = "command/attitude_thrust";
 static constexpr char COMMAND_TRAJECTORY[] = "command/trajectory";
 static constexpr char COMMAND_POSE[] = "command/pose";
