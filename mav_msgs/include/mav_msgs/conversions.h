@@ -514,6 +514,9 @@ inline void msgMultiDofJointTrajectoryFromEigen(
     msgMultiDofJointTrajectoryPointFromEigen(trajectory_point, &point_msg);
     msg->points.push_back(point_msg);
   }
+
+  msg->header.stamp.fromNSec(trajectory.front().timestamp_ns -
+                             trajectory.front().time_from_start_ns);
 }
 
 inline void msgMultiDofJointTrajectoryFromEigen(
@@ -541,6 +544,9 @@ inline void msgMultiDofJointTrajectoryFromEigen(
     msgMultiDofJointTrajectoryPointFromEigen(trajectory_point, &point_msg);
     msg->points.push_back(point_msg);
   }
+
+  msg->header.stamp.fromNSec(trajectory.front().timestamp_ns -
+                             trajectory.front().time_from_start_ns);
 }
 
 inline void msgMultiDofJointTrajectoryFromEigen(
