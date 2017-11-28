@@ -9,6 +9,7 @@ include_directories(${Eigen_INCLUDE_DIRS})
 
 add_message_files(
   FILES
+  PolygonWithHoles.msg
   PointCloudWithPose.msg
   PolynomialSegment4D.msg
   PolynomialTrajectory4D.msg
@@ -17,6 +18,7 @@ add_message_files(
 add_service_files(
   FILES
   PlannerService.srv
+  PolygonService.srv
 )
 
 generate_messages(
