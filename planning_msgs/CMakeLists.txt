@@ -10,6 +10,7 @@ include_directories(${Eigen_INCLUDE_DIRS})
 add_message_files(
   FILES
   PolygonWithHoles.msg
+  PolygonWithHolesStamped.msg
   PointCloudWithPose.msg
   PolynomialSegment4D.msg
   PolynomialTrajectory4D.msg
