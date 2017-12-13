@@ -103,7 +103,6 @@ inline void polynomialTrajectoryMsgFromEigen(
   }
 }
 
-
 }  // namespace planning_msgs
 
 #endif
