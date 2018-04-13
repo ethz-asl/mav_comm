@@ -26,6 +26,8 @@ namespace default_topics {
 
 static constexpr char IMU[] = "imu";
 static constexpr char MOTOR_MEASUREMENT[] = "motor_speed";
+static constexpr char MOTOR_POSITION_MEASUREMENT[] = "motor_position";
+static constexpr char MOTOR_FORCE_MEASUREMENT[] = "motor_force";
 static constexpr char MAGNETIC_FIELD[] = "magnetic_field";
 static constexpr char GPS[] = "gps";
 static constexpr char RC[] = "rc";
