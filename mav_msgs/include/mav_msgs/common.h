@@ -159,6 +159,27 @@ inline double getShortestYawDistance(double yaw1, double yaw2) {
   return getShortestAngleDistance(yaw1, yaw2);
 }
 
+// Calculates angular velocity (omega) from rotation vector derivative
+inline Eigen::Vector3d omegaFromRotationVector(
+                            const Eigen::Vector3d& rot_vec,
+                            const Eigen::Vector3d& rot_vec_vel) {
+  double phi = rot_vec.norm();
+  if (phi == 0.0) {
+    // This captures the case of zero rotation
+    return rot_vec_vel;
+  }
+  // Create skew-symmetric matrix from rotation vector
+  Eigen::Matrix3d phi_matrix;
+  phi_matrix << 0.0f, -rot_vec(2), rot_vec(1),
+                rot_vec(2), 0.0f, -rot_vec(0),
+                -rot_vec(1), rot_vec(0), 0.0f;
+  // Set up matrix to calculate omega
+  Eigen::Matrix3d W;
+  W = Eigen::MatrixXd::Identity(3,3) - phi_matrix * (1-cos(phi))/phi/phi
+      + phi_matrix*phi_matrix * (phi-sin(phi))/phi/phi/phi;
+  return W * rot_vec_vel;
+}
+
 // Calculate the nominal rotor rates given the MAV mass, allocation matrix,
 // angular velocity, angular acceleration, and body acceleration (normalized
 // thrust).
