@@ -30,6 +30,8 @@
 
 namespace mav_msgs {
 
+const double kNumNanosecondsPerSecond = 1.e9;
+
 /// Magnitude of Earth's gravitational field at specific height [m] and latitude
 /// [rad] (from wikipedia).
 inline double MagnitudeOfGravity(const double height,
@@ -195,6 +197,17 @@ inline void getSquaredRotorSpeedsFromAllocationAndState(
   Eigen::Vector4d input;
   input << torque, thrust_force;
   *rotor_rates_squared = allocation_inv * input;
+}
+
+inline double nanosecondsToSeconds(int64_t nanoseconds) {
+  double seconds = nanoseconds / kNumNanosecondsPerSecond;
+  return seconds;
+}
+
+inline int64_t secondsToNanoseconds(double seconds) {
+  int64_t nanoseconds =
+      static_cast<int64_t>(seconds * kNumNanosecondsPerSecond);
+  return nanoseconds;
 }
 
 }  // namespace mav_msgs
