@@ -1,5 +1,5 @@
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Changelog for package planning_msgs
+Changelog for package mav_planning_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 3.3.0 (2018-08-17)
 ------------------

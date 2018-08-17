@@ -16,13 +16,13 @@
  * limitations under the License.
  */
 
-#ifndef PLANNING_MSGS_EIGEN_MAV_MSGS_H
-#define PLANNING_MSGS_EIGEN_MAV_MSGS_H
+#ifndef MAV_PLANNING_MSGS_EIGEN_MAV_MSGS_H
+#define MAV_PLANNING_MSGS_EIGEN_MAV_MSGS_H
 
 #include <Eigen/Eigen>
 #include <vector>
 
-namespace planning_msgs {
+namespace mav_planning_msgs {
 
 struct EigenPolynomialSegment {
   EigenPolynomialSegment() : segment_time_ns(0), num_coeffs(0) {};
@@ -39,4 +39,4 @@ typedef std::vector<EigenPolynomialSegment> EigenPolynomialTrajectory;
 
 }
 
-#endif
+#endif // MAV_PLANNING_MSGS_EIGEN_MAV_MSGS_H

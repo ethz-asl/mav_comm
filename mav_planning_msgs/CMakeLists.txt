@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(planning_msgs)
+project(mav_planning_msgs)
 
 find_package(catkin REQUIRED COMPONENTS geometry_msgs sensor_msgs message_generation mav_msgs trajectory_msgs cmake_modules)
 find_package(Eigen REQUIRED)
