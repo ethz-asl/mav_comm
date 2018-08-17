@@ -142,25 +142,6 @@ inline void getEulerAnglesFromQuaternion(const Eigen::Quaternion<double>& q,
   }
 }
 
-// Wraps angle distance betwen two angles (in radians) to -pi to pi.
-inline double getShortestAngleDistance(double angle1, double angle2) {
-  // From burrimi's implementation in mav_flight_manager/devel/iros2015.
-  double angle_mod = std::fmod(angle1 - angle2, 2 * M_PI);
-  if (angle_mod < -M_PI) {
-    angle_mod += 2 * M_PI;
-  } else if (angle_mod > M_PI) {
-    angle_mod -= 2 * M_PI;
-  }
-
-  return angle_mod;
-}
-
-// Wraps angle distance betwen two yaws (in radians) to -pi to pi.
-// Name kept for legacy.
-inline double getShortestYawDistance(double yaw1, double yaw2) {
-  return getShortestAngleDistance(yaw1, yaw2);
-}
-
 // Calculate the nominal rotor rates given the MAV mass, allocation matrix,
 // angular velocity, angular acceleration, and body acceleration (normalized
 // thrust).
