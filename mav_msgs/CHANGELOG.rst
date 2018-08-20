@@ -8,6 +8,7 @@ Changelog for package mav_msgs
 * Add conversion from pose message to Eigen trajectory point.
 * Add angular accelerations as member of EigenMavState to calculate motor speeds.
 * Contributors: Helen Oleynikova, Karen Bodie, Rik Bähnemann
+
 3.2.0 (2017-03-02)
 ------------------
 * Access covariance in eigen odometry
