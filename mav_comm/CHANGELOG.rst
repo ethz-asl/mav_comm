@@ -1,6 +1,11 @@
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Changelog for package mav_comm
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+3.3.1 (2018-08-21)
+------------------
+* Change maintainer.
+* Add dependencies, see planning_msgs changelog for details.
+
 3.3.0 (2018-08-17)
 ------------------
 * More utilities and lower level UAV kinematics, see mav_msgs changelog for details.

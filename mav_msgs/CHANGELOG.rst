@@ -1,6 +1,10 @@
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Changelog for package mav_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+3.3.1 (2018-08-21)
+------------------
+* Change maintainer.
+
 3.3.0 (2018-08-17)
 ------------------
 * Add time conversion utilities.
