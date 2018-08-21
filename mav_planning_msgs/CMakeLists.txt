@@ -5,7 +5,6 @@ find_package(catkin REQUIRED COMPONENTS geometry_msgs sensor_msgs std_msgs messa
 include_directories(include ${catkin_INCLUDE_DIRS})
 
 find_package(Eigen3 REQUIRED)
-set(EIGEN3_INCLUDE_DIRS ${EIGEN3_INCLUDE_DIR})
 
 add_message_files(
   FILES

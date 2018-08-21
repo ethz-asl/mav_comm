@@ -5,7 +5,6 @@ find_package(catkin REQUIRED cmake_modules message_generation std_msgs geometry_
 include_directories(include ${catkin_INCLUDE_DIRS})
 
 find_package(Eigen3 REQUIRED)
-set(EIGEN3_INCLUDE_DIRS ${EIGEN3_INCLUDE_DIR})
 
 add_definitions(-std=c++11)
 
