@@ -24,7 +24,7 @@ add_message_files(
 generate_messages(DEPENDENCIES std_msgs geometry_msgs)
 
 catkin_package(
-  INCLUDE_DIRS ${EIGEN3_INCLUDE_DIRS}
+  INCLUDE_DIRS include ${EIGEN3_INCLUDE_DIRS}
   CATKIN_DEPENDS message_runtime std_msgs geometry_msgs trajectory_msgs
   CFG_EXTRAS export_flags.cmake
 )

@@ -29,6 +29,6 @@ generate_messages(
 )
 
 catkin_package(
-  INCLUDE_DIRS ${Eigen_INCLUDE_DIRS}
+  INCLUDE_DIRS include ${Eigen_INCLUDE_DIRS}
   CATKIN_DEPENDS message_runtime geometry_msgs sensor_msgs std_msgs mav_msgs trajectory_msgs
 )
