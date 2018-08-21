@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(mav_planning_msgs)
 
-find_package(catkin REQUIRED COMPONENTS geometry_msgs sensor_msgs std_msgs message_generation mav_msgs trajectory_msgs cmake_modules)
-include_directories(include ${catkin_INCLUDE_DIRS})
+find_package(catkin REQUIRED COMPONENTS geometry_msgs sensor_msgs message_generation mav_msgs trajectory_msgs cmake_modules)
+find_package(Eigen REQUIRED)
 
-find_package(Eigen3 REQUIRED)
-set(EIGEN3_INCLUDE_DIRS ${EIGEN3_INCLUDE_DIR})
+include_directories(include ${catkin_INCLUDE_DIRS})
+include_directories(${Eigen_INCLUDE_DIRS})
 
 add_message_files(
   FILES
@@ -25,10 +25,10 @@ add_service_files(
 )
 
 generate_messages(
-  DEPENDENCIES geometry_msgs sensor_msgs std_msgs mav_msgs trajectory_msgs
+  DEPENDENCIES geometry_msgs sensor_msgs mav_msgs trajectory_msgs
 )
 
 catkin_package(
-  INCLUDE_DIRS ${Eigen_INCLUDE_DIRS}
-  CATKIN_DEPENDS message_runtime geometry_msgs sensor_msgs std_msgs mav_msgs trajectory_msgs
+  INCLUDE_DIRS include ${Eigen_INCLUDE_DIRS}
+  CATKIN_DEPENDS message_runtime geometry_msgs sensor_msgs mav_msgs trajectory_msgs
 )
