@@ -9,12 +9,11 @@ if(NOT EIGEN3_FOUND)
   # ROS == Indigo.
   find_package(cmake_modules REQUIRED)
   find_package(Eigen REQUIRED)
-  set(EIGEN3_INCLUDE_DIRS ${EIGEN_INCLUDE_DIRS})
+  set(EIGEN3_INCLUDE_DIRS ${EIGEN3_INCLUDE_DIR})
 else()
   # ROS > Indigo.
-  find_package(Eigen3 REQUIRED)
+  set(EIGEN3_INCLUDE_DIRS ${EIGEN3_INCLUDE_DIR})
 endif()
-include_directories(${EIGEN3_INCLUDE_DIRS})
 
 add_message_files(
   FILES
