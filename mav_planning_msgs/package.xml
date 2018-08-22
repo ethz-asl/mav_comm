@@ -26,6 +26,7 @@
   <buildtool_depend>catkin</buildtool_depend>
 
   <depend>cmake_modules</depend>
+  <depend>eigen</depend>
   <depend>mav_msgs</depend>
   <depend>message_generation</depend>
   <depend>message_runtime</depend>
