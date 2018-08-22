@@ -1,6 +1,6 @@
 <package>
   <name>mav_comm</name>
-  <version>3.3.1</version>
+  <version>3.3.2</version>
   <description>Contains messages and services for MAV communication</description>
 
   <maintainer email="brik@ethz.ch">Rik Bähnemann</maintainer>
