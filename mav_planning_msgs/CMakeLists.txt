@@ -9,7 +9,7 @@ if(NOT EIGEN3_FOUND)
   # ROS == Indigo.
   find_package(cmake_modules REQUIRED)
   find_package(Eigen REQUIRED)
-  set(EIGEN3_INCLUDE_DIRS ${EIGEN3_INCLUDE_DIR})
+  set(EIGEN3_INCLUDE_DIRS ${EIGEN_INCLUDE_DIRS})
 else()
   # ROS > Indigo.
   set(EIGEN3_INCLUDE_DIRS ${EIGEN3_INCLUDE_DIR})
