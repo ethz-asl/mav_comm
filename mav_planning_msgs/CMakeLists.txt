@@ -4,7 +4,8 @@ project(mav_planning_msgs)
 find_package(catkin REQUIRED COMPONENTS geometry_msgs sensor_msgs std_msgs message_generation mav_msgs trajectory_msgs cmake_modules)
 include_directories(include ${catkin_INCLUDE_DIRS})
 
-find_package(Eigen3 REQUIRED)
+find_package(Eigen REQUIRED)
+include_directories(${EIGEN_INCLUDE_DIRS})
 
 add_message_files(
   FILES
@@ -28,6 +29,7 @@ generate_messages(
 )
 
 catkin_package(
-  INCLUDE_DIRS include ${Eigen_INCLUDE_DIRS}
+  INCLUDE_DIRS include ${EIGEN_INCLUDE_DIRS}
   CATKIN_DEPENDS message_runtime geometry_msgs sensor_msgs std_msgs mav_msgs trajectory_msgs
+  DEPENDS Eigen
 )
