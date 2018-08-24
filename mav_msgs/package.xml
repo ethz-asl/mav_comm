@@ -1,6 +1,6 @@
 <package>
   <name>mav_msgs</name>
-  <version>3.3.1</version>
+  <version>3.3.2</version>
   <description>Package containing messages for communicating with rotary wing MAVs</description>
 
   <maintainer email="brik@ethz.ch">Rik Bähnemann</maintainer>
