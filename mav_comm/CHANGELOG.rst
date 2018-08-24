@@ -1,6 +1,10 @@
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Changelog for package mav_comm
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+3.3.2 (2018-08-22)
+------------------
+* Fix indigo eigen3 compatibility.
+
 3.3.1 (2018-08-21)
 ------------------
 * Change maintainer.
