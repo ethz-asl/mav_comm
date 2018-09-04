@@ -30,6 +30,8 @@
 
 namespace mav_msgs {
 
+const double kNumNanosecondsPerSecond = 1.e9;
+
 /// Magnitude of Earth's gravitational field at specific height [m] and latitude
 /// [rad] (from wikipedia).
 inline double MagnitudeOfGravity(const double height,
@@ -140,18 +142,6 @@ inline void getEulerAnglesFromQuaternion(const Eigen::Quaternion<double>& q,
   }
 }
 
-inline double getShortestYawDistance(double yaw1, double yaw2) {
-  // From burrimi's implementation in mav_flight_manager/devel/iros2015.
-  double yaw_mod = std::fmod(yaw1 - yaw2, 2 * M_PI);
-  if (yaw_mod < -M_PI) {
-    yaw_mod += 2 * M_PI;
-  } else if (yaw_mod > M_PI) {
-    yaw_mod -= 2 * M_PI;
-  }
-
-  return yaw_mod;
-}
-
 // Calculate the nominal rotor rates given the MAV mass, allocation matrix,
 // angular velocity, angular acceleration, and body acceleration (normalized
 // thrust).
@@ -188,6 +178,17 @@ inline void getSquaredRotorSpeedsFromAllocationAndState(
   Eigen::Vector4d input;
   input << torque, thrust_force;
   *rotor_rates_squared = allocation_inv * input;
+}
+
+inline double nanosecondsToSeconds(int64_t nanoseconds) {
+  double seconds = nanoseconds / kNumNanosecondsPerSecond;
+  return seconds;
+}
+
+inline int64_t secondsToNanoseconds(double seconds) {
+  int64_t nanoseconds =
+      static_cast<int64_t>(seconds * kNumNanosecondsPerSecond);
+  return nanoseconds;
 }
 
 }  // namespace mav_msgs
