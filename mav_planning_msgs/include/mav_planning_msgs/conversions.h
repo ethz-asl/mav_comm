@@ -16,18 +16,18 @@
  * limitations under the License.
  */
 
-#ifndef PLANNING_MSGS_CONVERSIONS_H
-#define PLANNING_MSGS_CONVERSIONS_H
+#ifndef MAV_PLANNING_MSGS_CONVERSIONS_H
+#define MAV_PLANNING_MSGS_CONVERSIONS_H
 
 #include <geometry_msgs/Point.h>
 #include <geometry_msgs/Quaternion.h>
 #include <geometry_msgs/Vector3.h>
 
-#include "planning_msgs/PolynomialSegment4D.h"
-#include "planning_msgs/PolynomialTrajectory4D.h"
-#include "planning_msgs/eigen_planning_msgs.h"
+#include "mav_planning_msgs/PolynomialSegment4D.h"
+#include "mav_planning_msgs/PolynomialTrajectory4D.h"
+#include "mav_planning_msgs/eigen_planning_msgs.h"
 
-namespace planning_msgs {
+namespace mav_planning_msgs {
 
 /// Converts a PolynomialSegment double array to an Eigen::VectorXd.
 inline void vectorFromMsgArray(const PolynomialSegment4D::_x_type& array,
@@ -103,6 +103,6 @@ inline void polynomialTrajectoryMsgFromEigen(
   }
 }
 
-}  // namespace planning_msgs
+}  // namespace mav_planning_msgs
 
-#endif
+#endif // MAV_PLANNING_MSGS_CONVERSIONS_H

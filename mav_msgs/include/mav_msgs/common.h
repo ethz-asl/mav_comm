@@ -30,6 +30,8 @@
 
 namespace mav_msgs {
 
+const double kNumNanosecondsPerSecond = 1.e9;
+
 /// Magnitude of Earth's gravitational field at specific height [m] and latitude
 /// [rad] (from wikipedia).
 inline double MagnitudeOfGravity(const double height,
@@ -140,25 +142,6 @@ inline void getEulerAnglesFromQuaternion(const Eigen::Quaternion<double>& q,
   }
 }
 
-// Wraps angle distance betwen two angles (in radians) to -pi to pi.
-inline double getShortestAngleDistance(double angle1, double angle2) {
-  // From burrimi's implementation in mav_flight_manager/devel/iros2015.
-  double angle_mod = std::fmod(angle1 - angle2, 2 * M_PI);
-  if (angle_mod < -M_PI) {
-    angle_mod += 2 * M_PI;
-  } else if (angle_mod > M_PI) {
-    angle_mod -= 2 * M_PI;
-  }
-
-  return angle_mod;
-}
-
-// Wraps angle distance betwen two yaws (in radians) to -pi to pi.
-// Name kept for legacy.
-inline double getShortestYawDistance(double yaw1, double yaw2) {
-  return getShortestAngleDistance(yaw1, yaw2);
-}
-
 // Calculates angular velocity (omega) from rotation vector derivative
 inline Eigen::Vector3d omegaFromRotationVector(
                             const Eigen::Vector3d& rot_vec,
@@ -216,6 +199,17 @@ inline void getSquaredRotorSpeedsFromAllocationAndState(
   Eigen::Vector4d input;
   input << torque, thrust_force;
   *rotor_rates_squared = allocation_inv * input;
+}
+
+inline double nanosecondsToSeconds(int64_t nanoseconds) {
+  double seconds = nanoseconds / kNumNanosecondsPerSecond;
+  return seconds;
+}
+
+inline int64_t secondsToNanoseconds(double seconds) {
+  int64_t nanoseconds =
+      static_cast<int64_t>(seconds * kNumNanosecondsPerSecond);
+  return nanoseconds;
 }
 
 }  // namespace mav_msgs

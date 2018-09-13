@@ -1,6 +1,23 @@
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Changelog for package mav_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+3.3.2 (2018-08-22)
+------------------
+* Fix indigo eigen3 compatibility.
+
+3.3.1 (2018-08-21)
+------------------
+* Fix Eigen3 warning. Migration from Jade.
+* Change maintainer.
+
+3.3.0 (2018-08-17)
+------------------
+* Add time conversion utilities.
+* Add motor position and force default topics.
+* Add conversion from pose message to Eigen trajectory point.
+* Add angular accelerations as member of EigenMavState to calculate motor speeds.
+* Contributors: Helen Oleynikova, Karen Bodie, Rik Bähnemann
+
 3.2.0 (2017-03-02)
 ------------------
 * Access covariance in eigen odometry
