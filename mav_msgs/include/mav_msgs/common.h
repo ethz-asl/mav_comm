@@ -147,7 +147,7 @@ inline Eigen::Vector3d omegaFromRotationVector(
                             const Eigen::Vector3d& rot_vec,
                             const Eigen::Vector3d& rot_vec_vel) {
   double phi = rot_vec.norm();
-  if (phi == 0.0) {
+  if (abs(phi) < 1.0e-3) {
     // This captures the case of zero rotation
     return rot_vec_vel;
   }
