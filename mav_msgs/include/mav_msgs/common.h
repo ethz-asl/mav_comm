@@ -158,9 +158,47 @@ inline Eigen::Vector3d omegaFromRotationVector(
                 -rot_vec(1), rot_vec(0), 0.0f;
   // Set up matrix to calculate omega
   Eigen::Matrix3d W;
-  W = Eigen::MatrixXd::Identity(3,3) - phi_matrix * (1-cos(phi))/phi/phi
+  W = Eigen::MatrixXd::Identity(3,3) + phi_matrix * (1-cos(phi))/phi/phi
       + phi_matrix*phi_matrix * (phi-sin(phi))/phi/phi/phi;
   return W * rot_vec_vel;
+}
+
+// Calculates angular acceleration (omegaDot) from rotation vector derivative
+inline Eigen::Vector3d omegaDotFromRotationVector(
+                            const Eigen::Vector3d& rot_vec,
+                            const Eigen::Vector3d& rot_vec_vel,
+                            const Eigen::Vector3d& rot_vec_acc) {
+  double phi        = rot_vec.norm();
+  double phi_dot    = rot_vec.dot(rot_vec_vel)/phi; 
+
+  if (abs(phi) < 1.0e-3) {
+    // This captures the case of zero rotation
+    return rot_vec_acc;
+  }
+  // Create skew-symmetric matrix from rotation vector and velocity
+  Eigen::Matrix3d phi_matrix;
+  phi_matrix        << 0.0f, -rot_vec(2), rot_vec(1),
+                    rot_vec(2), 0.0f, -rot_vec(0),
+                    -rot_vec(1), rot_vec(0), 0.0f;
+
+  Eigen::Matrix3d phi_dot_matrix;
+  phi_dot_matrix    << 0.0f, -rot_vec_vel(2), rot_vec_vel(1),
+                    rot_vec_vel(2), 0.0f, -rot_vec_vel(0),
+                    -rot_vec_vel(1), rot_vec_vel(0), 0.0f;
+
+
+  // Set up matrices to calculate omega
+  Eigen::Matrix3d W_vel;
+  Eigen::Matrix3d W_acc;
+  W_vel =   phi_matrix * (phi*sin(phi) - 2.0f + 2.0f*cos(phi)) * phi_dot/phi/phi/phi
+            + phi_matrix * phi_matrix * (-2.0f*phi - phi*cos(phi) + 3.0f*sin(phi)) * phi_dot/phi/phi/phi/phi
+            + phi_dot_matrix * phi_matrix * (phi-sin(phi))/phi/phi/phi; 
+      
+  W_acc =   Eigen::MatrixXd::Identity(3,3) 
+            + phi_matrix * (1.0f-cos(phi))/phi/phi
+            + phi_matrix * phi_matrix * (phi-sin(phi))/phi/phi/phi;
+
+  return W_vel * rot_vec_vel + W_acc * rot_vec_acc;
 }
 
 // Calculate the nominal rotor rates given the MAV mass, allocation matrix,
