@@ -237,8 +237,6 @@ struct EigenTrajectoryPoint {
     angular_acceleration_W.z() = yaw_acc;
   }
 
-
-
   std::string toString() const {
     std::stringstream ss;
     ss << "position:          " << position_W.transpose() << std::endl
