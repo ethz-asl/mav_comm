@@ -237,6 +237,8 @@ struct EigenTrajectoryPoint {
     angular_acceleration_W.z() = yaw_acc;
   }
 
+
+
   std::string toString() const {
     std::stringstream ss;
     ss << "position:          " << position_W.transpose() << std::endl
@@ -251,6 +253,27 @@ struct EigenTrajectoryPoint {
     return ss.str();
   }
 };
+
+// Operator overload to transform Trajectory Points according to the Eigen
+// interfaces (uses operator* for this).
+// Has to be outside of class.
+// Example:
+// Eigen::Affine3d transform; EigenTrajectoryPoint point;
+// EigenTrajectoryPoint transformed = transform * point;
+inline EigenTrajectoryPoint operator*(const Eigen::Affine3d& lhs, const EigenTrajectoryPoint& rhs) {
+  EigenTrajectoryPoint transformed;
+  transformed.time_from_start_ns = rhs.time_from_start_ns;
+  transformed.timestamp_ns = rhs.timestamp_ns;
+  transformed.position_W =lhs * rhs.position_W;
+  transformed.velocity_W = lhs.rotation() * rhs.velocity_W;
+  transformed.acceleration_W = lhs.rotation() * rhs.acceleration_W;
+  transformed.jerk_W = lhs.rotation() * rhs.jerk_W;
+  transformed.snap_W = lhs.rotation() * rhs.snap_W;
+  transformed.orientation_W_B = lhs.rotation() * rhs.orientation_W_B;
+  transformed.angular_velocity_W = lhs.rotation() * rhs.angular_velocity_W;
+  transformed.angular_acceleration_W = lhs.rotation() * rhs.angular_acceleration_W;
+  return transformed;
+}
 
 struct EigenOdometry {
   EigenOdometry()
