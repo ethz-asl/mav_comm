@@ -262,14 +262,15 @@ inline EigenTrajectoryPoint operator*(const Eigen::Affine3d& lhs, const EigenTra
   EigenTrajectoryPoint transformed;
   transformed.time_from_start_ns = rhs.time_from_start_ns;
   transformed.timestamp_ns = rhs.timestamp_ns;
-  transformed.position_W =lhs * rhs.position_W;
+  transformed.position_W = lhs * rhs.position_W;
   transformed.velocity_W = lhs.rotation() * rhs.velocity_W;
   transformed.acceleration_W = lhs.rotation() * rhs.acceleration_W;
   transformed.jerk_W = lhs.rotation() * rhs.jerk_W;
   transformed.snap_W = lhs.rotation() * rhs.snap_W;
   transformed.orientation_W_B = lhs.rotation() * rhs.orientation_W_B;
   transformed.angular_velocity_W = lhs.rotation() * rhs.angular_velocity_W;
-  transformed.angular_acceleration_W = lhs.rotation() * rhs.angular_acceleration_W;
+  transformed.angular_acceleration_W =
+      lhs.rotation() * rhs.angular_acceleration_W;
   return transformed;
 }
 
