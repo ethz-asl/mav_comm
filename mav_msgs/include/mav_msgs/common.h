@@ -164,6 +164,7 @@ inline Eigen::Vector3d omegaFromRotationVector(
 }
 
 // Calculates angular acceleration (omegaDot) from rotation vector derivative
+// based on formula derived in "Finite rotations and angular velocity" by Asher Peres
 inline Eigen::Vector3d omegaDotFromRotationVector(
                             const Eigen::Vector3d& rot_vec,
                             const Eigen::Vector3d& rot_vec_vel,
