@@ -471,6 +471,8 @@ inline void msgMultiDofJointTrajectoryPointFromEigen(
                    &msg->velocities[0].angular);
   vectorEigenToMsg(trajectory_point.acceleration_W,
                    &msg->accelerations[0].linear);
+  vectorEigenToMsg(trajectory_point.angular_acceleration_W,
+                   &msg->accelerations[0].angular);
 }
 
 inline void msgMultiDofJointTrajectoryFromEigen(

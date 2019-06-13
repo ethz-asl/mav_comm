@@ -142,25 +142,84 @@ inline void getEulerAnglesFromQuaternion(const Eigen::Quaternion<double>& q,
   }
 }
 
+inline void skewMatrixFromVector(const Eigen::Vector3d& vec,
+                                 Eigen::Matrix3d* vec_skew) {
+  assert(vec_skew);
+  *vec_skew << 0.0f, -vec(2), vec(1), vec(2), 0.0f, -vec(0), -vec(1), vec(0),
+      0.0f;
+
+}
+
 // Calculates angular velocity (omega) from rotation vector derivative
+// based on formula derived in "Finite rotations and angular velocity" by Asher
+// Peres
 inline Eigen::Vector3d omegaFromRotationVector(
-                            const Eigen::Vector3d& rot_vec,
-                            const Eigen::Vector3d& rot_vec_vel) {
+    const Eigen::Vector3d& rot_vec, const Eigen::Vector3d& rot_vec_vel) 
+{
   double phi = rot_vec.norm();
   if (abs(phi) < 1.0e-3) {
     // This captures the case of zero rotation
     return rot_vec_vel;
   }
+
+  double phi_inv = 1.0 / phi;
+  double phi_2_inv = phi_inv / phi;
+  double phi_3_inv = phi_2_inv / phi;
+
   // Create skew-symmetric matrix from rotation vector
-  Eigen::Matrix3d phi_matrix;
-  phi_matrix << 0.0f, -rot_vec(2), rot_vec(1),
-                rot_vec(2), 0.0f, -rot_vec(0),
-                -rot_vec(1), rot_vec(0), 0.0f;
+  Eigen::Matrix3d phi_skew;
+  skewMatrixFromVector(rot_vec, &phi_skew);
+
   // Set up matrix to calculate omega
   Eigen::Matrix3d W;
-  W = Eigen::MatrixXd::Identity(3,3) - phi_matrix * (1-cos(phi))/phi/phi
-      + phi_matrix*phi_matrix * (phi-sin(phi))/phi/phi/phi;
+  W = Eigen::MatrixXd::Identity(3, 3) + phi_skew * (1 - cos(phi)) * phi_2_inv +
+      phi_skew * phi_skew * (phi - sin(phi)) * phi_3_inv;
   return W * rot_vec_vel;
+}
+
+// Calculates angular acceleration (omegaDot) from rotation vector derivative
+// based on formula derived in "Finite rotations and angular velocity" by Asher
+// Peres
+inline Eigen::Vector3d omegaDotFromRotationVector(
+    const Eigen::Vector3d& rot_vec, const Eigen::Vector3d& rot_vec_vel,
+    const Eigen::Vector3d& rot_vec_acc) 
+{
+  double phi = rot_vec.norm();
+  if (abs(phi) < 1.0e-3) {
+    // This captures the case of zero rotation
+    return rot_vec_acc;
+  }
+
+  double phi_dot = rot_vec.dot(rot_vec_vel) / phi;
+
+  double phi_inv = 1.0 / phi;
+  double phi_2_inv = phi_inv / phi;
+  double phi_3_inv = phi_2_inv / phi;
+  double phi_4_inv = phi_3_inv / phi;
+
+
+  // Create skew-symmetric matrix from rotation vector and velocity
+  Eigen::Matrix3d phi_skew;
+  Eigen::Matrix3d phi_dot_skew;
+
+  skewMatrixFromVector(rot_vec, &phi_skew);
+  skewMatrixFromVector(rot_vec_vel, &phi_dot_skew);
+
+  // Set up matrices to calculate omega dot
+  Eigen::Matrix3d W_vel;
+  Eigen::Matrix3d W_acc;
+  W_vel = phi_skew * (phi * sin(phi) - 2.0f + 2.0f * cos(phi)) * phi_dot *
+              phi_3_inv +
+          phi_skew * phi_skew *
+              (-2.0f * phi - phi * cos(phi) + 3.0f * sin(phi)) * phi_dot *
+              phi_4_inv +
+          phi_dot_skew * phi_skew * (phi - sin(phi)) * phi_3_inv;
+
+  W_acc = Eigen::MatrixXd::Identity(3, 3) +
+          phi_skew * (1.0f - cos(phi)) * phi_2_inv +
+          phi_skew * phi_skew * (phi - sin(phi)) * phi_3_inv;
+
+  return W_vel * rot_vec_vel + W_acc * rot_vec_acc;
 }
 
 // Calculate the nominal rotor rates given the MAV mass, allocation matrix,
