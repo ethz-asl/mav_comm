@@ -206,13 +206,12 @@ inline Eigen::Vector3d omegaDotFromRotationVector(
   // Set up matrices to calculate omega dot
   Eigen::Matrix3d W_vel;
   Eigen::Matrix3d W_acc;
-  W_vel =
-      phi_skew * (phi * sin(phi) - 2.0f + 2.0f * cos(phi)) * phi_dot * phi_3_inv
-
-      + phi_skew * phi_skew * (-2.0f * phi - phi * cos(phi) + 3.0f * sin(phi)) *
-            phi_dot * phi_4_inv
-
-      + phi_dot_skew * phi_skew * (phi - sin(phi)) * phi_3_inv;
+  W_vel = phi_skew * (phi * sin(phi) - 2.0f + 2.0f * cos(phi)) * phi_dot *
+              phi_3_inv +
+          phi_skew * phi_skew *
+              (-2.0f * phi - phi * cos(phi) + 3.0f * sin(phi)) * phi_dot *
+              phi_4_inv +
+          phi_dot_skew * phi_skew * (phi - sin(phi)) * phi_3_inv;
 
   W_acc = Eigen::MatrixXd::Identity(3, 3) +
           phi_skew * (1.0f - cos(phi)) * phi_2_inv +
