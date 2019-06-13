@@ -145,27 +145,27 @@ inline void getEulerAnglesFromQuaternion(const Eigen::Quaternion<double>& q,
 inline void skewMatrixFromVector(const Eigen::Vector3d& vec,
                                  Eigen::Matrix3d* vec_skew) {
   assert(vec_skew);
-  Eigen::Matrix3d vec_skew_;
-  vec_skew_ << 0.0f, -vec(2), vec(1), vec(2), 0.0f, -vec(0), -vec(1), vec(0),
+  *vec_skew << 0.0f, -vec(2), vec(1), vec(2), 0.0f, -vec(0), -vec(1), vec(0),
       0.0f;
 
-  *vec_skew = vec_skew_;
 }
 
 // Calculates angular velocity (omega) from rotation vector derivative
 // based on formula derived in "Finite rotations and angular velocity" by Asher
 // Peres
 inline Eigen::Vector3d omegaFromRotationVector(
-    const Eigen::Vector3d& rot_vec, const Eigen::Vector3d& rot_vec_vel) {
+    const Eigen::Vector3d& rot_vec, const Eigen::Vector3d& rot_vec_vel) 
+{
   double phi = rot_vec.norm();
-  double phi_inv = 1.0 / phi;
-  double phi_2_inv = phi_inv / phi;
-  double phi_3_inv = phi_2_inv / phi;
-
   if (abs(phi) < 1.0e-3) {
     // This captures the case of zero rotation
     return rot_vec_vel;
   }
+
+  double phi_inv = 1.0 / phi;
+  double phi_2_inv = phi_inv / phi;
+  double phi_3_inv = phi_2_inv / phi;
+
   // Create skew-symmetric matrix from rotation vector
   Eigen::Matrix3d phi_skew;
   skewMatrixFromVector(rot_vec, &phi_skew);
@@ -182,8 +182,14 @@ inline Eigen::Vector3d omegaFromRotationVector(
 // Peres
 inline Eigen::Vector3d omegaDotFromRotationVector(
     const Eigen::Vector3d& rot_vec, const Eigen::Vector3d& rot_vec_vel,
-    const Eigen::Vector3d& rot_vec_acc) {
+    const Eigen::Vector3d& rot_vec_acc) 
+{
   double phi = rot_vec.norm();
+  if (abs(phi) < 1.0e-3) {
+    // This captures the case of zero rotation
+    return rot_vec_acc;
+  }
+
   double phi_dot = rot_vec.dot(rot_vec_vel) / phi;
 
   double phi_inv = 1.0 / phi;
@@ -191,10 +197,6 @@ inline Eigen::Vector3d omegaDotFromRotationVector(
   double phi_3_inv = phi_2_inv / phi;
   double phi_4_inv = phi_3_inv / phi;
 
-  if (abs(phi) < 1.0e-3) {
-    // This captures the case of zero rotation
-    return rot_vec_acc;
-  }
 
   // Create skew-symmetric matrix from rotation vector and velocity
   Eigen::Matrix3d phi_skew;
