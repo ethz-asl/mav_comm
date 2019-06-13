@@ -80,8 +80,7 @@ struct EigenTorqueThrust {
       : torque(_torque), thrust(_thrust) {}
 
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-      Eigen::Vector3d
-  torque;
+  Eigen::Vector3d torque;
   Eigen::Vector3d thrust;
 };
 
@@ -160,8 +159,7 @@ class EigenMavState {
 
 struct EigenTrajectoryPoint {
   typedef std::vector<EigenTrajectoryPoint,
-  Eigen::aligned_allocator<EigenTrajectoryPoint>>
-      Vector;
+  Eigen::aligned_allocator<EigenTrajectoryPoint>> Vector;
   EigenTrajectoryPoint()
       : timestamp_ns(-1),
         time_from_start_ns(0),
