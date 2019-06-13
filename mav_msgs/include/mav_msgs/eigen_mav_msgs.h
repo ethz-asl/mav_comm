@@ -40,7 +40,8 @@ struct EigenAttitudeThrust {
   }
 
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-  Eigen::Quaterniond attitude;
+      Eigen::Quaterniond
+  attitude;
   Eigen::Vector3d thrust;
 };
 
@@ -52,7 +53,8 @@ struct EigenActuators {
   }
 
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-  Eigen::VectorXd angles;              // In rad.
+      Eigen::VectorXd
+  angles;              // In rad.
   Eigen::VectorXd angular_velocities;  // In rad/s.
   Eigen::VectorXd normalized;          // Everything else, normalized [-1 to 1].
 };
@@ -67,7 +69,8 @@ struct EigenRateThrust {
       : angular_rates(_angular_rates), thrust(_thrust) {}
 
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-  Eigen::Vector3d angular_rates;
+      Eigen::Vector3d
+  angular_rates;
   Eigen::Vector3d thrust;
 };
 
@@ -80,7 +83,8 @@ struct EigenTorqueThrust {
       : torque(_torque), thrust(_thrust) {}
 
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-  Eigen::Vector3d torque;
+      Eigen::Vector3d
+  torque;
   Eigen::Vector3d thrust;
 };
 
@@ -159,7 +163,7 @@ class EigenMavState {
 
 struct EigenTrajectoryPoint {
   typedef std::vector<EigenTrajectoryPoint,
-                      Eigen::aligned_allocator<EigenTrajectoryPoint>>
+  Eigen::aligned_allocator<EigenTrajectoryPoint>>
       Vector;
   EigenTrajectoryPoint()
       : timestamp_ns(-1),
@@ -205,8 +209,8 @@ struct EigenTrajectoryPoint {
                              _angular_velocity, Eigen::Vector3d::Zero()) {}
 
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-  int64_t
-      timestamp_ns;  // Time since epoch, negative value = invalid timestamp.
+      int64_t
+  timestamp_ns;  // Time since epoch, negative value = invalid timestamp.
   int64_t time_from_start_ns;
   Eigen::Vector3d position_W;
   Eigen::Vector3d velocity_W;
@@ -258,10 +262,9 @@ struct EigenTrajectoryPoint {
 // Example:
 // Eigen::Affine3d transform; EigenTrajectoryPoint point;
 // EigenTrajectoryPoint transformed = transform * point;
-inline EigenTrajectoryPoint operator*(const Eigen::Affine3d& lhs, const EigenTrajectoryPoint& rhs) {
-  EigenTrajectoryPoint transformed;
-  transformed.time_from_start_ns = rhs.time_from_start_ns;
-  transformed.timestamp_ns = rhs.timestamp_ns;
+inline EigenTrajectoryPoint operator*(const Eigen::Affine3d& lhs,
+                                      const EigenTrajectoryPoint& rhs) {
+  EigenTrajectoryPoint transformed(rhs);
   transformed.position_W = lhs * rhs.position_W;
   transformed.velocity_W = lhs.rotation() * rhs.velocity_W;
   transformed.acceleration_W = lhs.rotation() * rhs.acceleration_W;
@@ -292,8 +295,8 @@ struct EigenOdometry {
         angular_velocity_B(_angular_velocity) {}
 
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-  int64_t
-      timestamp_ns;  // Time since epoch, negative value = invalid timestamp.
+      int64_t
+  timestamp_ns;  // Time since epoch, negative value = invalid timestamp.
   Eigen::Vector3d position_W;
   Eigen::Quaterniond orientation_W_B;
   Eigen::Vector3d velocity_B;  // Velocity in expressed in the Body frame!
