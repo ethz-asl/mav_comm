@@ -40,8 +40,7 @@ struct EigenAttitudeThrust {
   }
 
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-      Eigen::Quaterniond
-  attitude;
+  Eigen::Quaterniond attitude;
   Eigen::Vector3d thrust;
 };
 
@@ -53,8 +52,7 @@ struct EigenActuators {
   }
 
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-      Eigen::VectorXd
-  angles;              // In rad.
+  Eigen::VectorXd angles;              // In rad.
   Eigen::VectorXd angular_velocities;  // In rad/s.
   Eigen::VectorXd normalized;          // Everything else, normalized [-1 to 1].
 };
@@ -69,8 +67,7 @@ struct EigenRateThrust {
       : angular_rates(_angular_rates), thrust(_thrust) {}
 
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-      Eigen::Vector3d
-  angular_rates;
+  Eigen::Vector3d angular_rates;
   Eigen::Vector3d thrust;
 };
 
@@ -111,8 +108,8 @@ struct EigenRollPitchYawrateThrust {
  */
 class EigenMavState {
  public:
-  typedef std::vector<EigenMavState, Eigen::aligned_allocator<EigenMavState>>
-      Vector;
+  typedef std::vector<EigenMavState,
+          Eigen::aligned_allocator<EigenMavState>> Vector;
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
   /// Initializes all members to zero / identity.
@@ -209,8 +206,7 @@ struct EigenTrajectoryPoint {
                              _angular_velocity, Eigen::Vector3d::Zero()) {}
 
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-      int64_t
-  timestamp_ns;  // Time since epoch, negative value = invalid timestamp.
+  int64_t timestamp_ns;  // Time since epoch, negative value = invalid timestamp.
   int64_t time_from_start_ns;
   Eigen::Vector3d position_W;
   Eigen::Vector3d velocity_W;
@@ -295,8 +291,7 @@ struct EigenOdometry {
         angular_velocity_B(_angular_velocity) {}
 
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-      int64_t
-  timestamp_ns;  // Time since epoch, negative value = invalid timestamp.
+  int64_t timestamp_ns;  // Time since epoch, negative value = invalid timestamp.
   Eigen::Vector3d position_W;
   Eigen::Quaterniond orientation_W_B;
   Eigen::Vector3d velocity_B;  // Velocity in expressed in the Body frame!
