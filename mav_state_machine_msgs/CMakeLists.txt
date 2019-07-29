@@ -10,7 +10,7 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 #)
 add_service_files(
   FILES
-  StartTaskService.srv
+  RunTaskService.srv
 )
 
 generate_messages()
