@@ -42,9 +42,9 @@ inline double MagnitudeOfGravity(const double height,
   const double kGravity_b = 0.0000058;
   const double kGravity_c = 3.155 * 1e-7;
 
-  double sin_squared_latitude = sin(latitude_radians) * sin(latitude_radians);
+  double sin_squared_latitude = std::sin(latitude_radians) * std::sin(latitude_radians);
   double sin_squared_twice_latitude =
-      sin(2 * latitude_radians) * sin(2 * latitude_radians);
+      std::sin(2 * latitude_radians) * std::sin(2 * latitude_radians);
   return kGravity_0 * ((1 + kGravity_a * sin_squared_latitude -
                         kGravity_b * sin_squared_twice_latitude) -
                        kGravity_c * height);
@@ -103,7 +103,7 @@ inline void quaternionEigenToMsg(const Eigen::Quaterniond& eigen,
  * which is the same as euler angles in the order z-y'-x''.
  */
 inline double yawFromQuaternion(const Eigen::Quaterniond& q) {
-  return atan2(2.0 * (q.w() * q.z() + q.x() * q.y()),
+  return std::atan2(2.0 * (q.w() * q.z() + q.x() * q.y()),
                1.0 - 2.0 * (q.y() * q.y() + q.z() * q.z()));
 }
 
@@ -134,10 +134,10 @@ inline void getEulerAnglesFromQuaternion(const Eigen::Quaternion<double>& q,
   {
     assert(euler_angles != NULL);
 
-    *euler_angles << atan2(2.0 * (q.w() * q.x() + q.y() * q.z()),
+    *euler_angles << std::atan2(2.0 * (q.w() * q.x() + q.y() * q.z()),
                            1.0 - 2.0 * (q.x() * q.x() + q.y() * q.y())),
-        asin(2.0 * (q.w() * q.y() - q.z() * q.x())),
-        atan2(2.0 * (q.w() * q.z() + q.x() * q.y()),
+        std::asin(2.0 * (q.w() * q.y() - q.z() * q.x())),
+        std::atan2(2.0 * (q.w() * q.z() + q.x() * q.y()),
               1.0 - 2.0 * (q.y() * q.y() + q.z() * q.z()));
   }
 }
@@ -147,7 +147,6 @@ inline void skewMatrixFromVector(const Eigen::Vector3d& vec,
   assert(vec_skew);
   *vec_skew << 0.0f, -vec(2), vec(1), vec(2), 0.0f, -vec(0), -vec(1), vec(0),
       0.0f;
-
 }
 
 // Calculates angular velocity (omega) from rotation vector derivative
@@ -157,7 +156,7 @@ inline Eigen::Vector3d omegaFromRotationVector(
     const Eigen::Vector3d& rot_vec, const Eigen::Vector3d& rot_vec_vel) 
 {
   double phi = rot_vec.norm();
-  if (abs(phi) < 1.0e-3) {
+  if (std::abs(phi) < 1.0e-3) {
     // This captures the case of zero rotation
     return rot_vec_vel;
   }
@@ -172,8 +171,8 @@ inline Eigen::Vector3d omegaFromRotationVector(
 
   // Set up matrix to calculate omega
   Eigen::Matrix3d W;
-  W = Eigen::MatrixXd::Identity(3, 3) + phi_skew * (1 - cos(phi)) * phi_2_inv +
-      phi_skew * phi_skew * (phi - sin(phi)) * phi_3_inv;
+  W = Eigen::MatrixXd::Identity(3, 3) + phi_skew * (1 - std::cos(phi)) * phi_2_inv +
+      phi_skew * phi_skew * (phi - std::sin(phi)) * phi_3_inv;
   return W * rot_vec_vel;
 }
 
@@ -185,7 +184,7 @@ inline Eigen::Vector3d omegaDotFromRotationVector(
     const Eigen::Vector3d& rot_vec_acc) 
 {
   double phi = rot_vec.norm();
-  if (abs(phi) < 1.0e-3) {
+  if (std::abs(phi) < 1.0e-3) {
     // This captures the case of zero rotation
     return rot_vec_acc;
   }
@@ -208,16 +207,16 @@ inline Eigen::Vector3d omegaDotFromRotationVector(
   // Set up matrices to calculate omega dot
   Eigen::Matrix3d W_vel;
   Eigen::Matrix3d W_acc;
-  W_vel = phi_skew * (phi * sin(phi) - 2.0f + 2.0f * cos(phi)) * phi_dot *
+  W_vel = phi_skew * (phi * std::sin(phi) - 2.0f + 2.0f * std::cos(phi)) * phi_dot *
               phi_3_inv +
           phi_skew * phi_skew *
-              (-2.0f * phi - phi * cos(phi) + 3.0f * sin(phi)) * phi_dot *
+              (-2.0f * phi - phi * std::cos(phi) + 3.0f * std::sin(phi)) * phi_dot *
               phi_4_inv +
-          phi_dot_skew * phi_skew * (phi - sin(phi)) * phi_3_inv;
+          phi_dot_skew * phi_skew * (phi - std::sin(phi)) * phi_3_inv;
 
   W_acc = Eigen::MatrixXd::Identity(3, 3) +
-          phi_skew * (1.0f - cos(phi)) * phi_2_inv +
-          phi_skew * phi_skew * (phi - sin(phi)) * phi_3_inv;
+          phi_skew * (1.0f - std::cos(phi)) * phi_2_inv +
+          phi_skew * phi_skew * (phi - std::sin(phi)) * phi_3_inv;
 
   return W_vel * rot_vec_vel + W_acc * rot_vec_acc;
 }
