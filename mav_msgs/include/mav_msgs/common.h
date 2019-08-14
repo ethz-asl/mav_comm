@@ -149,6 +149,85 @@ inline void skewMatrixFromVector(const Eigen::Vector3d& vec,
       0.0f;
 }
 
+inline void vectorFromSkewMatrix(const Eigen::Matrix3d& vec_skew,
+                                 Eigen::Vector3d* vec) {
+  assert(vec);
+  if ((vec_skew + vec_skew.transpose()).norm() < 1e-6){
+    *vec << vec_skew(2,1), vec_skew(0,2), vec_skew(1,0);
+  } else {
+    std::cerr << "[mav_msgs] Matrix is not skew-symmetric." << std::endl;
+    *vec = Eigen::Vector3d::Zero();
+    return;
+  }
+}
+
+// Rotation matrix from rotation vector as described in 
+// "Computationally Efficient Trajectory Generation for Fully Actuated Multirotor Vehicles"
+// Brescianini 2018
+inline void matrixFromRotationVector(const Eigen::Vector3d& vec,
+                                     Eigen::Matrix3d* mat) {
+  // R = (I + sin||r|| / ||r||) [r] + ((1 - cos||r||)/||r||^2) [r]^2
+  // where [r] is the skew matrix of r vector
+  assert(mat);
+  double r_norm = vec.norm();
+  Eigen::Matrix3d vec_skew_norm;
+  skewMatrixFromVector(vec / r_norm, &vec_skew_norm);
+
+  *mat = Eigen::Matrix3d::Identity() + vec_skew_norm * std::sin(r_norm) +
+         vec_skew_norm * vec_skew_norm * (1 - std::cos(r_norm));
+}
+
+// Rotation vector from rotation matrix as described in 
+// "Computationally Efficient Trajectory Generation for Fully Actuated Multirotor Vehicles"
+// Brescianini 2018
+inline void vectorFromRotationMatrix(const Eigen::Matrix3d& mat,
+                                     Eigen::Vector3d* vec) {
+  // [r] = phi / 2sin(phi) * (R - R^T)
+  // where [r] is the skew matrix of r vector
+  // and phi satisfies 1 + 2cos(phi) = trace(R)
+  assert(vec);
+  
+  // if (!isRotationMatrix(mat)){
+  //   std::cerr << "[mav_msgs::common] Not a rotation matrix." << std::endl;
+  // }
+  
+  if ((mat - Eigen::Matrix3d::Identity()).norm() < 1e-6){
+    *vec = Eigen::Vector3d::Zero();
+    return;
+  }
+  
+  // Compute cosine of angle and clamp in range [-1, 1]
+  double cos_phi = (mat.trace() - 1.0) / 2.0;
+  cos_phi > 1 ? 1 : 
+    cos_phi < -1 ? -1 : 
+      cos_phi; 
+  
+  double phi = std::acos(cos_phi);
+  
+  if (phi - 0.0 < 1e-6){
+    *vec = Eigen::Vector3d::Zero();
+  } else{
+    Eigen::Matrix3d vec_skew = (mat - mat.transpose()) * phi / (2.0 * std::sin(phi));
+    Eigen::Vector3d vec_unskewed;
+    std::cerr << "[mav_msgs::common] vec_skew = " << vec_skew << std::endl;
+    vectorFromSkewMatrix(vec_skew, &vec_unskewed);
+    *vec = vec_unskewed;
+  }
+}
+
+inline bool isRotationMatrix(const Eigen::Matrix3d& mat){
+  // Check that R^T * R = I
+  if ((mat.transpose() * mat - Eigen::Matrix3d::Identity()).norm() > 1e-6){
+    std::cerr << "[mav_msgs::common] Rotation matrix requirement violated (R^T * R = I)" << std::endl;
+    return false;
+  }  
+  // Check that det(R) = 1
+  if (mat.determinant() - 1.0 > 1e-6){
+    std::cerr << "[mav_msgs::common] Rotation matrix requirement violated (det(R) = 1)" << std::endl;
+    return false;
+  }  
+}
+
 // Calculates angular velocity (omega) from rotation vector derivative
 // based on formula derived in "Finite rotations and angular velocity" by Asher
 // Peres
