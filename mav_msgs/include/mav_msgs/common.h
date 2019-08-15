@@ -161,6 +161,19 @@ inline void vectorFromSkewMatrix(const Eigen::Matrix3d& vec_skew,
   }
 }
 
+inline bool isRotationMatrix(const Eigen::Matrix3d& mat){
+  // Check that R^T * R = I
+  if ((mat.transpose() * mat - Eigen::Matrix3d::Identity()).norm() > 1e-6){
+    std::cerr << "[mav_msgs::common] Rotation matrix requirement violated (R^T * R = I)" << std::endl;
+    return false;
+  }  
+  // Check that det(R) = 1
+  if (mat.determinant() - 1.0 > 1e-6){
+    std::cerr << "[mav_msgs::common] Rotation matrix requirement violated (det(R) = 1)" << std::endl;
+    return false;
+  }  
+}
+
 // Rotation matrix from rotation vector as described in 
 // "Computationally Efficient Trajectory Generation for Fully Actuated Multirotor Vehicles"
 // Brescianini 2018
@@ -187,9 +200,9 @@ inline void vectorFromRotationMatrix(const Eigen::Matrix3d& mat,
   // and phi satisfies 1 + 2cos(phi) = trace(R)
   assert(vec);
   
-  // if (!isRotationMatrix(mat)){
-  //   std::cerr << "[mav_msgs::common] Not a rotation matrix." << std::endl;
-  // }
+  if (!isRotationMatrix(mat)){
+    std::cerr << "[mav_msgs::common] Not a rotation matrix." << std::endl;
+  }
   
   if ((mat - Eigen::Matrix3d::Identity()).norm() < 1e-6){
     *vec = Eigen::Vector3d::Zero();
@@ -209,23 +222,9 @@ inline void vectorFromRotationMatrix(const Eigen::Matrix3d& mat,
   } else{
     Eigen::Matrix3d vec_skew = (mat - mat.transpose()) * phi / (2.0 * std::sin(phi));
     Eigen::Vector3d vec_unskewed;
-    std::cerr << "[mav_msgs::common] vec_skew = " << vec_skew << std::endl;
     vectorFromSkewMatrix(vec_skew, &vec_unskewed);
     *vec = vec_unskewed;
   }
-}
-
-inline bool isRotationMatrix(const Eigen::Matrix3d& mat){
-  // Check that R^T * R = I
-  if ((mat.transpose() * mat - Eigen::Matrix3d::Identity()).norm() > 1e-6){
-    std::cerr << "[mav_msgs::common] Rotation matrix requirement violated (R^T * R = I)" << std::endl;
-    return false;
-  }  
-  // Check that det(R) = 1
-  if (mat.determinant() - 1.0 > 1e-6){
-    std::cerr << "[mav_msgs::common] Rotation matrix requirement violated (det(R) = 1)" << std::endl;
-    return false;
-  }  
 }
 
 // Calculates angular velocity (omega) from rotation vector derivative
