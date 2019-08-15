@@ -29,16 +29,16 @@
 
 namespace mav_planning_msgs {
   
-  /// Converts a PolynomialSegment double array to an Eigen::VectorXd.
-  void vectorFromMsgArray(const PolynomialSegment4D::_x_type& array,
-                                 Eigen::VectorXd* x);
+/// Converts a PolynomialSegment double array to an Eigen::VectorXd.
+inline void vectorFromMsgArray(const PolynomialSegment4D::_x_type& array,
+                               Eigen::VectorXd* x);
 
-  /// Converts an Eigen::VectorXd to a PolynomialSegment double array.
-  void msgArrayFromVector(const Eigen::VectorXd& x,
-                                 PolynomialSegment4D::_x_type* array);
+/// Converts an Eigen::VectorXd to a PolynomialSegment double array.
+inline void msgArrayFromVector(const Eigen::VectorXd& x,
+                               PolynomialSegment4D::_x_type* array);
 
 /// Converts a PolynomialSegment message to an EigenPolynomialSegment structure.
-void eigenPolynomialSegmentFromMsg(const PolynomialSegment4D& msg,
+inline void eigenPolynomialSegmentFromMsg(const PolynomialSegment4D& msg,
                                           EigenPolynomialSegment* segment) {
   assert(segment != NULL);
 
@@ -52,7 +52,7 @@ void eigenPolynomialSegmentFromMsg(const PolynomialSegment4D& msg,
 }
 
 /// Converts a PolynomialTrajectory message to a EigenPolynomialTrajectory
-void eigenPolynomialTrajectoryFromMsg(
+inline void eigenPolynomialTrajectoryFromMsg(
     const PolynomialTrajectory4D& msg,
     EigenPolynomialTrajectory* eigen_trajectory) {
   assert(eigen_trajectory != NULL);
@@ -70,7 +70,7 @@ void eigenPolynomialTrajectoryFromMsg(
 
 /// Converts an EigenPolynomialSegment to a PolynomialSegment message. Does NOT
 /// set the header!
-void polynomialSegmentMsgFromEigen(const EigenPolynomialSegment& segment,
+inline void polynomialSegmentMsgFromEigen(const EigenPolynomialSegment& segment,
                                           PolynomialSegment4D* msg) {
   assert(msg != NULL);
   msgArrayFromVector(segment.x, &(msg->x));
@@ -84,7 +84,7 @@ void polynomialSegmentMsgFromEigen(const EigenPolynomialSegment& segment,
 
 /// Converts an EigenPolynomialTrajectory to a PolynomialTrajectory message.
 /// Does NOT set the header!
-void polynomialTrajectoryMsgFromEigen(
+inline void polynomialTrajectoryMsgFromEigen(
     const EigenPolynomialTrajectory& eigen_trajectory,
     PolynomialTrajectory4D* msg) {
   assert(msg != NULL);

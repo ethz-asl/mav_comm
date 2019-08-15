@@ -27,6 +27,9 @@
 #include "mav_planning_msgs/PolynomialTrajectory.h"
 #include "mav_planning_msgs/eigen_planning_msgs.h"
 
+// deprecated
+#include "mav_planning_msgs/conversions_deprecated.h"
+
 namespace mav_planning_msgs {
 
 /// Converts a PolynomialSegment double array to an Eigen::VectorXd.
