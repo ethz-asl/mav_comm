@@ -1,6 +1,12 @@
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Changelog for package mav_planning_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+3.3.3 (2019-08-16)
+------------------
+* Add PolynomialSegment/Trajectory messages with 3D rotation vector.
+* Update conversions, deprecate old conversions.
+* Update planner service to take 4D or full trajectory message
+
 3.3.2 (2018-08-22)
 ------------------
 * Fix indigo eigen3 compatibility.

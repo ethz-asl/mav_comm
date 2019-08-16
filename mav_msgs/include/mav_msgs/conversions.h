@@ -211,17 +211,33 @@ inline void EigenMavStateFromEigenTrajectoryPoint(
 /// Convenience function with EigenTrajectoryPoint as input and EigenMavState as
 /// output.
 inline void EigenMavStateFromEigenTrajectoryPoint(
-    const EigenTrajectoryPoint& flat_state, double magnitude_of_gravity,
+    const EigenTrajectoryPoint& trajectory_point, double magnitude_of_gravity,
     EigenMavState* mav_state) {
   assert(mav_state != NULL);
-  EigenMavStateFromEigenTrajectoryPoint(
-      flat_state.acceleration_W, flat_state.jerk_W, flat_state.snap_W,
-      flat_state.getYaw(), flat_state.getYawRate(), flat_state.getYawAcc(),
-      magnitude_of_gravity, &(mav_state->orientation_W_B),
-      &(mav_state->acceleration_B), &(mav_state->angular_velocity_B),
-      &(mav_state->angular_acceleration_B));
-  mav_state->position_W = flat_state.position_W;
-  mav_state->velocity_W = flat_state.velocity_W;
+  if (trajectory_point.degrees_of_freedom == MavActuation::DOF4) {
+    EigenMavStateFromEigenTrajectoryPoint(
+        trajectory_point.acceleration_W, trajectory_point.jerk_W,
+        trajectory_point.snap_W, trajectory_point.getYaw(),
+        trajectory_point.getYawRate(), trajectory_point.getYawAcc(),
+        magnitude_of_gravity, &(mav_state->orientation_W_B),
+        &(mav_state->acceleration_B), &(mav_state->angular_velocity_B),
+        &(mav_state->angular_acceleration_B));
+    mav_state->position_W = trajectory_point.position_W;
+    mav_state->velocity_W = trajectory_point.velocity_W;
+  } else {
+    // Assume fully actuated vehicle, can track trajectory point.
+    Eigen::Matrix3d R = trajectory_point.orientation_W_B.toRotationMatrix();
+    mav_state->position_W = trajectory_point.position_W;
+    mav_state->velocity_W = trajectory_point.velocity_W;
+    mav_state->acceleration_B =
+        R.transpose() * (trajectory_point.acceleration_W +
+                         Eigen::Vector3d(0.0, 0.0, magnitude_of_gravity));
+    mav_state->orientation_W_B = trajectory_point.orientation_W_B;
+    mav_state->angular_velocity_B =
+        R.transpose() * trajectory_point.angular_velocity_W;
+    mav_state->angular_acceleration_B =
+        R.transpose() * trajectory_point.angular_acceleration_W;
+  }
 }
 
 /**
