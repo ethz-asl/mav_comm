@@ -1,6 +1,11 @@
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Changelog for package mav_comm
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+3.3.3 (2019-08-16)
+------------------
+* Add 6DOF trajectory compatibility.
+* See mav_msgs and mav_planning_msgs changelogs for details.
+
 3.3.2 (2018-08-22)
 ------------------
 * Fix indigo eigen3 compatibility.
