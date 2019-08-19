@@ -27,9 +27,11 @@
 #include <geometry_msgs/Quaternion.h>
 #include <geometry_msgs/Vector3.h>
 #include <Eigen/Geometry>
+#include <boost/algorithm/clamp.hpp>
 
 namespace mav_msgs {
 
+const double kSmallValueCheck = 1.e-6;
 const double kNumNanosecondsPerSecond = 1.e9;
 
 /// Magnitude of Earth's gravitational field at specific height [m] and latitude
@@ -149,26 +151,27 @@ inline void skewMatrixFromVector(const Eigen::Vector3d& vec,
       0.0f;
 }
 
-inline void vectorFromSkewMatrix(const Eigen::Matrix3d& vec_skew,
+inline bool vectorFromSkewMatrix(const Eigen::Matrix3d& vec_skew,
                                  Eigen::Vector3d* vec) {
   assert(vec);
-  if ((vec_skew + vec_skew.transpose()).norm() < 1e-6){
+  if ((vec_skew + vec_skew.transpose()).norm() < kSmallValueCheck){
     *vec << vec_skew(2,1), vec_skew(0,2), vec_skew(1,0);
+    return true;
   } else {
     std::cerr << "[mav_msgs] Matrix is not skew-symmetric." << std::endl;
     *vec = Eigen::Vector3d::Zero();
-    return;
+    return false;
   }
 }
 
 inline bool isRotationMatrix(const Eigen::Matrix3d& mat){
   // Check that R^T * R = I
-  if ((mat.transpose() * mat - Eigen::Matrix3d::Identity()).norm() > 1e-6){
+  if ((mat.transpose() * mat - Eigen::Matrix3d::Identity()).norm() > kSmallValueCheck){
     std::cerr << "[mav_msgs::common] Rotation matrix requirement violated (R^T * R = I)" << std::endl;
     return false;
   }  
   // Check that det(R) = 1
-  if (mat.determinant() - 1.0 > 1e-6){
+  if (mat.determinant() - 1.0 > kSmallValueCheck){
     std::cerr << "[mav_msgs::common] Rotation matrix requirement violated (det(R) = 1)" << std::endl;
     return false;
   }  
@@ -183,8 +186,10 @@ inline void matrixFromRotationVector(const Eigen::Vector3d& vec,
   // where [r] is the skew matrix of r vector
   assert(mat);
   double r_norm = vec.norm();
-  Eigen::Matrix3d vec_skew_norm;
-  skewMatrixFromVector(vec / r_norm, &vec_skew_norm);
+  Eigen::Matrix3d vec_skew_norm = Eigen::Matrix3d::Zero();
+  if (r_norm > 0.0){
+    skewMatrixFromVector(vec / r_norm, &vec_skew_norm);
+  }
 
   *mat = Eigen::Matrix3d::Identity() + vec_skew_norm * std::sin(r_norm) +
          vec_skew_norm * vec_skew_norm * (1 - std::cos(r_norm));
@@ -193,7 +198,7 @@ inline void matrixFromRotationVector(const Eigen::Vector3d& vec,
 // Rotation vector from rotation matrix as described in 
 // "Computationally Efficient Trajectory Generation for Fully Actuated Multirotor Vehicles"
 // Brescianini 2018
-inline void vectorFromRotationMatrix(const Eigen::Matrix3d& mat,
+inline bool vectorFromRotationMatrix(const Eigen::Matrix3d& mat,
                                      Eigen::Vector3d* vec) {
   // [r] = phi / 2sin(phi) * (R - R^T)
   // where [r] is the skew matrix of r vector
@@ -202,29 +207,32 @@ inline void vectorFromRotationMatrix(const Eigen::Matrix3d& mat,
   
   if (!isRotationMatrix(mat)){
     std::cerr << "[mav_msgs::common] Not a rotation matrix." << std::endl;
+    return false;
   }
   
-  if ((mat - Eigen::Matrix3d::Identity()).norm() < 1e-6){
+  if ((mat - Eigen::Matrix3d::Identity()).norm() < kSmallValueCheck){
     *vec = Eigen::Vector3d::Zero();
-    return;
+    return true;
   }
   
   // Compute cosine of angle and clamp in range [-1, 1]
   double cos_phi = (mat.trace() - 1.0) / 2.0;
-  cos_phi > 1 ? 1 : 
-    cos_phi < -1 ? -1 : 
-      cos_phi; 
+  double cos_phi_clamped = boost::algorithm::clamp(cos_phi, -1.0, 1.0);
+  double phi = std::acos(cos_phi_clamped);
   
-  double phi = std::acos(cos_phi);
-  
-  if (phi - 0.0 < 1e-6){
+  if (phi < kSmallValueCheck){
     *vec = Eigen::Vector3d::Zero();
   } else{
     Eigen::Matrix3d vec_skew = (mat - mat.transpose()) * phi / (2.0 * std::sin(phi));
     Eigen::Vector3d vec_unskewed;
-    vectorFromSkewMatrix(vec_skew, &vec_unskewed);
-    *vec = vec_unskewed;
+    if (vectorFromSkewMatrix(vec_skew, &vec_unskewed)){
+      *vec = vec_unskewed;
+    }else{
+      return false;
+    }
+    
   }
+  return true;
 }
 
 // Calculates angular velocity (omega) from rotation vector derivative
