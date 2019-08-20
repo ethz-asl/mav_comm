@@ -175,6 +175,7 @@ inline bool isRotationMatrix(const Eigen::Matrix3d& mat){
     std::cerr << "[mav_msgs::common] Rotation matrix requirement violated (det(R) = 1)" << std::endl;
     return false;
   }  
+  return true;
 }
 
 // Rotation matrix from rotation vector as described in 
