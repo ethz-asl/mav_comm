@@ -28,7 +28,7 @@
   <run_depend>mav_msgs</run_depend>
   <run_depend>mav_planning_msgs</run_depend>
   <run_depend>mav_state_machine_msgs</run_depend>
-  <run_depend>mav_utils_msgs</run_depend>
+  <run_depend>mav_system_msgs</run_depend>
 
   <export>
     <metapackage/>

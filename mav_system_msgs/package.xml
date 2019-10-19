@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>mav_utils_msgs</name>
+  <name>mav_system_msgs</name>
   <version>0.0.0</version>
   <description>
     Messages specific to MAV utils scripts.
