@@ -213,7 +213,6 @@ struct EigenTrajectoryPoint {
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   int64_t timestamp_ns;  // Time since epoch, negative value = invalid timestamp.
   int64_t time_from_start_ns;
-  MavActuation degrees_of_freedom;
   Eigen::Vector3d position_W;
   Eigen::Vector3d velocity_W;
   Eigen::Vector3d acceleration_W;
@@ -223,6 +222,7 @@ struct EigenTrajectoryPoint {
   Eigen::Quaterniond orientation_W_B;
   Eigen::Vector3d angular_velocity_W;
   Eigen::Vector3d angular_acceleration_W;
+  MavActuation degrees_of_freedom;
 
   // Accessors for making dealing with orientation/angular velocity easier.
   inline double getYaw() const { return yawFromQuaternion(orientation_W_B); }
