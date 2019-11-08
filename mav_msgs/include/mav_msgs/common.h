@@ -191,6 +191,16 @@ inline int64_t secondsToNanoseconds(double seconds) {
   return nanoseconds;
 }
 
+inline void skewMatrixFromVector(Eigen::Vector3d& vector, Eigen::Matrix3d* skew_matrix) {
+  *skew_matrix << 0, -vector.z(), vector.y(),
+                  vector.z(), 0, -vector.x(),
+                  -vector.y(), vector.x(), 0;
+}
+
+inline void vectorFromSkewMatrix(Eigen::Matrix3d& skew_matrix, Eigen::Vector3d* vector) {
+  *vector << skew_matrix(2, 1), skew_matrix(0,2), skew_matrix(1, 0);
+}
+
 }  // namespace mav_msgs
 
 #endif  // MAV_MSGS_COMMON_H
