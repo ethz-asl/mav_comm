@@ -59,6 +59,12 @@ static constexpr char EXTERNAL_FORCE[] = "external_force";
 static constexpr char GROUND_TRUTH_POSE[] = "ground_truth/pose";
 static constexpr char GROUND_TRUTH_TWIST[] = "ground_truth/twist";
 
+// Flight controller specific topic names
+static constexpr char FLIGHT_CONTROLLER_ARM[] = "mavros/cmd/arming";
+static constexpr char FLIGHT_CONTROLLER_SET_MODE[] = "mavros/set_mode";
+static constexpr char FLIGHT_CONTROLLER_STATE[] = "mavros/state";
+static constexpr char FLIGHT_CONTROLLER_BATTERY[] = "mavros/battery";
+
 }  // end namespace default_topics
 }  // end namespace mav_msgs
 
