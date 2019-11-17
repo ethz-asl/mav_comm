@@ -333,10 +333,10 @@ inline void eigenTrajectoryPointFromMsg(
     return;
   }
 
-  if (msg.transforms.size() > 1) {
+  if (msg.transforms.size() > 2) {
     ROS_WARN(
-        "MultiDofJointTrajectoryPoint message should have one joint, but has "
-        "%lu. Using first joint.",
+        "MultiDofJointTrajectoryPoint message should have one joint for trajectory and a second joint for force, but has "
+        "%lu. Ignoring other joints.",
         msg.transforms.size());
   }
 
@@ -363,6 +363,19 @@ inline void eigenTrajectoryPointFromMsg(
   }
   trajectory_point->jerk_W.setZero();
   trajectory_point->snap_W.setZero();
+
+  // Set desired forces.
+    if (msg.accelerations.size() > 1) {
+    trajectory_point->force_W =
+        vector3FromMsg(msg.accelerations[1].linear);
+    trajectory_point->torque_W =
+        vector3FromMsg(msg.accelerations[1].angular);
+  } else {
+    ROS_WARN(
+        "MultiDofJointTrajectoryPoint desired force is not given! Setting to zero.");
+    trajectory_point->force_W.setZero();
+    trajectory_point->torque_W.setZero();
+  }
 }
 
 inline void eigenTrajectoryPointVectorFromMsg(
