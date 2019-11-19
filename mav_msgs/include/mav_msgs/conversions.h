@@ -489,7 +489,7 @@ inline void msgMultiDofJointTrajectoryPointFromEigen(
   msg->time_from_start.fromNSec(trajectory_point.time_from_start_ns);
   msg->transforms.resize(1);
   msg->velocities.resize(1);
-  msg->accelerations.resize(1);
+  msg->accelerations.resize(2);
 
   vectorEigenToMsg(trajectory_point.position_W,
                    &msg->transforms[0].translation);
@@ -502,6 +502,11 @@ inline void msgMultiDofJointTrajectoryPointFromEigen(
                    &msg->accelerations[0].linear);
   vectorEigenToMsg(trajectory_point.angular_acceleration_W,
                    &msg->accelerations[0].angular);
+
+  vectorEigenToMsg(trajectory_point.force_W,
+                   &msg->accelerations[1].linear);
+  vectorEigenToMsg(trajectory_point.torque_W,
+                   &msg->accelerations[1].angular);
 }
 
 inline void msgMultiDofJointTrajectoryFromEigen(
