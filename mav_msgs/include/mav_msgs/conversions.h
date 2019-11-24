@@ -371,8 +371,8 @@ inline void eigenTrajectoryPointFromMsg(
     trajectory_point->torque_W =
         vector3FromMsg(msg.accelerations[1].angular);
   } else {
-    ROS_WARN(
-        "MultiDofJointTrajectoryPoint desired force is not given! Setting to zero.");
+    ROS_WARN_ONCE(
+        "[mav_msgs::conversions] MultiDofJointTrajectoryPoint desired force is not given! Setting to zero.");
     trajectory_point->force_W.setZero();
     trajectory_point->torque_W.setZero();
   }
