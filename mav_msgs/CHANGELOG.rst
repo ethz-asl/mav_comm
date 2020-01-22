@@ -1,6 +1,14 @@
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Changelog for package mav_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+3.3.3 (2019-08-16)
+------------------
+* Add `degrees_of_freedom` to EigenTrajectoryPoint for 6DOF compatibility.
+* Add functions to common.h:
+*   skewMatrixFromVector, vectorFromSkewMatrix, isRotationMatrix, 
+*   matrixFromRotationVector, vectorFromRotationMatrix, omegaFromRotationVector
+*   omegaDotFromRotationVector
+
 3.3.2 (2018-08-22)
 ------------------
 * Fix indigo eigen3 compatibility.

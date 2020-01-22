@@ -31,6 +31,9 @@ struct EigenPolynomialSegment {
   Eigen::VectorXd y;
   Eigen::VectorXd z;
   Eigen::VectorXd yaw;
+  Eigen::VectorXd rx;
+  Eigen::VectorXd ry;
+  Eigen::VectorXd rz;
   uint64_t segment_time_ns;
   int num_coeffs;
 };

@@ -22,6 +22,8 @@ add_message_files(
   Polygon2D.msg
   PolygonWithHoles.msg
   PolygonWithHolesStamped.msg
+  PolynomialSegment.msg
+  PolynomialTrajectory.msg
   PolynomialSegment4D.msg
   PolynomialTrajectory4D.msg
 )

@@ -16,39 +16,29 @@
  * limitations under the License.
  */
 
-#ifndef MAV_PLANNING_MSGS_CONVERSIONS_H
-#define MAV_PLANNING_MSGS_CONVERSIONS_H
+#ifndef MAV_PLANNING_MSGS_CONVERSIONS_DEPRECATED_H
+#define MAV_PLANNING_MSGS_CONVERSIONS_DEPRECATED_H
 
 #include <geometry_msgs/Point.h>
 #include <geometry_msgs/Quaternion.h>
 #include <geometry_msgs/Vector3.h>
 
-#include "mav_planning_msgs/PolynomialSegment.h"
-#include "mav_planning_msgs/PolynomialTrajectory.h"
+#include "mav_planning_msgs/PolynomialSegment4D.h"
+#include "mav_planning_msgs/PolynomialTrajectory4D.h"
 #include "mav_planning_msgs/eigen_planning_msgs.h"
 
-// deprecated
-#include "mav_planning_msgs/conversions_deprecated.h"
-
 namespace mav_planning_msgs {
-
+  
 /// Converts a PolynomialSegment double array to an Eigen::VectorXd.
-inline void vectorFromMsgArray(const PolynomialSegment::_x_type& array,
-                               Eigen::VectorXd* x) {
-  *x = Eigen::Map<const Eigen::VectorXd>(&(array[0]), array.size());
-}
+inline void vectorFromMsgArray(const PolynomialSegment4D::_x_type& array,
+                               Eigen::VectorXd* x);
 
 /// Converts an Eigen::VectorXd to a PolynomialSegment double array.
 inline void msgArrayFromVector(const Eigen::VectorXd& x,
-                               PolynomialSegment::_x_type* array) {
-  array->resize(x.size());
-  Eigen::Map<Eigen::VectorXd> map =
-      Eigen::Map<Eigen::VectorXd>(&((*array)[0]), array->size());
-  map = x;
-}
+                               PolynomialSegment4D::_x_type* array);
 
 /// Converts a PolynomialSegment message to an EigenPolynomialSegment structure.
-inline void eigenPolynomialSegmentFromMsg(const PolynomialSegment& msg,
+inline void eigenPolynomialSegmentFromMsg(const PolynomialSegment4D& msg,
                                           EigenPolynomialSegment* segment) {
   assert(segment != NULL);
 
@@ -56,9 +46,6 @@ inline void eigenPolynomialSegmentFromMsg(const PolynomialSegment& msg,
   vectorFromMsgArray(msg.y, &(segment->y));
   vectorFromMsgArray(msg.z, &(segment->z));
   vectorFromMsgArray(msg.yaw, &(segment->yaw));
-  vectorFromMsgArray(msg.rx, &(segment->rx));
-  vectorFromMsgArray(msg.ry, &(segment->ry));
-  vectorFromMsgArray(msg.rz, &(segment->rz));
 
   segment->segment_time_ns = msg.segment_time.toNSec();
   segment->num_coeffs = msg.num_coeffs;
@@ -66,12 +53,12 @@ inline void eigenPolynomialSegmentFromMsg(const PolynomialSegment& msg,
 
 /// Converts a PolynomialTrajectory message to a EigenPolynomialTrajectory
 inline void eigenPolynomialTrajectoryFromMsg(
-    const PolynomialTrajectory& msg,
+    const PolynomialTrajectory4D& msg,
     EigenPolynomialTrajectory* eigen_trajectory) {
   assert(eigen_trajectory != NULL);
   eigen_trajectory->clear();
   eigen_trajectory->reserve(msg.segments.size());
-  for (PolynomialTrajectory::_segments_type::const_iterator it =
+  for (PolynomialTrajectory4D::_segments_type::const_iterator it =
            msg.segments.begin();
        it != msg.segments.end(); ++it) {
     EigenPolynomialSegment segment;
@@ -80,18 +67,16 @@ inline void eigenPolynomialTrajectoryFromMsg(
   }
 }
 
+
 /// Converts an EigenPolynomialSegment to a PolynomialSegment message. Does NOT
 /// set the header!
 inline void polynomialSegmentMsgFromEigen(const EigenPolynomialSegment& segment,
-                                          PolynomialSegment* msg) {
+                                          PolynomialSegment4D* msg) {
   assert(msg != NULL);
   msgArrayFromVector(segment.x, &(msg->x));
   msgArrayFromVector(segment.y, &(msg->y));
   msgArrayFromVector(segment.z, &(msg->z));
   msgArrayFromVector(segment.yaw, &(msg->yaw));
-  msgArrayFromVector(segment.rx, &(msg->rx));
-  msgArrayFromVector(segment.ry, &(msg->ry));
-  msgArrayFromVector(segment.rz, &(msg->rz));
 
   msg->segment_time.fromNSec(segment.segment_time_ns);
   msg->num_coeffs = segment.num_coeffs;
@@ -101,12 +86,12 @@ inline void polynomialSegmentMsgFromEigen(const EigenPolynomialSegment& segment,
 /// Does NOT set the header!
 inline void polynomialTrajectoryMsgFromEigen(
     const EigenPolynomialTrajectory& eigen_trajectory,
-    PolynomialTrajectory* msg) {
+    PolynomialTrajectory4D* msg) {
   assert(msg != NULL);
   msg->segments.reserve(eigen_trajectory.size());
   for (EigenPolynomialTrajectory::const_iterator it = eigen_trajectory.begin();
        it != eigen_trajectory.end(); ++it) {
-    PolynomialSegment segment;
+    PolynomialSegment4D segment;
     polynomialSegmentMsgFromEigen(*it, &segment);
     msg->segments.push_back(segment);
   }
@@ -114,4 +99,4 @@ inline void polynomialTrajectoryMsgFromEigen(
 
 }  // namespace mav_planning_msgs
 
-#endif // MAV_PLANNING_MSGS_CONVERSIONS_H
+#endif // MAV_PLANNING_MSGS_CONVERSIONS_DEPRECATED_H
