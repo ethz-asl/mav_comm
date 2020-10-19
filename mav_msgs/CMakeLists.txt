@@ -24,6 +24,7 @@ add_message_files(
   RateThrust.msg
   RollPitchYawrateThrust.msg
   TorqueThrust.msg
+  TorqueThrustDelta.msg
   Status.msg
   FilteredSensorData.msg
   GpsWaypoint.msg
