@@ -37,6 +37,7 @@
 #include "mav_msgs/RateThrust.h"
 #include "mav_msgs/RollPitchYawrateThrust.h"
 #include "mav_msgs/TorqueThrust.h"
+#include "mav_msgs/TorqueThrustDelta.h"
 #include "mav_msgs/common.h"
 #include "mav_msgs/default_values.h"
 #include "mav_msgs/eigen_mav_msgs.h"
@@ -443,6 +444,15 @@ inline void msgTorqueThrustFromEigen(EigenTorqueThrust& torque_thrust,
   assert(msg != NULL);
   vectorEigenToMsg(torque_thrust.torque, &msg->torque);
   vectorEigenToMsg(torque_thrust.thrust, &msg->thrust);
+}
+
+inline void msgTorqueThrustDeltaFromEigen(EigenTorqueThrust& torque_thrust,
+                                     Eigen::Vector3d& delta_commands,
+                                     TorqueThrustDelta* msg) {
+  assert(msg != NULL);
+  vectorEigenToMsg(torque_thrust.torque, &msg->torque);
+  vectorEigenToMsg(torque_thrust.thrust, &msg->thrust);
+  vectorEigenToMsg(delta_commands, &msg->delta);
 }
 
 inline void msgRollPitchYawrateThrustFromEigen(
