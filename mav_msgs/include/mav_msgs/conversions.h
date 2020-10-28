@@ -34,6 +34,8 @@
 
 #include "mav_msgs/Actuators.h"
 #include "mav_msgs/AttitudeThrust.h"
+#include "mav_msgs/MultiDOFTrajectory.h"
+#include "mav_msgs/MultiDOFTrajectoryPoint.h"
 #include "mav_msgs/RateThrust.h"
 #include "mav_msgs/RollPitchYawrateThrust.h"
 #include "mav_msgs/TorqueThrust.h"
@@ -517,6 +519,86 @@ inline void msgMultiDofJointTrajectoryPointFromEigen(
                    &msg->accelerations[1].linear);
   vectorEigenToMsg(trajectory_point.torque_W,
                    &msg->accelerations[1].angular);
+}
+
+inline void msgNewMultiDofTrajectoryPointFromEigen(
+    const EigenTrajectoryPoint& trajectory_point,
+    mav_msgs::MultiDOFTrajectoryPoint* msg) {
+  assert(msg != NULL);
+
+  msg->time_from_start.fromNSec(trajectory_point.time_from_start_ns);
+  msg->transforms.resize(1);
+  msg->velocities.resize(1);
+  msg->accelerations.resize(1);
+  msg->wrenches.resize(1);
+
+  vectorEigenToMsg(trajectory_point.position_W,
+                   &msg->transforms[0].translation);
+  quaternionEigenToMsg(trajectory_point.orientation_W_B,
+                   &msg->transforms[0].rotation);
+  vectorEigenToMsg(trajectory_point.velocity_W, 
+                   &msg->velocities[0].linear);
+  vectorEigenToMsg(trajectory_point.angular_velocity_W,
+                   &msg->velocities[0].angular);
+  vectorEigenToMsg(trajectory_point.acceleration_W,
+                   &msg->accelerations[0].linear);
+  vectorEigenToMsg(trajectory_point.angular_acceleration_W,
+                   &msg->accelerations[0].angular);
+  vectorEigenToMsg(trajectory_point.force_W,
+                   &msg->wrenches[0].linear);
+  vectorEigenToMsg(trajectory_point.torque_W,
+                   &msg->wrenches[0].angular);
+}
+
+inline void msgAddMultiDofTrajectoryPointFromEigen(
+    const EigenTrajectoryPoint& trajectory_point,
+    mav_msgs::MultiDOFTrajectoryPoint* msg) {
+  assert(msg != NULL);
+
+  int index = msg->transforms.size();
+  msg->transforms.resize(index+1);
+  msg->velocities.resize(index+1);
+  msg->accelerations.resize(index+1);
+  msg->wrenches.resize(index+1);
+
+  vectorEigenToMsg(trajectory_point.position_W,
+                   &msg->transforms[index].translation);
+  quaternionEigenToMsg(trajectory_point.orientation_W_B,
+                   &msg->transforms[index].rotation);
+  vectorEigenToMsg(trajectory_point.velocity_W, 
+                   &msg->velocities[index].linear);
+  vectorEigenToMsg(trajectory_point.angular_velocity_W,
+                   &msg->velocities[index].angular);
+  vectorEigenToMsg(trajectory_point.acceleration_W,
+                   &msg->accelerations[index].linear);
+  vectorEigenToMsg(trajectory_point.angular_acceleration_W,
+                   &msg->accelerations[index].angular);
+  vectorEigenToMsg(trajectory_point.force_W,
+                   &msg->wrenches[index].linear);
+  vectorEigenToMsg(trajectory_point.torque_W,
+                   &msg->wrenches[index].angular);
+}
+
+inline void msgNewMultiDofTrajectoryFromEigen(
+    const EigenTrajectoryPoint& trajectory_point, const std::string& link_name,
+    mav_msgs::MultiDOFTrajectory* msg) {
+  assert(msg != NULL);
+  mav_msgs::MultiDOFTrajectoryPoint point_msg;
+  msgNewMultiDofTrajectoryPointFromEigen(trajectory_point, &point_msg);
+
+  msg->joint_names.clear();
+  msg->points.clear();
+  msg->joint_names.push_back(link_name);
+  msg->points.push_back(point_msg);
+}
+
+inline void msgAddMultiDofTrajectoryFromEigen(
+    const EigenTrajectoryPoint& trajectory_point, const std::string& link_name,
+    mav_msgs::MultiDOFTrajectory* msg) {
+  // Just single point case for now.
+  assert(msg != NULL);
+  msg->joint_names.push_back(link_name);
+  msgAddMultiDofTrajectoryPointFromEigen(trajectory_point, &(msg->points[0]));
 }
 
 inline void msgMultiDofJointTrajectoryFromEigen(

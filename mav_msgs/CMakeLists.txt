@@ -21,13 +21,15 @@ add_message_files(
   FILES
   Actuators.msg
   AttitudeThrust.msg
-  RateThrust.msg
-  RollPitchYawrateThrust.msg
-  TorqueThrust.msg
-  TorqueThrustDelta.msg
-  Status.msg
   FilteredSensorData.msg
   GpsWaypoint.msg
+  MultiDOFTrajectory.msg
+  MultiDOFTrajectoryPoint.msg
+  RateThrust.msg
+  RollPitchYawrateThrust.msg
+  Status.msg
+  TorqueThrust.msg
+  TorqueThrustDelta.msg 
 )
 
 generate_messages(DEPENDENCIES std_msgs geometry_msgs)
