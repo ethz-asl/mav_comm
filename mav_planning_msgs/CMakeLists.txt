@@ -32,6 +32,7 @@ add_service_files(
   FILES
   PlannerService.srv
   PolygonService.srv
+  ChangeNameService.srv
 )
 
 generate_messages(
