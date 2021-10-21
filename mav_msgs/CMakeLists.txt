@@ -21,6 +21,9 @@ add_message_files(
   FILES
   Actuators.msg
   AttitudeThrust.msg
+  JointState.msg
+  MultiJointTrajectoryPoint.msg
+  MultiJointTrajectory.msg
   RateThrust.msg
   RollPitchYawrateThrust.msg
   TorqueThrust.msg
