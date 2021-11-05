@@ -455,6 +455,59 @@ inline void eigenTrajectoryDequeFromMsg(
   }
 }
 
+inline void msgMultiJointTrajectoryPointFromEigen(
+    const EigenTrajectory& point, MultiJointTrajectoryPoint* msg) {
+  msg->time_from_start.fromNSec(point.time_from_start_ns);
+  msg->states.clear();
+
+  for (const auto& joint : point.joints) {
+    JointState joint_state;
+    // frames
+    joint_state.frame_id = joint.frame_id;
+    joint_state.parent_id = joint.parent_id;
+
+    // translation
+    vectorEigenToMsg(joint.position_W, &joint_state.transform.translation);
+    vectorEigenToMsg(joint.velocity_W, &joint_state.twist.linear);
+    vectorEigenToMsg(joint.acceleration_W, &joint_state.acceleration.linear);
+    vectorEigenToMsg(joint.jerk_W, &joint_state.jerk.linear);
+
+    // rotation
+    quaternionEigenToMsg(joint.orientation_W_B,
+                         &joint_state.transform.rotation);
+    vectorEigenToMsg(joint.angular_velocity_W, &joint_state.twist.angular);
+    vectorEigenToMsg(joint.angular_acceleration_W,
+                     &joint_state.acceleration.angular);
+    vectorEigenToMsg(joint.angular_jerk_W, &joint_state.jerk.angular);
+
+    // interaction forces
+    vectorEigenToMsg(joint.force_W, &joint_state.wrench.force);
+    vectorEigenToMsg(joint.torque_W, &joint_state.wrench.torque);
+    vectorEigenToMsg(joint.force_d_W, &joint_state.wrench_derivative.force);
+    vectorEigenToMsg(joint.torque_d_W, &joint_state.wrench_derivative.torque);
+
+    msg->states.push_back(joint_state);
+  }
+}
+
+inline void msgMultiJointTrajectoryFromEigen(
+    const EigenTrajectoryDeque& trajectory, MultiJointTrajectory* msg) {
+  msg->points.clear();
+  for (const auto& point : trajectory) {
+    MultiJointTrajectoryPoint point_msg;
+    msgMultiJointTrajectoryPointFromEigen(point, &point_msg);
+    msg->points.push_back(point_msg);
+  }
+}
+
+inline void msgMultiJointTrajectoryFromEigen(const EigenTrajectory& point,
+                                             MultiJointTrajectory* msg) {
+  EigenTrajectoryDeque trajectory;
+  trajectory.clear();
+  trajectory.push_back(point);
+  msgMultiJointTrajectoryFromEigen(trajectory, msg);
+}
+
 // In all these conversions, client is responsible for filling in message
 // header.
 inline void msgActuatorsFromEigen(const EigenActuators& actuators,

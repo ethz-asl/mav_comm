@@ -401,6 +401,13 @@ struct EigenTrajectory {
     joints.clear();
   }
 
+  // single joint reference constructor
+  EigenTrajectory(const EigenTrajectoryPoint& point) {
+    timestamp_ns = point.timestamp_ns;
+    time_from_start_ns = point.time_from_start_ns;
+    joints.push_back(point);
+  }
+
   // automatic conversion from MultiJointTrajectoryPoint message
   EigenTrajectory(const MultiJointTrajectoryPoint& msg,
                   const int64_t& timestamp_ns_ = -1)
