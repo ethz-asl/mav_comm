@@ -330,7 +330,8 @@ inline void eigenTrajectoryPointFromMsg(
   assert(trajectory_point != NULL);
 
   if (msg.transforms.empty()) {
-    ROS_ERROR("MultiDofJointTrajectoryPoint is empty.");
+    ROS_ERROR(
+        "[eigenTrajectoryPointFromMsg] MultiDofJointTrajectoryPoint is empty.");
     return;
   }
 
@@ -405,12 +406,51 @@ inline void eigenTrajectoryPointDequeFromMsg(
 
 inline void eigenTrajectoryDequeFromMsg(const MultiJointTrajectory& msg,
                                         EigenTrajectoryDeque* trajectory) {
+  if (msg.points.empty()) {
+    ROS_ERROR("[eigenTrajectoryDequeFromMsg] MultiJointTrajectory is empty.");
+    return;
+  }
+
   assert(trajectory != NULL);
   trajectory->clear();
 
   int64_t timestamp_ns = msg.header.stamp.toNSec();
   for (const auto& msg_point : msg.points) {
     EigenTrajectory point(msg_point, timestamp_ns);
+    trajectory->push_back(point);
+  }
+}
+
+// This only supports a single joint!
+// Values in the fields corresponding to a second joint are interpreted as
+// force/torque reference and the rest is ignored.
+//
+// Use MultiJointTrajectory message type to support multiple joints
+inline void eigenTrajectoryDequeFromMsg(
+    const trajectory_msgs::MultiDOFJointTrajectory& msg,
+    EigenTrajectoryDeque* trajectory) {
+  if (msg.points.empty()) {
+    ROS_ERROR(
+        "[eigenTrajectoryDequeFromMsg] MultiDOFJointTrajectory is empty.");
+    return;
+  }
+
+  assert(trajectory != NULL);
+  trajectory->clear();
+
+  int64_t timestamp_ns = msg.header.stamp.toNSec();
+
+  // iterate over all time_from_start values
+  for (const auto& msg_point : msg.points) {
+    int64_t time_from_start_ns = msg_point.time_from_start.toNSec();
+    EigenTrajectory point(timestamp_ns, time_from_start_ns);
+
+    EigenTrajectoryPoint joint_state;
+    eigenTrajectoryPointFromMsg(msg_point, &joint_state);
+
+    point.joints.push_back(joint_state);
+
+    // add all joints for specific time_from_start value to overall trajectory
     trajectory->push_back(point);
   }
 }

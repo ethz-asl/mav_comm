@@ -394,14 +394,20 @@ struct EigenTrajectory {
   //**************//
   // constructors //
   //**************//
-  // default constructor
-  EigenTrajectory() : timestamp_ns(-1), time_from_start_ns(0) {}
+  // default constructors
+  EigenTrajectory(const int64_t& timestamp_ns_ = -1,
+                  const int64_t& time_from_start_ns_ = 0)
+      : timestamp_ns(timestamp_ns_), time_from_start_ns(time_from_start_ns_) {
+    joints.clear();
+  }
 
   // automatic conversion from MultiJointTrajectoryPoint message
   EigenTrajectory(const MultiJointTrajectoryPoint& msg,
-                  const int64_t timestamp_ns_ = -1)
+                  const int64_t& timestamp_ns_ = -1)
       : timestamp_ns(timestamp_ns_),
         time_from_start_ns(msg.time_from_start.toNSec()) {
+    joints.clear();
+
     if (msg.states.empty()) {
       ROS_ERROR("[EigenTrajectory] MultiJointTrajectoryPoint is empty.");
       return;
