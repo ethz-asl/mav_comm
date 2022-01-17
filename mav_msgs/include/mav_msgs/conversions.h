@@ -341,7 +341,6 @@ inline void eigenTrajectoryPointFromMsg(
         msg.transforms.size());
   }
 
-  trajectory_point->timestamp = msg.header.stamp.toNSec();
   trajectory_point->time_from_start_ns = msg.time_from_start.toNSec();
   trajectory_point->position_W = vector3FromMsg(msg.transforms[0].translation);
   trajectory_point->orientation_W_B =
@@ -387,6 +386,7 @@ inline void eigenTrajectoryPointVectorFromMsg(
   for (const auto& msg_point : msg.points) {
     EigenTrajectoryPoint point;
     eigenTrajectoryPointFromMsg(msg_point, &point);
+    point.timestamp_ns = msg.header.stamp.toNSec();
     trajectory->push_back(point);
   }
 }
@@ -399,6 +399,7 @@ inline void eigenTrajectoryPointDequeFromMsg(
   for (const auto& msg_point : msg.points) {
     EigenTrajectoryPoint point;
     eigenTrajectoryPointFromMsg(msg_point, &point);
+    point.timestamp_ns = msg.header.stamp.toNSec();
     trajectory->push_back(point);
   }
 }
