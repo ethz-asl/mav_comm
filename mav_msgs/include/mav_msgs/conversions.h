@@ -335,11 +335,13 @@ inline void eigenTrajectoryPointFromMsg(
 
   if (msg.transforms.size() > 2) {
     ROS_WARN(
-        "MultiDofJointTrajectoryPoint message should have one joint for trajectory and a second joint for force, but has "
+        "MultiDofJointTrajectoryPoint message should have one joint for "
+        "trajectory and a second joint for force, but has "
         "%lu. Ignoring other joints.",
         msg.transforms.size());
   }
 
+  trajectory_point->timestamp = msg.header.stamp.toNSec();
   trajectory_point->time_from_start_ns = msg.time_from_start.toNSec();
   trajectory_point->position_W = vector3FromMsg(msg.transforms[0].translation);
   trajectory_point->orientation_W_B =
@@ -365,14 +367,13 @@ inline void eigenTrajectoryPointFromMsg(
   trajectory_point->snap_W.setZero();
 
   // Set desired forces.
-    if (msg.accelerations.size() > 1) {
-    trajectory_point->force_W =
-        vector3FromMsg(msg.accelerations[1].linear);
-    trajectory_point->torque_W =
-        vector3FromMsg(msg.accelerations[1].angular);
+  if (msg.accelerations.size() > 1) {
+    trajectory_point->force_W = vector3FromMsg(msg.accelerations[1].linear);
+    trajectory_point->torque_W = vector3FromMsg(msg.accelerations[1].angular);
   } else {
     ROS_WARN_ONCE(
-        "[mav_msgs::conversions] MultiDofJointTrajectoryPoint desired force is not given! Setting to zero.");
+        "[mav_msgs::conversions] MultiDofJointTrajectoryPoint desired force is "
+        "not given! Setting to zero.");
     trajectory_point->force_W.setZero();
     trajectory_point->torque_W.setZero();
   }
@@ -503,10 +504,8 @@ inline void msgMultiDofJointTrajectoryPointFromEigen(
   vectorEigenToMsg(trajectory_point.angular_acceleration_W,
                    &msg->accelerations[0].angular);
 
-  vectorEigenToMsg(trajectory_point.force_W,
-                   &msg->accelerations[1].linear);
-  vectorEigenToMsg(trajectory_point.torque_W,
-                   &msg->accelerations[1].angular);
+  vectorEigenToMsg(trajectory_point.force_W, &msg->accelerations[1].linear);
+  vectorEigenToMsg(trajectory_point.torque_W, &msg->accelerations[1].angular);
 }
 
 inline void msgMultiDofJointTrajectoryFromEigen(
