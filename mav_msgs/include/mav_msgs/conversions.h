@@ -383,10 +383,16 @@ inline void eigenTrajectoryPointVectorFromMsg(
     EigenTrajectoryPointVector* trajectory) {
   assert(trajectory != NULL);
   trajectory->clear();
+  int64_t header_stamp_ns = msg.header.stamp.toNSec();
+  if (header_stamp_ns == 0) {
+    ROS_WARN_THROTTLE(
+        1.0, "[mav_msgs::conversions] Trajectory timestamp not initialized.");
+    header_stamp_ns = ros::Time::now().toNSec();
+  }
   for (const auto& msg_point : msg.points) {
     EigenTrajectoryPoint point;
     eigenTrajectoryPointFromMsg(msg_point, &point);
-    point.timestamp_ns = msg.header.stamp.toNSec();
+    point.timestamp_ns = header_stamp_ns;
     trajectory->push_back(point);
   }
 }
@@ -396,10 +402,16 @@ inline void eigenTrajectoryPointDequeFromMsg(
     EigenTrajectoryPointDeque* trajectory) {
   assert(trajectory != NULL);
   trajectory->clear();
+  int64_t header_stamp_ns = msg.header.stamp.toNSec();
+  if (header_stamp_ns == 0) {
+    ROS_WARN_THROTTLE(
+        1.0, "[mav_msgs::conversions] Trajectory timestamp not initialized.");
+    header_stamp_ns = ros::Time::now().toNSec();
+  }
   for (const auto& msg_point : msg.points) {
     EigenTrajectoryPoint point;
     eigenTrajectoryPointFromMsg(msg_point, &point);
-    point.timestamp_ns = msg.header.stamp.toNSec();
+    point.timestamp_ns = header_stamp_ns;
     trajectory->push_back(point);
   }
 }
