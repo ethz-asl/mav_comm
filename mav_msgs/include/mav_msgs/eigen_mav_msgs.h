@@ -174,6 +174,8 @@ struct EigenTrajectoryPoint {
         orientation_W_B(Eigen::Quaterniond::Identity()),
         angular_velocity_W(Eigen::Vector3d::Zero()),
         angular_acceleration_W(Eigen::Vector3d::Zero()),
+        force_W(Eigen::Vector3d::Zero()),
+        torque_W(Eigen::Vector3d::Zero()),
         degrees_of_freedom(MavActuation::DOF4) {}
 
   EigenTrajectoryPoint(int64_t _time_from_start_ns,
@@ -185,6 +187,8 @@ struct EigenTrajectoryPoint {
                        const Eigen::Quaterniond& _orientation,
                        const Eigen::Vector3d& _angular_velocity,
                        const Eigen::Vector3d& _angular_acceleration,
+                       const Eigen::Vector3d& _force,
+                       const Eigen::Vector3d& _torque,
                        const MavActuation& _degrees_of_freedom = MavActuation::DOF4)
       : time_from_start_ns(_time_from_start_ns),
         position_W(_position),
@@ -195,7 +199,25 @@ struct EigenTrajectoryPoint {
         orientation_W_B(_orientation),
         angular_velocity_W(_angular_velocity),
         angular_acceleration_W(_angular_acceleration),
+        force_W(_force),
+        torque_W(_torque),
         degrees_of_freedom(_degrees_of_freedom) {}
+
+  EigenTrajectoryPoint(int64_t _time_from_start_ns,
+                       const Eigen::Vector3d& _position,
+                       const Eigen::Vector3d& _velocity,
+                       const Eigen::Vector3d& _acceleration,
+                       const Eigen::Vector3d& _jerk,
+                       const Eigen::Vector3d& _snap,
+                       const Eigen::Quaterniond& _orientation,
+                       const Eigen::Vector3d& _angular_velocity,
+                       const Eigen::Vector3d& _angular_acceleration,
+                       const MavActuation& _degrees_of_freedom = MavActuation::DOF4)
+      : EigenTrajectoryPoint(_time_from_start_ns, _position, _velocity,
+                             _acceleration, _jerk, _snap, _orientation,
+                             _angular_velocity, _angular_acceleration, 
+                             Eigen::Vector3d::Zero(), Eigen::Vector3d::Zero(),
+                             _degrees_of_freedom) {}
 
   EigenTrajectoryPoint(int64_t _time_from_start_ns,
                        const Eigen::Vector3d& _position,
@@ -208,7 +230,9 @@ struct EigenTrajectoryPoint {
                        const MavActuation& _degrees_of_freedom = MavActuation::DOF4)
       : EigenTrajectoryPoint(_time_from_start_ns, _position, _velocity,
                              _acceleration, _jerk, _snap, _orientation,
-                             _angular_velocity, Eigen::Vector3d::Zero(), _degrees_of_freedom) {}
+                             _angular_velocity, Eigen::Vector3d::Zero(), 
+                             Eigen::Vector3d::Zero(), Eigen::Vector3d::Zero(),
+                             _degrees_of_freedom) {}
 
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   int64_t timestamp_ns;  // Time since epoch, negative value = invalid timestamp.
@@ -222,6 +246,9 @@ struct EigenTrajectoryPoint {
   Eigen::Quaterniond orientation_W_B;
   Eigen::Vector3d angular_velocity_W;
   Eigen::Vector3d angular_acceleration_W;
+
+  Eigen::Vector3d force_W;
+  Eigen::Vector3d torque_W;
   MavActuation degrees_of_freedom;
 
   // Accessors for making dealing with orientation/angular velocity easier.
@@ -276,6 +303,9 @@ inline EigenTrajectoryPoint operator*(const Eigen::Affine3d& lhs,
   transformed.angular_velocity_W = lhs.rotation() * rhs.angular_velocity_W;
   transformed.angular_acceleration_W =
       lhs.rotation() * rhs.angular_acceleration_W;
+  // Note: wrench is rotated but not transformed as an equivalent wrench.
+  transformed.force_W = lhs.rotation() * rhs.force_W;
+  transformed.torque_W = lhs.rotation() * rhs.torque_W;
   return transformed;
 }
 
@@ -341,6 +371,7 @@ struct EigenOdometry {
 MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EigenAttitudeThrust)
 MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EigenActuators)
 MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EigenRateThrust)
+MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EigenTorqueThrust)
 MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EigenTrajectoryPoint)
 MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EigenRollPitchYawrateThrust)
 MAV_MSGS_MAKE_ALIGNED_CONTAINERS(EigenOdometry)
