@@ -33,6 +33,7 @@
 #include <Eigen/Eigen>
 #include <deque>
 #include <iostream>
+#include <iostream>
 
 #include "mav_msgs/common.h"
 
@@ -416,7 +417,11 @@ struct EigenTrajectory {
     joints.clear();
 
     if (msg.states.empty()) {
-      ROS_ERROR("[EigenTrajectory] MultiJointTrajectoryPoint is empty.");
+      // outputing messages here is not nice, but before it was a ROS log,
+      // which caused compilation errors if ROS wasn't included in the
+      // right order in whatever other header inlucded this header.
+      std::cout << "[EigenTrajectory] MultiJointTrajectoryPoint is empty." <<
+          std::endl;
       return;
     }
     for (const auto& state : msg.states) {
