@@ -51,8 +51,7 @@ inline void eigenAttitudeThrustFromMsg(const AttitudeThrust& msg,
   attitude_thrust->thrust = vector3FromMsg(msg.thrust);
 }
 
-inline void eigenActuatorsFromMsg(const Actuators& msg,
-                                  EigenActuators* actuators) {
+inline void eigenActuatorsFromMsg(const Actuators& msg, EigenActuators* actuators) {
   assert(actuators != NULL);
 
   // Angle of the actuator in [rad].
@@ -75,16 +74,14 @@ inline void eigenActuatorsFromMsg(const Actuators& msg,
   }
 }
 
-inline void eigenRateThrustFromMsg(const RateThrust& msg,
-                                   EigenRateThrust* rate_thrust) {
+inline void eigenRateThrustFromMsg(const RateThrust& msg, EigenRateThrust* rate_thrust) {
   assert(rate_thrust != NULL);
 
   rate_thrust->angular_rates = vector3FromMsg(msg.angular_rates);
   rate_thrust->thrust = vector3FromMsg(msg.thrust);
 }
 
-inline void eigenTorqueThrustFromMsg(const TorqueThrust& msg,
-                                     EigenTorqueThrust* torque_thrust) {
+inline void eigenTorqueThrustFromMsg(const TorqueThrust& msg, EigenTorqueThrust* torque_thrust) {
   assert(torque_thrust != NULL);
 
   torque_thrust->torque = vector3FromMsg(msg.torque);
@@ -92,8 +89,7 @@ inline void eigenTorqueThrustFromMsg(const TorqueThrust& msg,
 }
 
 inline void eigenRollPitchYawrateThrustFromMsg(
-    const RollPitchYawrateThrust& msg,
-    EigenRollPitchYawrateThrust* roll_pitch_yawrate_thrust) {
+    const RollPitchYawrateThrust& msg, EigenRollPitchYawrateThrust* roll_pitch_yawrate_thrust) {
   assert(roll_pitch_yawrate_thrust != NULL);
 
   roll_pitch_yawrate_thrust->roll = msg.roll;
@@ -102,25 +98,21 @@ inline void eigenRollPitchYawrateThrustFromMsg(
   roll_pitch_yawrate_thrust->thrust = vector3FromMsg(msg.thrust);
 }
 
-inline void eigenOdometryFromMsg(const nav_msgs::Odometry& msg,
-                                 EigenOdometry* odometry) {
+inline void eigenOdometryFromMsg(const nav_msgs::Odometry& msg, EigenOdometry* odometry) {
   assert(odometry != NULL);
   odometry->timestamp_ns = msg.header.stamp.toNSec();
   odometry->position_W = mav_msgs::vector3FromPointMsg(msg.pose.pose.position);
-  odometry->orientation_W_B =
-      mav_msgs::quaternionFromMsg(msg.pose.pose.orientation);
+  odometry->orientation_W_B = mav_msgs::quaternionFromMsg(msg.pose.pose.orientation);
   odometry->velocity_B = mav_msgs::vector3FromMsg(msg.twist.twist.linear);
-  odometry->angular_velocity_B =
-      mav_msgs::vector3FromMsg(msg.twist.twist.angular);
+  odometry->angular_velocity_B = mav_msgs::vector3FromMsg(msg.twist.twist.angular);
   odometry->pose_covariance_ =
       Eigen::Map<const Eigen::Matrix<double, 6, 6>>(msg.pose.covariance.data());
-  odometry->twist_covariance_ = Eigen::Map<const Eigen::Matrix<double, 6, 6>>(
-      msg.twist.covariance.data());
+  odometry->twist_covariance_ =
+      Eigen::Map<const Eigen::Matrix<double, 6, 6>>(msg.twist.covariance.data());
 }
 
-inline void eigenTrajectoryPointFromTransformMsg(
-    const geometry_msgs::TransformStamped& msg,
-    EigenTrajectoryPoint* trajectory_point) {
+inline void eigenTrajectoryPointFromTransformMsg(const geometry_msgs::TransformStamped& msg,
+                                                 EigenTrajectoryPoint* trajectory_point) {
   assert(trajectory_point != NULL);
 
   ros::Time timestamp = msg.header.stamp;
@@ -139,8 +131,8 @@ inline void eigenTrajectoryPointFromTransformMsg(
 // 2 versions of this: one for PoseStamped (which fills in the timestamps
 // correctly and should be used if at all possible), and one for a raw pose
 // message.
-inline void eigenTrajectoryPointFromPoseMsg(
-    const geometry_msgs::Pose& msg, EigenTrajectoryPoint* trajectory_point) {
+inline void eigenTrajectoryPointFromPoseMsg(const geometry_msgs::Pose& msg,
+                                            EigenTrajectoryPoint* trajectory_point) {
   assert(trajectory_point != NULL);
 
   trajectory_point->position_W = vector3FromPointMsg(msg.position);
@@ -153,9 +145,8 @@ inline void eigenTrajectoryPointFromPoseMsg(
   trajectory_point->snap_W.setZero();
 }
 
-inline void eigenTrajectoryPointFromPoseMsg(
-    const geometry_msgs::PoseStamped& msg,
-    EigenTrajectoryPoint* trajectory_point) {
+inline void eigenTrajectoryPointFromPoseMsg(const geometry_msgs::PoseStamped& msg,
+                                            EigenTrajectoryPoint* trajectory_point) {
   assert(trajectory_point != NULL);
 
   ros::Time timestamp = msg.header.stamp;
@@ -187,41 +178,35 @@ inline void eigenTrajectoryPointFromPoseMsg(
  * expressed in body coordinates.
  */
 void EigenMavStateFromEigenTrajectoryPoint(
-    const Eigen::Vector3d& acceleration, const Eigen::Vector3d& jerk,
-    const Eigen::Vector3d& snap, double yaw, double yaw_rate,
-    double yaw_acceleration, double magnitude_of_gravity,
+    const Eigen::Vector3d& acceleration, const Eigen::Vector3d& jerk, const Eigen::Vector3d& snap,
+    double yaw, double yaw_rate, double yaw_acceleration, double magnitude_of_gravity,
     Eigen::Quaterniond* orientation, Eigen::Vector3d* acceleration_body,
-    Eigen::Vector3d* angular_velocity_body,
-    Eigen::Vector3d* angular_acceleration_body);
+    Eigen::Vector3d* angular_velocity_body, Eigen::Vector3d* angular_acceleration_body);
 
 /// Convenience function with default value for the magnitude of the gravity
 /// vector.
 inline void EigenMavStateFromEigenTrajectoryPoint(
-    const Eigen::Vector3d& acceleration, const Eigen::Vector3d& jerk,
-    const Eigen::Vector3d& snap, double yaw, double yaw_rate,
-    double yaw_acceleration, Eigen::Quaterniond* orientation,
+    const Eigen::Vector3d& acceleration, const Eigen::Vector3d& jerk, const Eigen::Vector3d& snap,
+    double yaw, double yaw_rate, double yaw_acceleration, Eigen::Quaterniond* orientation,
     Eigen::Vector3d* acceleration_body, Eigen::Vector3d* angular_velocity_body,
     Eigen::Vector3d* angular_acceleration_body) {
-  EigenMavStateFromEigenTrajectoryPoint(
-      acceleration, jerk, snap, yaw, yaw_rate, yaw_acceleration, kGravity,
-      orientation, acceleration_body, angular_velocity_body,
-      angular_acceleration_body);
+  EigenMavStateFromEigenTrajectoryPoint(acceleration, jerk, snap, yaw, yaw_rate, yaw_acceleration,
+                                        kGravity, orientation, acceleration_body,
+                                        angular_velocity_body, angular_acceleration_body);
 }
 
 /// Convenience function with EigenTrajectoryPoint as input and EigenMavState as
 /// output.
-inline void EigenMavStateFromEigenTrajectoryPoint(
-    const EigenTrajectoryPoint& trajectory_point, double magnitude_of_gravity,
-    EigenMavState* mav_state) {
+inline void EigenMavStateFromEigenTrajectoryPoint(const EigenTrajectoryPoint& trajectory_point,
+                                                  double magnitude_of_gravity,
+                                                  EigenMavState* mav_state) {
   assert(mav_state != NULL);
   if (trajectory_point.degrees_of_freedom == MavActuation::DOF4) {
     EigenMavStateFromEigenTrajectoryPoint(
-        trajectory_point.acceleration_W, trajectory_point.jerk_W,
-        trajectory_point.snap_W, trajectory_point.getYaw(),
-        trajectory_point.getYawRate(), trajectory_point.getYawAcc(),
-        magnitude_of_gravity, &(mav_state->orientation_W_B),
-        &(mav_state->acceleration_B), &(mav_state->angular_velocity_B),
-        &(mav_state->angular_acceleration_B));
+        trajectory_point.acceleration_W, trajectory_point.jerk_W, trajectory_point.snap_W,
+        trajectory_point.getYaw(), trajectory_point.getYawRate(), trajectory_point.getYawAcc(),
+        magnitude_of_gravity, &(mav_state->orientation_W_B), &(mav_state->acceleration_B),
+        &(mav_state->angular_velocity_B), &(mav_state->angular_acceleration_B));
     mav_state->position_W = trajectory_point.position_W;
     mav_state->velocity_W = trajectory_point.velocity_W;
   } else {
@@ -229,14 +214,11 @@ inline void EigenMavStateFromEigenTrajectoryPoint(
     Eigen::Matrix3d R = trajectory_point.orientation_W_B.toRotationMatrix();
     mav_state->position_W = trajectory_point.position_W;
     mav_state->velocity_W = trajectory_point.velocity_W;
-    mav_state->acceleration_B =
-        R.transpose() * (trajectory_point.acceleration_W +
-                         Eigen::Vector3d(0.0, 0.0, magnitude_of_gravity));
+    mav_state->acceleration_B = R.transpose() * (trajectory_point.acceleration_W +
+                                                 Eigen::Vector3d(0.0, 0.0, magnitude_of_gravity));
     mav_state->orientation_W_B = trajectory_point.orientation_W_B;
-    mav_state->angular_velocity_B =
-        R.transpose() * trajectory_point.angular_velocity_W;
-    mav_state->angular_acceleration_B =
-        R.transpose() * trajectory_point.angular_acceleration_W;
+    mav_state->angular_velocity_B = R.transpose() * trajectory_point.angular_velocity_W;
+    mav_state->angular_acceleration_B = R.transpose() * trajectory_point.angular_acceleration_W;
   }
 }
 
@@ -245,18 +227,16 @@ inline void EigenMavStateFromEigenTrajectoryPoint(
  * EigenMavState as output
  *        with default value for the magnitude of the gravity vector.
  */
-inline void EigenMavStateFromEigenTrajectoryPoint(
-    const EigenTrajectoryPoint& flat_state, EigenMavState* mav_state) {
+inline void EigenMavStateFromEigenTrajectoryPoint(const EigenTrajectoryPoint& flat_state,
+                                                  EigenMavState* mav_state) {
   EigenMavStateFromEigenTrajectoryPoint(flat_state, kGravity, mav_state);
 }
 
 inline void EigenMavStateFromEigenTrajectoryPoint(
-    const Eigen::Vector3d& acceleration, const Eigen::Vector3d& jerk,
-    const Eigen::Vector3d& snap, double yaw, double yaw_rate,
-    double yaw_acceleration, double magnitude_of_gravity,
+    const Eigen::Vector3d& acceleration, const Eigen::Vector3d& jerk, const Eigen::Vector3d& snap,
+    double yaw, double yaw_rate, double yaw_acceleration, double magnitude_of_gravity,
     Eigen::Quaterniond* orientation, Eigen::Vector3d* acceleration_body,
-    Eigen::Vector3d* angular_velocity_body,
-    Eigen::Vector3d* angular_acceleration_body) {
+    Eigen::Vector3d* angular_velocity_body, Eigen::Vector3d* angular_acceleration_body) {
   // Mapping from flat state to full state following to Mellinger [1]:
   // See [1]: Mellinger, Daniel Warren. "Trajectory generation and control for
   //          quadrotors." (2012), Phd-thesis, p. 15ff.
@@ -302,8 +282,7 @@ inline void EigenMavStateFromEigenTrajectoryPoint(
 
   const Eigen::Matrix3d R((Eigen::Matrix3d() << xb, yb, zb).finished());
 
-  const Eigen::Vector3d h_w =
-      inv_thrust * (jerk - double(zb.transpose() * jerk) * zb);
+  const Eigen::Vector3d h_w = inv_thrust * (jerk - double(zb.transpose() * jerk) * zb);
 
   *orientation = Eigen::Quaterniond(R);
   *acceleration_body = R.transpose() * zb * thrust;
@@ -314,18 +293,17 @@ inline void EigenMavStateFromEigenTrajectoryPoint(
   // Calculate angular accelerations.
   const Eigen::Vector3d wcrossz = (*angular_velocity_body).cross(zb);
   const Eigen::Vector3d wcrosswcrossz = (*angular_velocity_body).cross(wcrossz);
-  const Eigen::Vector3d h_a =
-      inv_thrust * (snap - double(zb.transpose() * snap) * zb) - 2 * wcrossz -
-      wcrosswcrossz + double(zb.transpose() * wcrosswcrossz) * zb;
+  const Eigen::Vector3d h_a = inv_thrust * (snap - double(zb.transpose() * snap) * zb) -
+                              2 * wcrossz - wcrosswcrossz +
+                              double(zb.transpose() * wcrosswcrossz) * zb;
 
   (*angular_acceleration_body)[0] = -h_a.transpose() * yb;
   (*angular_acceleration_body)[1] = h_a.transpose() * xb;
   (*angular_acceleration_body)[2] = yaw_acceleration * zb[2];
 }
 
-inline void eigenTrajectoryPointFromMsg(
-    const trajectory_msgs::MultiDOFJointTrajectoryPoint& msg,
-    EigenTrajectoryPoint* trajectory_point) {
+inline void eigenTrajectoryPointFromMsg(const trajectory_msgs::MultiDOFJointTrajectoryPoint& msg,
+                                        EigenTrajectoryPoint* trajectory_point) {
   assert(trajectory_point != NULL);
 
   if (msg.transforms.empty()) {
@@ -343,21 +321,17 @@ inline void eigenTrajectoryPointFromMsg(
 
   trajectory_point->time_from_start_ns = msg.time_from_start.toNSec();
   trajectory_point->position_W = vector3FromMsg(msg.transforms[0].translation);
-  trajectory_point->orientation_W_B =
-      quaternionFromMsg(msg.transforms[0].rotation);
+  trajectory_point->orientation_W_B = quaternionFromMsg(msg.transforms[0].rotation);
   if (msg.velocities.size() > 0) {
     trajectory_point->velocity_W = vector3FromMsg(msg.velocities[0].linear);
-    trajectory_point->angular_velocity_W =
-        vector3FromMsg(msg.velocities[0].angular);
+    trajectory_point->angular_velocity_W = vector3FromMsg(msg.velocities[0].angular);
   } else {
     trajectory_point->velocity_W.setZero();
     trajectory_point->angular_velocity_W.setZero();
   }
   if (msg.accelerations.size() > 0) {
-    trajectory_point->acceleration_W =
-        vector3FromMsg(msg.accelerations[0].linear);
-    trajectory_point->angular_acceleration_W =
-        vector3FromMsg(msg.accelerations[0].angular);
+    trajectory_point->acceleration_W = vector3FromMsg(msg.accelerations[0].linear);
+    trajectory_point->angular_acceleration_W = vector3FromMsg(msg.accelerations[0].angular);
   } else {
     trajectory_point->acceleration_W.setZero();
     trajectory_point->angular_acceleration_W.setZero();
@@ -378,15 +352,13 @@ inline void eigenTrajectoryPointFromMsg(
   }
 }
 
-inline void eigenTrajectoryPointVectorFromMsg(
-    const trajectory_msgs::MultiDOFJointTrajectory& msg,
-    EigenTrajectoryPointVector* trajectory) {
+inline void eigenTrajectoryPointVectorFromMsg(const trajectory_msgs::MultiDOFJointTrajectory& msg,
+                                              EigenTrajectoryPointVector* trajectory) {
   assert(trajectory != NULL);
   trajectory->clear();
   int64_t header_stamp_ns = msg.header.stamp.toNSec();
   if (header_stamp_ns == 0) {
-    ROS_WARN_THROTTLE(
-        1.0, "[mav_msgs::conversions] Trajectory timestamp not initialized.");
+    ROS_WARN_THROTTLE(1.0, "[mav_msgs::conversions] Trajectory timestamp not initialized.");
     header_stamp_ns = ros::Time::now().toNSec();
   }
   for (const auto& msg_point : msg.points) {
@@ -397,15 +369,13 @@ inline void eigenTrajectoryPointVectorFromMsg(
   }
 }
 
-inline void eigenTrajectoryPointDequeFromMsg(
-    const trajectory_msgs::MultiDOFJointTrajectory& msg,
-    EigenTrajectoryPointDeque* trajectory) {
+inline void eigenTrajectoryPointDequeFromMsg(const trajectory_msgs::MultiDOFJointTrajectory& msg,
+                                             EigenTrajectoryPointDeque* trajectory) {
   assert(trajectory != NULL);
   trajectory->clear();
   int64_t header_stamp_ns = msg.header.stamp.toNSec();
   if (header_stamp_ns == 0) {
-    ROS_WARN_THROTTLE(
-        1.0, "[mav_msgs::conversions] Trajectory timestamp not initialized.");
+    ROS_WARN_THROTTLE(1.0, "[mav_msgs::conversions] Trajectory timestamp not initialized.");
     header_stamp_ns = ros::Time::now().toNSec();
   }
   for (const auto& msg_point : msg.points) {
@@ -418,8 +388,7 @@ inline void eigenTrajectoryPointDequeFromMsg(
 
 // In all these conversions, client is responsible for filling in message
 // header.
-inline void msgActuatorsFromEigen(const EigenActuators& actuators,
-                                  Actuators* msg) {
+inline void msgActuatorsFromEigen(const EigenActuators& actuators, Actuators* msg) {
   assert(msg != NULL);
 
   msg->angles.resize(actuators.angles.size());
@@ -438,30 +407,27 @@ inline void msgActuatorsFromEigen(const EigenActuators& actuators,
   }
 }
 
-inline void msgAttitudeThrustFromEigen(
-    const EigenAttitudeThrust& attitude_thrust, AttitudeThrust* msg) {
+inline void msgAttitudeThrustFromEigen(const EigenAttitudeThrust& attitude_thrust,
+                                       AttitudeThrust* msg) {
   assert(msg != NULL);
   quaternionEigenToMsg(attitude_thrust.attitude, &msg->attitude);
   vectorEigenToMsg(attitude_thrust.thrust, &msg->thrust);
 }
 
-inline void msgRateThrustFromEigen(EigenRateThrust& rate_thrust,
-                                   RateThrust* msg) {
+inline void msgRateThrustFromEigen(EigenRateThrust& rate_thrust, RateThrust* msg) {
   assert(msg != NULL);
   vectorEigenToMsg(rate_thrust.angular_rates, &msg->angular_rates);
   vectorEigenToMsg(rate_thrust.thrust, &msg->thrust);
 }
 
-inline void msgTorqueThrustFromEigen(EigenTorqueThrust& torque_thrust,
-                                     TorqueThrust* msg) {
+inline void msgTorqueThrustFromEigen(EigenTorqueThrust& torque_thrust, TorqueThrust* msg) {
   assert(msg != NULL);
   vectorEigenToMsg(torque_thrust.torque, &msg->torque);
   vectorEigenToMsg(torque_thrust.thrust, &msg->thrust);
 }
 
 inline void msgRollPitchYawrateThrustFromEigen(
-    const EigenRollPitchYawrateThrust& roll_pitch_yawrate_thrust,
-    RollPitchYawrateThrust* msg) {
+    const EigenRollPitchYawrateThrust& roll_pitch_yawrate_thrust, RollPitchYawrateThrust* msg) {
   assert(msg != NULL);
   msg->roll = roll_pitch_yawrate_thrust.roll;
   msg->pitch = roll_pitch_yawrate_thrust.pitch;
@@ -469,8 +435,7 @@ inline void msgRollPitchYawrateThrustFromEigen(
   vectorEigenToMsg(roll_pitch_yawrate_thrust.thrust, &msg->thrust);
 }
 
-inline void msgOdometryFromEigen(const EigenOdometry& odometry,
-                                 nav_msgs::Odometry* msg) {
+inline void msgOdometryFromEigen(const EigenOdometry& odometry, nav_msgs::Odometry* msg) {
   assert(msg != NULL);
 
   if (odometry.timestamp_ns >= 0) {
@@ -484,15 +449,13 @@ inline void msgOdometryFromEigen(const EigenOdometry& odometry,
 }
 
 // WARNING: discards all derivatives, etc.
-inline void msgPoseStampedFromEigenTrajectoryPoint(
-    const EigenTrajectoryPoint& trajectory_point,
-    geometry_msgs::PoseStamped* msg) {
+inline void msgPoseStampedFromEigenTrajectoryPoint(const EigenTrajectoryPoint& trajectory_point,
+                                                   geometry_msgs::PoseStamped* msg) {
   if (trajectory_point.timestamp_ns >= 0) {
     msg->header.stamp.fromNSec(trajectory_point.timestamp_ns);
   }
   pointEigenToMsg(trajectory_point.position_W, &msg->pose.position);
-  quaternionEigenToMsg(trajectory_point.orientation_W_B,
-                       &msg->pose.orientation);
+  quaternionEigenToMsg(trajectory_point.orientation_W_B, &msg->pose.orientation);
 }
 
 inline void msgMultiDofJointTrajectoryPointFromEigen(
@@ -505,25 +468,23 @@ inline void msgMultiDofJointTrajectoryPointFromEigen(
   msg->velocities.resize(1);
   msg->accelerations.resize(2);
 
-  vectorEigenToMsg(trajectory_point.position_W,
-                   &msg->transforms[0].translation);
-  quaternionEigenToMsg(trajectory_point.orientation_W_B,
-                       &msg->transforms[0].rotation);
-  vectorEigenToMsg(trajectory_point.velocity_W, &msg->velocities[0].linear);
-  vectorEigenToMsg(trajectory_point.angular_velocity_W,
-                   &msg->velocities[0].angular);
-  vectorEigenToMsg(trajectory_point.acceleration_W,
-                   &msg->accelerations[0].linear);
-  vectorEigenToMsg(trajectory_point.angular_acceleration_W,
-                   &msg->accelerations[0].angular);
+  Eigen::Matrix3d R_B_W = trajectory_point.orientation_W_B.toRotationMatrix().transpose();
+  vectorEigenToMsg(trajectory_point.position_W, &msg->transforms[0].translation);
+  quaternionEigenToMsg(trajectory_point.orientation_W_B, &msg->transforms[0].rotation);
+  vectorEigenToMsg(R_B_W * trajectory_point.velocity_W, &msg->velocities[0].linear);
+  vectorEigenToMsg(R_B_W * trajectory_point.acceleration_W, &msg->accelerations[0].linear);
 
-  vectorEigenToMsg(trajectory_point.force_W, &msg->accelerations[1].linear);
-  vectorEigenToMsg(trajectory_point.torque_W, &msg->accelerations[1].angular);
+  // Note: angular_velocity_W and angular_acceleration_W are expressed in body frame B!
+  vectorEigenToMsg(trajectory_point.angular_velocity_W, &msg->velocities[0].angular);
+  vectorEigenToMsg(trajectory_point.angular_acceleration_W, &msg->accelerations[0].angular);
+
+  vectorEigenToMsg(R_B_W * trajectory_point.force_W, &msg->accelerations[1].linear);
+  vectorEigenToMsg(R_B_W * trajectory_point.torque_W, &msg->accelerations[1].angular);
 }
 
-inline void msgMultiDofJointTrajectoryFromEigen(
-    const EigenTrajectoryPoint& trajectory_point, const std::string& link_name,
-    trajectory_msgs::MultiDOFJointTrajectory* msg) {
+inline void msgMultiDofJointTrajectoryFromEigen(const EigenTrajectoryPoint& trajectory_point,
+                                                const std::string& link_name,
+                                                trajectory_msgs::MultiDOFJointTrajectory* msg) {
   assert(msg != NULL);
   trajectory_msgs::MultiDOFJointTrajectoryPoint point_msg;
   msgMultiDofJointTrajectoryPointFromEigen(trajectory_point, &point_msg);
@@ -534,16 +495,14 @@ inline void msgMultiDofJointTrajectoryFromEigen(
   msg->points.push_back(point_msg);
 }
 
-inline void msgMultiDofJointTrajectoryFromEigen(
-    const EigenTrajectoryPoint& trajectory_point,
-    trajectory_msgs::MultiDOFJointTrajectory* msg) {
+inline void msgMultiDofJointTrajectoryFromEigen(const EigenTrajectoryPoint& trajectory_point,
+                                                trajectory_msgs::MultiDOFJointTrajectory* msg) {
   msgMultiDofJointTrajectoryFromEigen(trajectory_point, "base_link", msg);
 }
 
 // Convenience method to quickly create a trajectory from a single waypoint.
 inline void msgMultiDofJointTrajectoryFromPositionYaw(
-    const Eigen::Vector3d& position, double yaw,
-    trajectory_msgs::MultiDOFJointTrajectory* msg) {
+    const Eigen::Vector3d& position, double yaw, trajectory_msgs::MultiDOFJointTrajectory* msg) {
   assert(msg != NULL);
 
   EigenTrajectoryPoint point;
@@ -553,9 +512,9 @@ inline void msgMultiDofJointTrajectoryFromPositionYaw(
   msgMultiDofJointTrajectoryFromEigen(point, msg);
 }
 
-inline void msgMultiDofJointTrajectoryFromEigen(
-    const EigenTrajectoryPointVector& trajectory, const std::string& link_name,
-    trajectory_msgs::MultiDOFJointTrajectory* msg) {
+inline void msgMultiDofJointTrajectoryFromEigen(const EigenTrajectoryPointVector& trajectory,
+                                                const std::string& link_name,
+                                                trajectory_msgs::MultiDOFJointTrajectory* msg) {
   assert(msg != NULL);
 
   if (trajectory.empty()) {
@@ -574,15 +533,14 @@ inline void msgMultiDofJointTrajectoryFromEigen(
   }
 }
 
-inline void msgMultiDofJointTrajectoryFromEigen(
-    const EigenTrajectoryPointVector& trajectory,
-    trajectory_msgs::MultiDOFJointTrajectory* msg) {
+inline void msgMultiDofJointTrajectoryFromEigen(const EigenTrajectoryPointVector& trajectory,
+                                                trajectory_msgs::MultiDOFJointTrajectory* msg) {
   msgMultiDofJointTrajectoryFromEigen(trajectory, "base_link", msg);
 }
 
-inline void msgMultiDofJointTrajectoryFromEigen(
-    const EigenTrajectoryPointDeque& trajectory, const std::string& link_name,
-    trajectory_msgs::MultiDOFJointTrajectory* msg) {
+inline void msgMultiDofJointTrajectoryFromEigen(const EigenTrajectoryPointDeque& trajectory,
+                                                const std::string& link_name,
+                                                trajectory_msgs::MultiDOFJointTrajectory* msg) {
   assert(msg != NULL);
 
   if (trajectory.empty()) {
@@ -601,9 +559,8 @@ inline void msgMultiDofJointTrajectoryFromEigen(
   }
 }
 
-inline void msgMultiDofJointTrajectoryFromEigen(
-    const EigenTrajectoryPointDeque& trajectory,
-    trajectory_msgs::MultiDOFJointTrajectory* msg) {
+inline void msgMultiDofJointTrajectoryFromEigen(const EigenTrajectoryPointDeque& trajectory,
+                                                trajectory_msgs::MultiDOFJointTrajectory* msg) {
   msgMultiDofJointTrajectoryFromEigen(trajectory, "base_link", msg);
 }
 
