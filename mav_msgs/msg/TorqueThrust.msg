@@ -1,4 +1,4 @@
-Header header
+std_msgs/Header header
 
 # We use the coordinate frames with the following convention:
 #   x: forward

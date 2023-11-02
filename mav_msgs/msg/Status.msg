@@ -1,4 +1,4 @@
-Header header
+std_msgs/Header header
 
 # If values are not known / available, set to -1 or empty string.
 string      vehicle_name

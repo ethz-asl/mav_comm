@@ -1,5 +1,7 @@
-<package>
-  <name>mav_comm</name>
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+ <name>mav_comm</name>
   <version>3.3.3</version>
   <description>Contains messages and services for MAV communication</description>
 
@@ -22,15 +24,15 @@
   <url type="bugtracker">https://github.com/ethz-asl/mav_comm/issues</url>
 
   <!-- Dependencies which this package needs to build itself. -->
-  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
 
   <!-- Dependencies needed after this package is compiled. -->
-  <run_depend>mav_msgs</run_depend>
-  <run_depend>mav_planning_msgs</run_depend>
-  <run_depend>mav_state_machine_msgs</run_depend>
-  <run_depend>mav_system_msgs</run_depend>
+  <exec_depend>mav_msgs</exec_depend>
+  <exec_depend>mav_planning_msgs</exec_depend>
+  <exec_depend>mav_state_machine_msgs</exec_depend>
+  <exec_depend>mav_system_msgs</exec_depend>
 
   <export>
-    <metapackage/>
+    <build_type>ament_cmake</build_type>
   </export>
 </package>
