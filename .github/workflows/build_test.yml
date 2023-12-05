@@ -17,7 +17,7 @@ jobs:
         apt update
         rosdep update
         source /opt/ros/${{ matrix.config.rosdistro }}/setup.bash
-        rosdep install --from-paths . --ignore-src -y --rosdistro ${{matrix.config.rosdistro}}
+        rosdep install --from-paths . --ignore-src -y
       shell: bash
     - name: Build with colcon
       run: |
