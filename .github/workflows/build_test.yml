@@ -27,6 +27,6 @@ jobs:
     - name: Run tests
       run: |
         source /opt/ros/${{ matrix.config.rosdistro }}/setup.bash
-        colcon test --paths src/ethz-asl/terrain-navigation --event-handlers=console_cohesion+
+        colcon test --event-handlers=console_cohesion+
         colcon test-result --all --verbose
       shell: bash
