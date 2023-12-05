@@ -1,6 +1,9 @@
-cmake_minimum_required(VERSION 3.14.4..3.27)
+cmake_minimum_required(VERSION 3.14.4...3.27)
 project(mav_system_msgs)
 
+if(${CMAKE_VERSION} VERSION_GREATER 3.27)
+  cmake_policy(SET CMP0148 OLD)
+endif()
 
 find_package(std_msgs REQUIRED)
 
